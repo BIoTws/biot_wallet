@@ -1,0 +1,214 @@
+$background: #191c2f;
+
+.balance {
+  width: 95%;
+  height: 7em;
+  line-height: 7em;
+  position: absolute;
+  bottom: 64%;
+  left: 2%;
+  text-align: center;
+}
+.balance-title {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  position: absolute;
+  bottom: 40%;
+  left: 38%;
+}
+
+.balance-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 35px;
+  text-align: center;
+  color: #e9f5f3;
+}
+
+.transactions {
+  overflow: auto;
+  width: 95%;
+  height: 45%;
+  position: absolute;
+  bottom: 3%;
+  left: 2%;
+  background-color: #24293d;
+}
+
+.transactions-button {
+  height: 2em;
+  line-height: 2em;
+  width: 48%;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  color: #c8d5d3;
+  position: absolute;
+  bottom: 48%;
+  left: 49%;
+}
+.transactions-button-active {
+  height: 2em;
+  line-height: 2em;
+  width: 48%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #24293d;
+  text-align: center;
+  color: #c8d5d3;
+  position: absolute;
+  bottom: 48%;
+  left: 49%;
+}
+.transactions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transactions::-webkit-scrollbar-thumb {
+  border-width: 0.7px 0.7px 0.7px 1.4px;
+  border-color: #24293d;
+  background-color: #5765d7;
+}
+
+.transactions::-webkit-scrollbar-track {
+  border-width: 0;
+}
+
+.transactions::-webkit-scrollbar-track:hover {
+  border-left: solid 1px #191c2f;
+  background-color: #5765d7;
+}
+
+.transactions::-webkit-scrollbar-track {
+  border-width: 0;
+}
+
+.channels {
+  overflow: auto;
+  width: 95%;
+  height: 45%;
+  position: absolute;
+  bottom: 3%;
+  left: 2%;
+  background-color: #24293d;
+}
+.channels-button {
+  height: 2em;
+  line-height: 2em;
+  width: 47%;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  color: #c8d5d3;
+  position: absolute;
+  bottom: 48%;
+  left: 2%;
+}
+.channels-button-active {
+  height: 2em;
+  line-height: 2em;
+  width: 47%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #24293d;
+  text-align: center;
+  color: #c8d5d3;
+  position: absolute;
+  bottom: 48%;
+  left: 2%;
+}
+
+.channels::-webkit-scrollbar {
+  width: 6px;
+}
+
+.channels::-webkit-scrollbar-thumb {
+  border-width: 0.7px 0.7px 0.7px 1.4px;
+  border-color: #24293d;
+  background-color: #5765d7;
+}
+
+.channels::-webkit-scrollbar-track {
+  border-width: 0;
+}
+
+.channels::-webkit-scrollbar-track:hover {
+  border-left: solid 1px #191c2f;
+  background-color: #5765d7;
+}
+
+.channels::-webkit-scrollbar-track {
+  border-width: 0;
+}
+
+//list of trans/channels
+
+.channels-list-body {
+  margin-top: 3%;
+  margin-left: 2%;
+  background-color: $background;
+  width: 95%;
+  height: 2.5em;
+  text-align: left;
+  line-height: 2.5em;
+  display: block;
+  position: relative;
+}
+
+.channels-list-body-name {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  padding-left: 15px;
+  /*position: absolute;
+  left: 15%;
+  top: 5px;*/
+}
+.list-body {
+  margin-top: 3%;
+  margin-left: 2%;
+  background-color: $background;
+  width: 95%;
+  height: 2.5em;
+  text-align: center;
+  line-height: 2.5em;
+  display: block;
+  position: relative;
+}
+
+.list-body-name {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  /*position: absolute;
+  left: 15%;
+  top: 5px;*/
+}
+
+.list-body-balance {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  position: absolute;
+  left: 83%;
+  top: -0.01em;
+}
+
+.list-body-balance-ch {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  position: absolute;
+  left: 73%;
+  top: -0.01em;
+}
+
+.send{
+  display: inline-block;
+  background: url(../styles/icons/yhod.svg) no-repeat;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: 10px;
+  top: 13%;
+}
+.receive {
+  display: inline-block;
+  background: url(../styles/icons/postypl.svg) no-repeat;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: 10px;
+  top: 13%;
+}

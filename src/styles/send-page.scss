@@ -1,0 +1,60 @@
+$background: #191c2f;
+
+.address-input {
+  position: absolute;
+  left: 13%;
+  top: 21%;
+}
+
+.amount-input {
+  position: absolute;
+  left: 13%;
+  top: 35%;
+}
+
+.send-input {
+  width: 20em;
+  height: 2em;
+  border: 0;
+  color: #505663;
+  border-bottom: 1px solid rgba(#c8d5d3, 0.5);
+  background-color: $background;
+  text-align: center;
+}
+
+.send-input:focus {
+  text-align: center;
+  outline: 0;
+  border-bottom: 1px solid rgba(#5765d7, 0.7);
+}
+
+.send-input:focus::-webkit-input-placeholder {
+  color: transparent
+}
+
+.send-input::placeholder {
+  text-align: center;
+  color: #505663;
+}
+
+.button-send-submit {
+  font-family: 'Roboto', sans-serif;
+  color: #b3bebc;
+  font-weight: 600;
+  text-decoration: none;
+  user-select: none;
+  padding: .4em 3.5em;
+  outline: none;
+  border: 0 solid;
+  border-radius: 0;
+  transition: 0.1s;
+  position: absolute;
+  left: 33%;
+  top: 50%;
+  background: #444fa5;
+}
+
+.button-send-submit:hover {
+  color: #a4afad;
+  background: #3c4692;
+}

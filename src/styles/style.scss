@@ -1,0 +1,139 @@
+$background: #191c2f;
+
+body {
+  background-color: $background;
+}
+
+.qr-scanner {
+  background: url(../styles/icons/scan.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: 4%;
+  left: 45%;
+}
+
+.qr-scanner:hover {
+  background: url(../styles/icons/hover/scan-hover.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.back-button {
+  background: url(../styles/icons/back.svg) no-repeat;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 16%;
+  left: 4%;
+}
+
+.back-button:hover {
+  background: url(../styles/icons/hover/back-hover.svg) no-repeat;
+  width: 20px;
+  height: 20px;
+}
+
+.qrScanner-title {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  text-align: center;
+  position: absolute;
+  top: 5%;
+  left: 40%;
+}
+
+.wallet-title {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+
+}
+
+.top-bar {
+  background-color: #24293d;
+  text-align: center;
+  width: 95%;
+  height: 2em;
+  line-height: 2em;
+  position: absolute;
+  bottom: 93%;
+  left: 2%;
+}
+
+.wallet-menu {
+  text-align: center;
+  width: 95%;
+  height: 3em;
+  line-height: 3em;
+  position: absolute;
+  bottom: 58%;
+  left: 5%;
+}
+
+.send-button {
+  background: url(../styles/icons/send.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 30%;
+}
+
+.send-button:hover {
+  background: url(../styles/icons/hover/sendHover.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.receive-button {
+  background: url(../styles/icons/receive.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 55%;
+}
+
+.receive-button:hover {
+  background: url(../styles/icons/hover/getHover.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.listAddChannel {
+  color: #c8d5d3;
+  margin-top: 50px;
+  background-color: #24293d;
+  padding: 10px;
+}
+
+.chBtns {
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+}
+
+.chApprove {
+  background-color: #444fa5;
+  line-height: 40px;
+  text-align: center;
+}
+
+.chReject {
+  background-color: #24293d;
+  line-height: 40px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+//list of wallets
+/*.Ethereum {
+  display: inline-block;
+  background: url(../styles/icons/ethLogo.svg) no-repeat;
+  width: 45px;
+  height: 45px;
+  position: absolute;
+  left: 13px;
+  top: 15%;
+}*/
+
+
