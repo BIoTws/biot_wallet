@@ -11,7 +11,7 @@ exports.storage = 'sqlite';
 //exports.socksHost = '127.0.0.1';
 //exports.socksPort = 9050;
 
-exports.hub = 'byteball.org/bb-test';
+exports.hub = 'obyte.org/bb-test';
 exports.deviceName = 'Bot example';
 exports.permanent_pairing_secret = '*'; // * allows to pair with any code, the code is passed as 2nd param to the pairing event handler
 exports.control_addresses = [''];

@@ -1,22 +1,48 @@
 .qr-address {
-  width: 15em;
-  height: 15em;
+  width: 14em;
+  height: 14em;
   position: absolute;
-  top: 12%;
-  left: 17%;
+  left: 50%;
+  margin-left: -7em;
   background-color: #24293d;
 }
 
 .address {
-  width: 95%;
+  width: 24em;
   height: 1.7em;
   line-height: 1.7em;
   position: absolute;
-  top: 56%;
-  left: 2%;
+  top: 240px;
+  left: 50%;
+  margin-left: -12em;
   text-align: center;
   font-family: 'Roboto', sans-serif;
   font-size: 1em;
   background-color: #24293d;
   color: #e9f5f3;
+}
+
+.faucet {
+  position: absolute;
+  top: 297px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  color: #e9f5f3;
+  width: 100%;
+}
+
+.faucet a {
+  border: 1px solid #212533;
+  padding: 12px;
+  background: #24293d;
+}
+
+.receive-block {
+  width: 400px;
+  height: 500px;
+  position: absolute;
+  margin-left: -200px;
+  left: 50%;
+  top: 10%;
 }

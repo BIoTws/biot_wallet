@@ -1,19 +1,23 @@
 $background: #191c2f;
 
+.send-form {
+  width: 95%;
+  height: 500px;
+  left: 2%;
+  top: 7%;
+  text-align: center;
+}
+
 .address-input {
-  position: absolute;
-  left: 13%;
-  top: 21%;
+  margin-top: 80px;
 }
 
 .amount-input {
-  position: absolute;
-  left: 13%;
-  top: 35%;
+  margin-top: 60px;
 }
 
 .send-input {
-  width: 20em;
+  width: 98%;
   height: 2em;
   border: 0;
   color: #505663;
@@ -48,13 +52,16 @@ $background: #191c2f;
   border: 0 solid;
   border-radius: 0;
   transition: 0.1s;
-  position: absolute;
-  left: 33%;
-  top: 50%;
   background: #444fa5;
+  position: relative;
+  top: 50px;
 }
 
 .button-send-submit:hover {
   color: #a4afad;
   background: #3c4692;
+}
+
+.button-block {
+  height: 50px
 }

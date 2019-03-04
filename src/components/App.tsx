@@ -5,7 +5,11 @@ import { WalletsList } from "./WalletsList";
 import { Wallet } from "./WalletPage";
 import { ReceivePage } from "./ReceivePage";
 import { SendPage } from "./SendPage";
+import { Apps } from "./Apps";
 import getBiot from "../getBiot";
+import { EventEmitter } from './EventEmitter';
+
+let events = new EventEmitter();
 
 interface IPage {
 	page: string;
@@ -22,8 +26,12 @@ export class Menu extends React.Component<any, IPage> {
 		return (
 			<div className={'menu'}>
 				<a onClick={() => {
-					this.props.setPage(this.state.page)
+					this.props.setPage("qrScanner")
 				}} className={'qr-scanner'}>
+				</a>
+				<a onClick={() => {
+					this.props.setPage("apps")
+				}} className={'app-icon'}>
 				</a>
 			</div>
 		)
@@ -149,7 +157,12 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 					balance: balance.base.stable + balance.base.pending
 				}];
 			}
-			this.setState({ wallets: wallets });
+			if (wallets.length === 1) {
+				console.error(wallets[0]);
+				this.props.setPage(this.props.nextPage, wallets[0].id, null, this.props.params)
+			} else {
+				this.setState({ wallets: wallets });
+			}
 		});
 	}
 
@@ -172,36 +185,63 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 	}
 }
 
-export class ReqChannel extends React.Component<{ params: any, walletId: string, setPage: (page) => void }, any> {
+export class ReqChannel extends React.Component<{ params: any, walletId: string, setPage: (page) => void },
+	{ wallets: any, profile: any, hiddenProfiles: boolean, profiles: any, hiddenWaiting: boolean }> {
+	state = {
+		wallets: [],
+		profiles: [],
+		profile: { address: '', unit: '', object: '' },
+		hiddenProfiles: true,
+		hiddenWaiting: true
+	};
 
-	state = { wallets: [] };
+	componentDidMount () {
+		this.getProfile = this.getProfile.bind(this);
+		this.setProfile = this.setProfile.bind(this);
+	}
 
 	openChannel = async (biot, deviceAddress) => {
 		// @ts-ignore
 		let channelsManager = new ChannelsManager(this.props.walletId);
+		console.error('chm', channelsManager);
 		// @ts-ignore
 		let myDeviceAddressW = window.myDeviceAddress;
-
-		let channel = channelsManager.newChannel({
+		let params = {
 			myDeviceAddress: myDeviceAddressW,
 			peerDeviceAddress: deviceAddress,
 			myAmount: this.props.params.myAmount,
 			peerAmount: this.props.params.peerAmount,
 			age: this.props.params.age
-		});
+		};
+		if (this.props.params.needProfile) {
+			params['messageOnOpening'] = {
+				address: this.state.profile.address,
+				unit: this.state.profile.unit,
+				profile: this.state.profile.object
+			};
+		}
+		let channel = channelsManager.newChannel(params);
+		let interval;
 		channel.events.on('error', error => {
+			if (error.type === 'reject') {
+				alert('Channel rejected');
+				this.props.setPage('index');
+			}
 			console.error('channelError', error, channel.id);
 		});
 		channel.events.on('start', async () => {
+			this.setState({ hiddenWaiting: true });
 			console.error('channel start. id:', channel.id);
 			let i = 1;
-			let interval = setInterval(async () => {
+			interval = setInterval(async () => {
 				await channel.transfer(this.props.params.rate);
 				console.error('info', channel.info());
 				i++;
 				if (i >= this.props.params.count) {
 					clearInterval(interval);
-					await channel.closeMutually();
+					setImmediate(async () => {
+						await channel.closeMutually();
+					});
 					setTimeout(async () => {
 						if (channel.step !== 'mutualClose') {
 							await channel.closeOneSide();
@@ -209,34 +249,42 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 					}, 60000);
 				}
 			}, this.props.params.interval * 1000);
+			alert('Channel opened');
+			this.props.setPage('index');
 			await channel.transfer(this.props.params.rate);
 		});
 		channel.events.on('changed_step', (step) => {
+			if(step === 'mutualClose') clearInterval(interval);
+			if(step === 'close') clearInterval(interval);
 			console.error('changed_step: ', step, channel.id);
 		});
 		channel.events.on('new_transfer', async (amount) => {
 			console.error('new_transfer: ', amount, channel.id);
 		});
+		this.setState({ hiddenWaiting: false });
 		console.error('init', await channel.init());
 	};
 
 	approve = () => {
+		if (this.props.params.needProfile && this.state.profile.address === '') return alert('Please choose profile');
 		getBiot(async (biot: any) => {
-			let pubKey = this.props.params.pairingCode.match(/^[A-Za-z0-9]+/)[0];
+			let pubKey = this.props.params.pairingCode.match(/^[A-Za-z0-9/=]+/)[0];
 
+			console.error('pubKey', pubKey, this.props.params.pairingCode);
 			// @ts-ignore
 			let peerDeviceAddress = objectHash.getDeviceAddress(pubKey);
-
 			let listCorrespondents = await biot.core.listCorrespondents();
+			console.error(listCorrespondents, peerDeviceAddress);
 			if (listCorrespondents.length && listCorrespondents.filter(v => {
 				return v.device_address === peerDeviceAddress
 			}).length) {
+				console.error('!add');
 				await this.openChannel(biot, peerDeviceAddress);
 			} else {
+				console.error('add');
 				await biot.core.addCorrespondent(this.props.params.pairingCode);
 				await this.openChannel(biot, peerDeviceAddress);
 			}
-
 		});
 	};
 
@@ -244,22 +292,58 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		this.props.setPage('index');
 	};
 
+	async chooseProfile () {
+		getBiot(async (biot: any) => {
+			let profiles = await biot.core.getProfiles();
+			this.setState({ hiddenProfiles: false, profiles });
+		});
+	}
+
+	setProfile (address, unit, object) {
+		this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
+		console.error('set', address, unit, object);
+	}
+
+	getProfile () {
+		let wallets = this.state.profiles.map((profile: any) => {
+			let prf = JSON.parse(profile.object);
+			console.error('prf', prf);
+			return (
+				<div onClick={() => this.setProfile(profile.address, profile.unit, profile.object)} key={profile.unit}
+				     className={'wallets-list-body'}>
+					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
+					<div className={'profiles-list-body-balance'}>{profile.address}</div>
+				</div>
+			);
+		});
+		return <div hidden={this.state.hiddenProfiles}>
+			<div className={'state-wallets'}>{wallets}</div>
+		</div>
+	}
+
 	render () {
+		console.error('prps', this.props);
 		return <div>
-			<div className={'top-bar'}>
-				<text className={'qrScanner-title'}>Open channel</text>
-				<a onClick={() => this.props.setPage('index')} className={'back-button'}> </a>
-			</div>
-			<div className={'listAddChannel'}>
-				<div>My amount: {this.props.params.myAmount}</div>
-				<div>Peer amount: {this.props.params.peerAmount}</div>
-				<div>Age: {this.props.params.age}</div>
-				<div>Rate: {this.props.params.rate} bytes</div>
-				<div>Number of Payments: {this.props.params.count}</div>
-				<div>Interval: {this.props.params.interval} sec</div>
-				<div className={'chBtns'}>
-				<div className={'chApprove'}><a onClick={() => this.approve()}>Approve</a></div>
-				<div className={'chReject'}><a onClick={() => this.reject()}>Reject</a></div>
+			<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
+			{this.getProfile()}
+			<div hidden={!this.state.hiddenProfiles}>
+				<div className={'top-bar'}>
+					<text className={'qrScanner-title'}>Open channel</text>
+					<a onClick={() => this.props.setPage('index')} className={'back-button'}> </a>
+				</div>
+				<div className={'listAddChannel'}>
+					<div>My amount: {this.props.params.myAmount}</div>
+					<div>Peer amount: {this.props.params.peerAmount}</div>
+					<div>Age: {this.props.params.age}</div>
+					<div>Amount: {this.props.params.rate} bytes</div>
+					<div>Number of Payments: {this.props.params.count}</div>
+					<div>Interval: {this.props.params.interval} sec</div>
+					<div>{this.props.params.needProfile ?
+						<a id={'choosePr'} onClick={() => this.chooseProfile()}>Choose profile</a> : ''}</div>
+					<div className={'chBtns'}>
+						<div onClick={() => this.approve()} className={'chApprove'}><a>Approve</a></div>
+						<div onClick={() => this.reject()} className={'chReject'}><a>Reject</a></div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -274,6 +358,24 @@ export class App extends React.Component {
 		params: {}
 	};
 
+	constructor (props) {
+		super(props);
+		events.on('kwrk', () => {
+			this.setPage('setWallet', null, 'reqChannel', {
+				pairingCode: 'AkwrrLNRYqVj0Wt6wfT2qnUkv7vxF8bb8R78YgzEXuIp@obyte.org/bb-test#test',
+				myAmount: 1001,
+				peerAmount: 1,
+				age: 10,
+				channelType: 'pft',
+				rate: 1,
+				count: 1000,
+				interval: 30,
+				needProfile: true
+			});
+		});
+	}
+
+
 	setPage = (page, walletId?, nextPage?, params?) => {
 		this.setState({ page: page, walletId: walletId, nextPage: nextPage || '', params: params || {} });
 	};
@@ -287,6 +389,10 @@ export class App extends React.Component {
 			</div>
 		} else if (this.state.page === 'setWallet') {
 			return <div>
+				<div className={'top-bar'}>
+					<text className={'wallet-title'}>Select wallet</text>
+					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
+				</div>
 				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
 			</div>
 		} else if (this.state.page === 'reqChannel') {
@@ -325,9 +431,40 @@ export class App extends React.Component {
 				</div>
 				<ReceivePage walletId={this.state.walletId}/>
 			</div>
+		} else if (this.state.page == 'apps') {
+			return <div>
+				<Apps goIndex={() => this.setState({ page: 'index' })}/>
+			</div>
+		}
+	}
+}
+
+// @ts-ignore
+nfc.addNdefListener(
+	parseTag,
+	function () {
+		console.error('nfc ok');
+	},
+	function () {
+		alert(3);
+	}
+);
+
+function parseTag (nfcEvent) {
+	let records = nfcEvent.tag.ndefMessage;
+
+	for (let i = 0; i < records.length; i++) {
+		// @ts-ignore
+		let text = nfc.bytesToString(records[i].payload).substr(3);
+		if (text === 'kwrk') {
+			events.emit('kwrk');
 		}
 	}
 }
 
 
+document.addEventListener("backbutton", onBackKeyDown, false);
 
+function onBackKeyDown () {
+
+}

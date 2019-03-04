@@ -3,7 +3,9 @@ $background: #191c2f;
 .wallets-list {
   background-color: #24293d;
   width: 95%;
-  height: 6%;
+  height: 2em;
+  line-height: 2em;
+  text-align: left;
   position: absolute;
   bottom: 93%;
   left: 2%;
@@ -12,13 +14,11 @@ $background: #191c2f;
 .wallets-list-text {
   font-family: 'Roboto', sans-serif;
   color: #c8d5d3;
-  position: absolute;
-  bottom: 25%;
-  left: 3%;
+  margin-left: 15px;
 }
 
 .wallets-list-body {
-  margin-top: 3%;
+  margin-top: 10px;
   background-color: #24293d;
   width: 100%;
   height: 14%;
@@ -30,7 +30,7 @@ $background: #191c2f;
   font-family: 'Roboto', sans-serif;
   color: #c8d5d3;
   position: absolute;
-  left: 15%;
+  left: 70px;
   top: 5px;
 }
 
@@ -38,7 +38,7 @@ $background: #191c2f;
   font-family: 'Roboto', sans-serif;
   color: #c8d5d3;
   position: absolute;
-  left: 15%;
+  left: 70px;
   top: 40px;
 }
 
@@ -55,11 +55,11 @@ $background: #191c2f;
 
 .state-wallets {
   width: 95%;
-  height: 80%;
+  height: 76%;
   background-color: $background;
   overflow: auto;
   position: absolute;
-  bottom: 12%;
+  bottom: 15%;
   left: 2%;
 }
 
@@ -114,8 +114,8 @@ $background: #191c2f;
   width: 25px;
   height: 25px;
   position: absolute;
-  bottom: 18%;
-  left: 90%;
+  top: 10%;
+  right: 15px;
 }
 
 .add-wallet-button:hover {

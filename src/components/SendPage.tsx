@@ -37,41 +37,50 @@ export class SendPage extends React.Component<ISendPage, {}> {
 	sendPayment = () => {
 		console.error('sendPayment', this.state.address, this.state.amount);
 		getBiot(async (biot: any) => {
-			console.error('start p');
-			console.error('paym', await biot.core.sendPaymentFromWallet({
-				asset: 'base',
-				wallet: this.props.walletId,
-				toAddress: this.state.address,
-				amount: this.state.amount,
-				changeAddress: (await biot.core.getAddressesInWallet(this.props.walletId))[0],
-				deviceAddress: null
-			}));
-			alert('payment sent');
+			try {
+				console.error('paym', await biot.core.sendPaymentFromWallet({
+					asset: 'base',
+					wallet: this.props.walletId,
+					toAddress: this.state.address,
+					amount: this.state.amount,
+					changeAddress: (await biot.core.getAddressesInWallet(this.props.walletId))[0],
+					deviceAddress: null
+				}));
+				alert('payment sent');
+			} catch (e) {
+				alert('Error');
+			}
 			this.props.back();
 		});
 	};
 
 	render () {
 		return <div>
-			<div className={'address-input'}>
-				<input
-					required={true}
-					type="text"
-					className="send-input"
-					placeholder="Recipient address"
-					value={this.state.address}
-					onChange={this.setAddress}/>
+			<div className={'send-form'}>>
+				<div className={'address-input'}>
+					<input
+						required={true}
+						type="text"
+						className="send-input"
+						placeholder="Recipient address"
+						value={this.state.address}
+						onChange={this.setAddress}/>
+				</div>
+				<div className={'amount-input'}>
+					<input
+						required={true}
+						type="text"
+						className="send-input"
+						placeholder="Amount"
+						value={this.state.amount}
+						onChange={this.setAmount}/>
+				</div>
+				<div className={'button-block'}>
+					<button onClick={() => this.sendPayment()} className={'button-send-submit'} type="submit">
+						Send
+					</button>
+				</div>
 			</div>
-			<div className={'amount-input'}>
-				<input
-					required={true}
-					type="text"
-					className="send-input"
-					placeholder="Amount"
-					value={this.state.amount}
-					onChange={this.setAmount}/>
-			</div>
-			<button onClick={() => this.sendPayment()} className={'button-send-submit'} type="submit">Send</button>
 		</div>
 	}
 }

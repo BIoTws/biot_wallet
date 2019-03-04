@@ -1,0 +1,101 @@
+#listApps {
+  margin-top: 4em;
+}
+
+.ident {
+  background: url(../styles/icons/ident.svg) no-repeat;
+  width: 55px;
+  height: 55px;
+  display: inline-block;
+  margin: 20px;
+}
+
+.home {
+  background: url(../styles/icons/home.svg) no-repeat;
+  width: 55px;
+  height: 55px;
+  display: inline-block;
+  margin: 20px;
+}
+
+.co-working {
+  background: url(../styles/icons/cowork.svg) no-repeat;
+  width: 55px;
+  height: 55px;
+  display: inline-block;
+  margin: 20px;
+}
+
+.data {
+  margin-top: 4em;
+  color: #e9f5f3;
+}
+
+.input {
+  width: 98%;
+  height: 2em;
+  border: 0;
+  color: #616775;
+  border-bottom: 1px solid rgba(#c8d5d3, 0.5);
+  background-color: #191c2f;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.input:focus {
+  text-align: center;
+  outline: 0;
+  border-bottom: 1px solid rgba(#5765d7, 0.7);
+}
+
+.input::placeholder {
+  text-align: center;
+  color: #505663;
+}
+
+.button-send-submit {
+  font-family: 'Roboto', sans-serif;
+  color: #b3bebc;
+  font-weight: 600;
+  text-decoration: none;
+  user-select: none;
+  padding: .4em 3.5em;
+  outline: none;
+  border: 0 solid;
+  border-radius: 0;
+  transition: 0.1s;
+  background: #444fa5;
+  position: relative;
+}
+
+.button-send-submit:hover {
+  color: #a4afad;
+  background: #3c4692;
+}
+
+.selectAddress {
+  color: #5356a5;
+}
+
+.plsWaiting {
+  position: absolute;
+  top: 3em;
+  height: 30px;
+  left: 0;
+  right: 0;
+  background: #058b00;
+  color: #fff;
+  text-align: center;
+  line-height: 30px;
+  font-size: 20px;
+}
+
+.list-menu {
+  padding: 15px 0;
+  border-top: 1px solid #24293d;
+  text-align: center;
+}
+
+.list-menu:last-child {
+  border-bottom: 1px solid #24293d;
+}

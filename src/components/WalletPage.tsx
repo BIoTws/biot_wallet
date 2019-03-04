@@ -63,14 +63,20 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 			let arrChannels: any = [];
 			for (let i = 0; i < listChannels.length; i++) {
 				let channel = listChannels[i];
-				arrChannels = [...arrChannels, {
-					id: channel.id,
-					myAmount: channel.myAmount,
-					peerAmount: channel.peerAmount,
-					row: channel
-				}];
+				if(channel.step !== "null" && channel.step !== 'reject') {
+					arrChannels = [...arrChannels, {
+						id: channel.id,
+						myAmount: channel.myAmount,
+						peerAmount: channel.peerAmount,
+						row: channel
+					}];
+				}
 			}
 
+			arrChannels = arrChannels.sort((a,b) => {
+				return new Date(b.row.change_date).getTime() - new Date(a.row.change_date).getTime()
+			});
+			console.error('arrC', arrChannels);
 			this.setState({
 				balance: balance.base.stable + balance.base.pending,
 				transactions: arrTransactions,
@@ -201,9 +207,12 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 			<div>
 				{modal()}
 				<div className={'balance'}>
-
-					<text className={'balance-title'}>Total balance</text>
-					<text className={'balance-text'}>{this.state.balance} bytes</text>
+					<div className={'balance-title-block'}>
+						<span className={'balance-title'}>Total balance</span>
+					</div>
+					<div className={'balance-text-block'}>
+						<span className={'balance-text'}>{this.state.balance} bytes</span>
+					</div>
 				</div>
 
 				<div onClick={() => this.setState({ list: 'transactions' })}

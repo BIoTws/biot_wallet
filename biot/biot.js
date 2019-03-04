@@ -1,6 +1,7 @@
 const conf = require('ocore/conf');
 const validation = require('ocore/validation_utils');
 const objectHash = require('ocore/object_hash');
+const eventBus = require('ocore/event_bus');
 const lconf = require('./conf');
 for (let k in lconf) {
 	conf[k] = lconf[k];
@@ -15,6 +16,7 @@ async function onDeviceReady() {
 	console.error(await core.init('1029384756'));
 	window.biot = {core};
 	window.objectHash = objectHash;
+	window.eventBus = eventBus;
 	window.ChannelsManager = ChannelsManager;
 	
 	const device = require('ocore/device');

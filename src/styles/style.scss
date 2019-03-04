@@ -4,19 +4,33 @@ body {
   background-color: $background;
 }
 
+.menu {
+  height: 60px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  position: absolute;
+}
+
 .qr-scanner {
   background: url(../styles/icons/scan.svg) no-repeat;
   width: 40px;
   height: 40px;
+  display: block;
   position: absolute;
-  bottom: 4%;
-  left: 45%;
+  left: 25%;
+  margin-left: -20px;
 }
 
-.qr-scanner:hover {
-  background: url(../styles/icons/hover/scan-hover.svg) no-repeat;
+.app-icon {
+  background: url(../styles/icons/apps.svg) no-repeat;
   width: 40px;
   height: 40px;
+  position: absolute;
+  display: block;
+  left: 75%;
+  margin-left: -20px;
 }
 
 .back-button {
@@ -63,11 +77,11 @@ body {
 .wallet-menu {
   text-align: center;
   width: 95%;
-  height: 3em;
-  line-height: 3em;
+  height: 4em;
+  line-height: 4em;
   position: absolute;
   bottom: 58%;
-  left: 5%;
+  left: 2%;
 }
 
 .send-button {
@@ -75,7 +89,7 @@ body {
   width: 40px;
   height: 40px;
   position: absolute;
-  left: 30%;
+  right: 28%;
 }
 
 .send-button:hover {
@@ -89,7 +103,7 @@ body {
   width: 40px;
   height: 40px;
   position: absolute;
-  left: 55%;
+  left: 28%;
 }
 
 .receive-button:hover {
@@ -103,6 +117,15 @@ body {
   margin-top: 50px;
   background-color: #24293d;
   padding: 10px;
+}
+
+.listAddChannel div:not(:last-child) {
+  padding: 10px 0;
+  border-bottom: 1px solid #191c2f;
+}
+
+#choosePr {
+  color: #5762ef;
 }
 
 .chBtns {
@@ -125,6 +148,22 @@ body {
   margin-top: 5px;
 }
 
+.profiles-list-body-name {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+
+.profiles-list-body-balance {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  position: absolute;
+  left: 5px;
+  top: 40px;
+}
+
 //list of wallets
 /*.Ethereum {
   display: inline-block;
@@ -137,3 +176,16 @@ body {
 }*/
 
 
+
+.plsWaiting {
+  position: absolute;
+  top: 3em;
+  height: 30px;
+  left: 0;
+  right: 0;
+  background: #058b00;
+  color: #fff;
+  text-align: center;
+  line-height: 30px;
+  font-size: 20px;
+}
