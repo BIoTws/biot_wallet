@@ -254,8 +254,8 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			await channel.transfer(this.props.params.rate);
 		});
 		channel.events.on('changed_step', (step) => {
-			if(step === 'mutualClose') clearInterval(interval);
-			if(step === 'close') clearInterval(interval);
+			if (step === 'mutualClose') clearInterval(interval);
+			if (step === 'close') clearInterval(interval);
 			console.error('changed_step: ', step, channel.id);
 		});
 		channel.events.on('new_transfer', async (amount) => {
@@ -373,6 +373,29 @@ export class App extends React.Component {
 				needProfile: true
 			});
 		});
+		events.on('openURL', url => {
+			let u = url.match(/^biot:\/\/([a-zA-Z]+)/);
+			if (u.length < 2) return;
+
+			let action = u[1];
+			let p = url.match(/([a-zA-Z0-9]+=[a-zA-Z0-9]+)/g).map((v) => v.split('='));
+			let params = {};
+			p.forEach(v => {
+				params[v[0]] = v[1];
+			});
+
+			if (action === 'transfer') {
+				// @ts-ignore
+				if (OBValidation.isValidAddress(params['to'])) {
+					this.setPage('setWallet', null, 'sendTransaction', {
+						address: params['to'],
+						amount: parseInt(params['amount']) || 0
+					});
+				} else {
+					alert('Incorrect address');
+				}
+			}
+		});
 	}
 
 
@@ -446,7 +469,7 @@ nfc.addNdefListener(
 		console.error('nfc ok');
 	},
 	function () {
-		alert(3);
+		console.error('nfc error');
 	}
 );
 
@@ -468,3 +491,10 @@ document.addEventListener("backbutton", onBackKeyDown, false);
 function onBackKeyDown () {
 
 }
+
+// @ts-ignore
+window.handleOpenURL = function (url) {
+	setTimeout(function () {
+		events.emit('openURL', url);
+	}, 0);
+};
