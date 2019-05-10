@@ -3,6 +3,8 @@ import "../styles/receive-page.scss";
 import getBiot from "../getBiot";
 import { QRCode, ErrorCorrectLevel, QRNumber, QRAlphaNum, QR8BitByte, QRKanji } from "qrcode-generator-ts/js";
 
+// @ts-ignore
+let _eventBus = window.eventBus;
 
 export class ReceivePage extends React.Component<{ walletId: String }> {
 	state = {
@@ -25,7 +27,26 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 			let base64ImageString = qrCode.toDataURL();
 			this.setState({ address: address, imgUrl: base64ImageString, hidden: false });
 		});
+
+		_eventBus.on('text', this.message);
 	}
+
+	componentWillUnmount (): void {
+		_eventBus.removeListener('text', this.message);
+	}
+
+	message = (from_address, text) => {
+		if (!text.match(/free blackbytes/)) {
+			if (text.match(/You can request free bytes only once per 24 hours/)) {
+				alert('You can request free bytes only once per 24 hours')
+			}
+			console.error('text', from_address, ' - ', text);
+			this.setState({ faucetText: 'Get from faucet' });
+		} else {
+			alert('Your address is replenished');
+			this.setState({ faucetText: 'Get from faucet' });
+		}
+	};
 
 	getFromFaucet () {
 		if (this.state.getting) return;
@@ -38,24 +59,13 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 			let wallets = await biot.core.getMyDeviceWallets();
 			let addresses = await biot.core.getAddressesInWallet(wallets[0]);
 
-			_eventBus.on('text', (from_address, text) => {
-				if (text.match(/To receive free bytes/)) {
-					biot.core.sendTextMessageToDevice(from_address, addresses[0]);
-					console.error('sent faucet: ', addresses[0]);
-					console.error('Awaiting response...');
-				} else if (!text.match(/free blackbytes/)) {
-					if (text.match(/You can request free bytes only once per 24 hours/)) {
-						alert('You can request free bytes only once per 24 hours')
-					}
-					console.error('text', from_address, ' - ', text);
-					this.setState({ faucetText: 'Get from faucet' });
-				} else {
-					alert('Your address is replenished');
-					this.setState({ faucetText: 'Get from faucet' });
-				}
-			});
-
-			await biot.core.addCorrespondent('AxBxXDnPOzE/AxLHmidAjwLPFtQ6dK3k70zM0yKVeDzC@byteball.org/bb-test#0000');
+			let list = await biot.core.listCorrespondents();
+			if (list.find(e => e.device_address === "0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB")) {
+				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', addresses[0]);
+			} else {
+				await biot.core.addCorrespondent('AxBxXDnPOzE/AxLHmidAjwLPFtQ6dK3k70zM0yKVeDzC@byteball.org/bb-test#0000');
+				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', addresses[0]);
+			}
 		});
 	}
 

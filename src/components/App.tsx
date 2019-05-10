@@ -93,7 +93,8 @@ export class QRScanner extends React.Component<any, IPage> {
 								channelType: json.channelType,
 								rate: json.rate,
 								count: json.count,
-								interval: json.interval
+								interval: json.interval,
+								messageOnOpening: json.messageOnOpening || null
 							});
 						} else {
 							alert('Error_ch');
@@ -213,6 +214,9 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			peerAmount: this.props.params.peerAmount,
 			age: this.props.params.age
 		};
+		if (this.props.params.messageOnOpening) {
+			params['messageOnOpening'] = this.props.params.messageOnOpening;
+		}
 		if (this.props.params.needProfile) {
 			params['messageOnOpening'] = {
 				address: this.state.profile.address,
@@ -262,7 +266,18 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			console.error('new_transfer: ', amount, channel.id);
 		});
 		this.setState({ hiddenWaiting: false });
-		console.error('init', await channel.init());
+		try {
+			let i = await channel.init();
+			console.error('init', i);
+		} catch (e) {
+			console.error(e, JSON.stringify(e), e.message);
+			if (e.message.indexOf('Insufficient funds') !== -1) {
+				alert('Insufficient funds');
+			} else {
+				alert('Error');
+			}
+			this.props.setPage('index');
+		}
 	};
 
 	approve = () => {
@@ -352,14 +367,40 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 
 export class App extends React.Component {
 	state = {
-		page: 'index',      //qrScanner , wallet
+		page: 'index',      //qrScanner, wallet, setName
 		walletId: '',
 		nextPage: '',
-		params: {}
+		params: {},
+		name: ''
 	};
 
 	constructor (props) {
 		super(props);
+		let self = this;
+
+		this.messages = this.messages.bind(this);
+		this.objMessages = this.objMessages.bind(this);
+		//@ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.on('text', self.messages);
+		_eventBus.on('object', self.objMessages);
+
+		function chInit () {
+			//@ts-ignore
+			let _bInit = window.bInit;
+			if (_bInit) {
+				if (_bInit === 'waiting') {
+					return setTimeout(chInit, 100);
+				} else if (_bInit === 'errorDeviceName') {
+					return self.setState({ page: 'setName' });
+				} else if (_bInit === 'error') {
+					return alert('error');
+				}
+			}
+		}
+
+		chInit();
+
 		events.on('kwrk', () => {
 			this.setPage('setWallet', null, 'reqChannel', {
 				pairingCode: 'AkwrrLNRYqVj0Wt6wfT2qnUkv7vxF8bb8R78YgzEXuIp@obyte.org/bb-test#test',
@@ -398,11 +439,45 @@ export class App extends React.Component {
 		});
 	}
 
+	messages = (from_address, text) => {
+		if (this.state.page !== 'apps') {
+			let cm = localStorage.getItem('m_' + from_address);
+			let messages = cm ? JSON.parse(cm) : [];
+			messages.push({ text, i: false });
+			localStorage.setItem('m_' + from_address, JSON.stringify(messages));
+		}
+	};
+
+	objMessages = (from_address, object) => {
+		if (this.state.page !== 'apps') {
+			if (object.type === 'imapp') {
+				let ls = localStorage.getItem('listApps');
+				let listApps = ls ? JSON.parse(ls) : {};
+				listApps[from_address] = true;
+				localStorage.setItem('listApps', JSON.stringify(listApps));
+			}
+		}
+	};
+
 
 	setPage = (page, walletId?, nextPage?, params?) => {
 		this.setState({ page: page, walletId: walletId, nextPage: nextPage || '', params: params || {} });
 	};
 
+	setName = (evt) => {
+		this.setState({
+			name: evt.target.value
+		});
+	};
+
+	saveName = () => {
+		getBiot(async (biot: any) => {
+			await biot.core.setDeviceName(this.state.name);
+			//@ts-ignore
+			window.bInitialize();
+			this.setState({ page: 'index' });
+		});
+	};
 
 	render () {
 		if (this.state.page == 'index') {
@@ -417,6 +492,17 @@ export class App extends React.Component {
 					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
 				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
+			</div>
+		} else if (this.state.page === 'setName') {
+			return <div className={'app-body'} style={{ textAlign: 'center' }}>
+				<div className={'name-title'}>What's your name?</div>
+				<div><input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
+				</div>
+				<div className={'button-block'}>
+					<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
+						Save name
+					</button>
+				</div>
 			</div>
 		} else if (this.state.page === 'reqChannel') {
 			return <div><ReqChannel params={this.state.params} walletId={this.state.walletId} setPage={this.setPage}/>
