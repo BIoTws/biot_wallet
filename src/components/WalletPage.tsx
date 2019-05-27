@@ -33,58 +33,118 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 	timerB: any = null;
 
+	calcListTransactions (objTransactions, myAddresses) {
+		let list: any = [];
+
+		for (let key in objTransactions) {
+			let objT = objTransactions[key];
+			let obj: any = {};
+			obj.time = parseInt(objT.date);
+
+			let useMyAddress = false;
+			let otherAddresses = objT.from.filter(v => {
+				if (myAddresses.indexOf(v) !== -1) {
+					useMyAddress = true;
+					return false;
+				}
+				return true;
+			});
+
+			if (otherAddresses.length && !useMyAddress) {
+				let amount = 0;
+				let address = '';
+				for (let k in objT.to) {
+					let output = objT.to[k];
+					if (myAddresses.indexOf(output.address) !== -1) {
+						address = output.address;
+						amount += output.amount;
+					}
+				}
+				obj.name = address.substr(0, 20) + '...';
+				obj.id = objT.date;
+				obj.balance = amount;
+				obj.transaction = 'receive';
+			} else if (useMyAddress && !otherAddresses.length) {
+				let amount = 0;
+				let address = '';
+				for (let k in objT.to) {
+					let output = objT.to[k];
+					if (myAddresses.indexOf(output.address) === -1) {
+						address = output.address;
+						amount += output.amount;
+					}
+				}
+				obj.name = address.substr(0, 20) + '...';
+				obj.id = objT.date;
+				obj.balance = amount;
+				obj.transaction = 'send';
+			} else {
+				let amount = 0;
+				let address = '';
+				console.error('obJT', objT.to);
+				for (let k in objT.to) {
+					let output = objT.to[k];
+					if (myAddresses.indexOf(output.address) !== -1) {
+						amount += output.amount;
+					} else {
+						address = output.address;
+					}
+				}
+				obj.name = address.substr(0, 20) + '...';
+				obj.id = objT.date;
+				obj.balance = objT.myFromAmount - amount;
+				obj.transaction = 'send';
+			}
+
+			list.push(obj);
+		}
+
+		list.sort((a, b) => b.time - a.time);
+		return list;
+	}
+
 	componentDidMount () {
 		let self = this;
 		getBiot(async (biot: any) => {
-			let balance = await biot.core.getWalletBalance(this.props.walletId);
-			let transactions = await biot.core.getListTransactionsForWallet(this.props.walletId);
+			let upd = async () => {
+				let balance = await biot.core.getWalletBalance(this.props.walletId);
+				let objTransactions = await biot.core.getWalletTransactions(this.props.walletId);
+				let myAddresses = await biot.core.getAddressesInWallet(this.props.walletId);
+				let listTransactions = this.calcListTransactions(objTransactions, myAddresses);
+				console.error('listT', listTransactions);
 
-			// @ts-ignore
-			let listChannels = await ChannelsManager.listByWalletId(this.props.walletId);
+				// @ts-ignore
+				let listChannels = await ChannelsManager.listByWalletId(this.props.walletId);
 
-			console.error('transactions', transactions);
-			console.error('channels', listChannels);
-			let arrTransactions: any = [];
-			for (let i = 0; i < transactions.length; i++) {
-				let transaction = transactions[i];
-				var obj: any = {};
-				if (transaction.action === 'received') {
-					obj.transaction = 'receive';
-					obj.name = transaction.my_address.substr(0, 20) + '...';
-				} else {
-					obj.transaction = 'send';
-					obj.name = transaction.addressTo.substr(0, 20) + '...';
+				console.error('transactions', listTransactions);
+				console.error('channels', listChannels);
+
+				let arrChannels: any = [];
+				for (let i = 0; i < listChannels.length; i++) {
+					let channel = listChannels[i];
+					if (channel.step !== "null" && channel.step !== 'reject') {
+						arrChannels = [...arrChannels, {
+							id: channel.id,
+							myAmount: channel.myAmount,
+							peerAmount: channel.peerAmount,
+							row: channel
+						}];
+					}
 				}
-				obj.id = transaction.time;
-				obj.balance = transaction.amount;
-				arrTransactions = [...arrTransactions, obj];
-			}
 
-			let arrChannels: any = [];
-			for (let i = 0; i < listChannels.length; i++) {
-				let channel = listChannels[i];
-				if(channel.step !== "null" && channel.step !== 'reject') {
-					arrChannels = [...arrChannels, {
-						id: channel.id,
-						myAmount: channel.myAmount,
-						peerAmount: channel.peerAmount,
-						row: channel
-					}];
-				}
-			}
-
-			arrChannels = arrChannels.sort((a,b) => {
-				return new Date(b.row.change_date).getTime() - new Date(a.row.change_date).getTime()
-			});
-			console.error('arrC', arrChannels);
-			this.setState({
-				balance: balance.base.stable + balance.base.pending,
-				transactions: arrTransactions,
-				channels: arrChannels
-			});
+				arrChannels = arrChannels.sort((a, b) => {
+					return new Date(b.row.change_date).getTime() - new Date(a.row.change_date).getTime()
+				});
+				console.error('arrC', arrChannels);
+				this.setState({
+					balance: balance.base.stable + balance.base.pending,
+					transactions: listTransactions,
+					channels: arrChannels
+				});
+			};
+			upd();
 			this.timerB = setInterval(async function () {
-				let balance = await biot.core.getWalletBalance(self.props.walletId);
-				self.setState({ balance: balance.base.stable + balance.base.pending });
+				upd();
 			}, 10000);
 		});
 	}
@@ -112,7 +172,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 				<div key={channel.id} className={'channels-list-body'}
 				     onClick={() => this.showModalChannel(channel.row)}>
 					<div className={'channels-list-body-name'}>{channel.id.substr(0, 20) + '...'}</div>
-					<div className={'list-body-balance-ch'}>{channel.myAmount} / {channel.peerAmount}</div>
+					<div className={'list-body-balance-ch'}>My amount: {channel.myAmount} | Peer amount: {channel.peerAmount}</div>
 				</div>
 			);
 		});

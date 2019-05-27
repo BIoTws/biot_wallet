@@ -50,7 +50,7 @@
 
 .input::placeholder {
   text-align: center;
-  color: #505663;
+  color: #7E8494;
 }
 
 .button-send-submit {
@@ -66,11 +66,6 @@
   transition: 0.1s;
   background: #444fa5;
   position: relative;
-}
-
-.button-send-submit:hover {
-  color: #a4afad;
-  background: #3c4692;
 }
 
 .selectAddress {
@@ -134,21 +129,22 @@
   width: 72%;
   height: 2em;
   border: 0;
-  color: #616775;
+  color: #7E8494;
   border-bottom: 1px solid rgba(#c8d5d3, 0.5);
   background-color: #191c2f;
-  text-align: center;
+  text-align: left;
+  padding: 0 5px;
 }
 
 #text_input:focus {
-  text-align: center;
+  text-align: left;
   outline: 0;
   border-bottom: 1px solid rgba(#5765d7, 0.7);
 }
 
 #text_input::placeholder {
-  text-align: center;
-  color: #505663;
+  text-align: left;
+  color: #7E8494;
 }
 
 #menu_img {
@@ -184,7 +180,7 @@
   position: fixed;
   overflow-y: scroll;
   top: 3em;
-  bottom: 0;
+  bottom: 80px;
   left: 0;
   right: 0;
 }
@@ -193,22 +189,73 @@
   color: #fff;
 }
 
-.m_l {
+.m_l, .m_r {
   max-width: 80%;
+  word-wrap: break-word;
+  color: #fff;
+  border-radius: 10px;
+  padding: 7px 12px
+}
+
+.m_l {
   margin: 15px 10px;
   text-align: left;
-  word-wrap: break-word;
+  background-color: #5d5d5d;
 }
 
 .m_r {
-  max-width: 80%;
   margin: 15px 10px 0 19%;
   text-align: right;
-  word-wrap: break-word;
+  background-color: #5568bf
+}
+
+#send_my_address, #insert_my_address {
+  position: absolute;
+  width: 250px;
+  padding: 10px;
+  background-color: #58606c;
 }
 
 #send_my_address {
-  margin-top: -40px;
+  margin-top: -50px;
+
+}
+
+#insert_my_address {
+  margin-top: -84px;
+}
+
+#action_tab_bg {
   position: absolute;
-  width: 250px;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+#action_tap_menu {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  border-radius: 10px;
+  background-color: #262947;
+  color: #fff;
+  z-index: 10000;
+}
+
+#action_tap_menu > div{
+  padding: 20px 15px;
+  font-size: 16px;
+  text-align: center;
+}
+
+#action_tap_menu > div:not(:last-child) {
+  border-bottom: 1px solid #191c2f;
+}
+
+.redText {
+  color: #ea2b2b;
 }

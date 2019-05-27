@@ -22,7 +22,7 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 			let qrCode = new QRCode();
 			qrCode.setErrorCorrectLevel(ErrorCorrectLevel.M);
 			qrCode.setTypeNumber(4);
-			qrCode.addData("byteball-rn:" + address);
+			qrCode.addData("ocore-tn:" + address);
 			qrCode.make();
 			let base64ImageString = qrCode.toDataURL();
 			this.setState({ address: address, imgUrl: base64ImageString, hidden: false });
@@ -53,18 +53,14 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 		this.setState({ getting: true, faucetText: 'Please wait' });
 
 		getBiot(async (biot: any) => {
-			// @ts-ignore
-			let _eventBus = window.eventBus;
-
-			let wallets = await biot.core.getMyDeviceWallets();
-			let addresses = await biot.core.getAddressesInWallet(wallets[0]);
+			let address = (await biot.core.getAddressesInWallet(this.props.walletId))[0];
 
 			let list = await biot.core.listCorrespondents();
 			if (list.find(e => e.device_address === "0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB")) {
-				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', addresses[0]);
+				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', address);
 			} else {
 				await biot.core.addCorrespondent('AxBxXDnPOzE/AxLHmidAjwLPFtQ6dK3k70zM0yKVeDzC@byteball.org/bb-test#0000');
-				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', addresses[0]);
+				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', address);
 			}
 		});
 	}

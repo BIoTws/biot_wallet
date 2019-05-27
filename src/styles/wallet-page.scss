@@ -85,11 +85,6 @@ $background: #191c2f;
   border-width: 0;
 }
 
-.transactions::-webkit-scrollbar-track:hover {
-  border-left: solid 1px #191c2f;
-  background-color: #5765d7;
-}
-
 .transactions::-webkit-scrollbar-track {
   border-width: 0;
 }
@@ -141,11 +136,6 @@ $background: #191c2f;
 
 .channels::-webkit-scrollbar-track {
   border-width: 0;
-}
-
-.channels::-webkit-scrollbar-track:hover {
-  border-left: solid 1px #191c2f;
-  background-color: #5765d7;
 }
 
 .channels::-webkit-scrollbar-track {

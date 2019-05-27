@@ -20,7 +20,7 @@ $background: #191c2f;
   width: 98%;
   height: 2em;
   border: 0;
-  color: #505663;
+  color: #7E8494;
   border-bottom: 1px solid rgba(#c8d5d3, 0.5);
   background-color: $background;
   text-align: center;
@@ -38,7 +38,7 @@ $background: #191c2f;
 
 .send-input::placeholder {
   text-align: center;
-  color: #505663;
+  color: #7E8494;
 }
 
 .button-send-submit {
@@ -55,11 +55,6 @@ $background: #191c2f;
   background: #444fa5;
   position: relative;
   top: 50px;
-}
-
-.button-send-submit:hover {
-  color: #a4afad;
-  background: #3c4692;
 }
 
 .button-block {

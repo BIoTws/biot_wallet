@@ -3,8 +3,9 @@ import "../styles/apps.scss";
 import "../styles/style.scss";
 import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
+import { Menu } from "./Menu";
 
-export class Apps extends React.Component<{ goIndex: () => void }, any> {
+export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
 	requirements: any = {};
 	core: any = null;
@@ -27,7 +28,9 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 		thisChat: { name: '', device_address: '' },
 		currentText: '',
 		messages: {},
-		isShowBlockSendAddress: false
+		isShowBlockSendAddress: false,
+		hiddenListAction: true,
+		elementTapId: ''
 	};
 
 	private messages_scroll: React.RefObject<any>;
@@ -46,6 +49,9 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 		this.sendResponse = this.sendResponse.bind(this);
 		this.setWallet = this.setWallet.bind(this);
 		this.showWallets = this.showWallets.bind(this);
+		this.onTStart = this.onTStart.bind(this);
+		this.hideTapActionList = this.hideTapActionList.bind(this);
+		this.delCor = this.delCor.bind(this);
 
 		//@ts-ignore
 		let _eventBus = window.eventBus;
@@ -72,6 +78,12 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 				}];
 			}
 			this.setState({ wallets: wallets });
+
+
+			setTimeout(async () => {
+				let listCors = await biot.core.listCorrespondents();
+				this.setState({ correspondents: listCors });
+			}, 1000);
 		});
 	}
 
@@ -106,7 +118,7 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 
 	getElement (f) {
 		if (f.type === 'input') {
-			return this.tInput(f.title, f.id);
+			return this.tInput(this.escapeHtml(f.title), this.escapeHtml(f.id));
 		} else if (f.type === 'address') {
 			return <div style={{ textAlign: 'center' }}>
 				<a onClick={() => this.showWallets()} className={'selectAddress'}>
@@ -115,24 +127,24 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 		} else if (f.type === 'blank_line') {
 			return <div><br/></div>
 		} else if (f.type === 'submit') {
-			return <div id={f.id} style={{ textAlign: 'center' }}>
+			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}>
 				<input onClick={() => this.sendResponse()} className={'button-send-submit'} type={'submit'}
-				       value={f.title}/>
+				       value={this.escapeHtml(f.title)}/>
 			</div>
 		} else if (f.type === 'h2') {
-			return <div id={f.id} style={{ textAlign: 'center' }}><h2>{f.title}</h2></div>
+			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}><h2>{this.escapeHtml(f.title)}</h2></div>
 		} else if (f.type === 'h3') {
-			return <div id={f.id} style={{ textAlign: 'center' }}><h3>{f.title}</h3></div>
+			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}><h3>{this.escapeHtml(f.title)}</h3></div>
 		} else if (f.type === 'text') {
-			return <div id={f.id}>{f.title}</div>
+			return <div id={this.escapeHtml(f.id)}>{this.escapeHtml(f.title)}</div>
 		} else if (f.type === 'request') {
-			return <div id={f.id} style={{ textAlign: 'center' }}>
+			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}>
 				<input onClick={() => this.sendRequest(f.req)} className={'button-send-submit'} type={'button'}
-				       value={f.title}/>
+				       value={this.escapeHtml(f.title)}/>
 			</div>
 		} else if (f.type === 'list-menu') {
-			return <div onClick={() => this.sendRequest(f.req)} id={f.id} className={'list-menu'}>
-				{f.title}
+			return <div onClick={() => this.sendRequest(f.req)} id={this.escapeHtml(f.id)} className={'list-menu'}>
+				{this.escapeHtml(f.title)}
 			</div>
 		}
 	}
@@ -255,7 +267,9 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 			// @ts-ignore
 			let icon = makeBlockie(correspondent.device_address);
 			return <div key={correspondent.device_address} className={'wallets-list-body'}
-			            onClick={() => this.openChatOrApp(correspondent)}>
+			            onClick={() => this.openChatOrApp(correspondent)}
+			            onTouchStart={() => this.onTStart(correspondent.device_address)}
+			            onTouchEnd={() => this.onTEnd(correspondent.device_address)}>
 				<div style={{ padding: '10px 7px' }}><img width={'50px'} height={'50px'} src={icon}/></div>
 				<div className={'wallets-list-body-name'}>{correspondent.name}</div>
 				<div className={'cors-list'}>{correspondent.device_address}</div>
@@ -292,7 +306,7 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 			let listCors = await biot.core.listCorrespondents();
 			setTimeout(() => {
 				this.setState({ app: 'list', correspondents: listCors });
-			}, 100);
+			}, 500);
 		});
 	};
 
@@ -319,12 +333,6 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 	};
 
 	openChat = (correspondent) => {
-		this.callbackW = (address) => {
-			this.setState({ currentText: address }, () => {
-				this.sendMessage();
-			});
-		};
-
 		let cm = this.state.messages;
 		let ls = localStorage.getItem('m_' + correspondent.device_address);
 		cm[correspondent.device_address] = ls ? JSON.parse(ls) : [];
@@ -349,14 +357,61 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 		}, 100);
 	};
 
-	showOrHideBlock = ()=> {
-		this.setState({isShowBlockSendAddress: !this.state.isShowBlockSendAddress});
+	showOrHideBlock = () => {
+		this.setState({ isShowBlockSendAddress: !this.state.isShowBlockSendAddress });
 	};
 
-	hideBlockAndShowWallets = ()=> {
-		this.setState({isShowBlockSendAddress: false});
+	hideBlockAndShowWallets = (insert) => {
+		this.callbackW = (address) => {
+			if (insert) {
+				this.setState({ currentText: this.state.currentText + address });
+			} else {
+				this.setState({ currentText: address }, () => {
+					this.sendMessage();
+				});
+			}
+		};
+		this.setState({ isShowBlockSendAddress: false });
 		this.showWallets();
 	};
+
+
+	tapTimers = {};
+	onTStart = (id) => {
+		this.tapTimers[id] = setTimeout((id) => {
+			this.setState({elementTapId: id, hiddenListAction: false});
+			delete this.tapTimers[id];
+		}, 700, id);
+	};
+
+	onTEnd = (id) => {
+		clearTimeout(this.tapTimers[id]);
+	};
+
+	hideTapActionList = () => {
+		this.setState({elementTapId: '', hiddenListAction: true});
+	};
+
+	delCor = () => {
+		getBiot(async (biot) => {
+			await biot.core.removeCorrespondent(this.state.elementTapId).catch(e => alert(e));
+			let listCors = await biot.core.listCorrespondents();
+			setTimeout(() => {
+				this.setState({ app: 'list', correspondents: listCors, elementTapId: '' });
+			}, 500);
+		});
+		this.setState({hiddenListAction: true});
+	};
+
+	escapeHtml = (text) => {
+		return text
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	};
+
 
 	render () {
 		if (this.state.app === 'addC') {
@@ -376,17 +431,17 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 			</div>
 		} else if (this.state.app === 'list') {
 			return <div>
+				<div id={'action_tap'} hidden={this.state.hiddenListAction}>
+					<div id={'action_tab_bg'} onClick={this.hideTapActionList}></div>
+					<div id={'action_tap_menu'}>
+						<div onClick={this.delCor}>Delete correspondent</div>
+					</div>
+				</div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Apps and chats</text>
-					<a onClick={() => this.props.goIndex()} className={'back-button'}> </a>
 				</div>
 				<div id={'bl_for_scroll_corrs'}>
 					<div className={'state-wallets'}>
-						<div key={'invDev'} className={'wallets-list-body'} onClick={() => this.copyPairingCode()}>
-							<div className={'invDev'}></div>
-							<div className={'wallets-list-body-name'}>My pairing code (click to copy)</div>
-							<div className={'cors-list'}>{this.state.pairingCode}</div>
-						</div>
 						<div key={'recvCorr'} className={'wallets-list-body'} onClick={() => {
 							this.showAddC()
 						}}>
@@ -397,6 +452,7 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 						{this.listCorrespondents()}
 					</div>
 				</div>
+				<Menu page={'apps'} setPage={this.props.setPage}/>
 			</div>
 		} else if (this.state.app === 'app') {
 			return <div>
@@ -429,8 +485,8 @@ export class Apps extends React.Component<{ goIndex: () => void }, any> {
 						</div>
 						<div id={'input_block'}>
 							<div id={'menu_img'} onClick={this.showOrHideBlock}>
-								<div hidden={!this.state.isShowBlockSendAddress} id={'send_my_address'}
-								     onClick={this.hideBlockAndShowWallets}>Send my address
+								<div hidden={!this.state.isShowBlockSendAddress} id={'insert_my_address'}
+								     onClick={() => this.hideBlockAndShowWallets(1)}>Insert my address
 								</div>
 							</div>
 							<input id={'text_input'} type={'text'} placeholder={'Your message'}

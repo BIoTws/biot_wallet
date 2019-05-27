@@ -13,23 +13,62 @@ body {
   position: absolute;
 }
 
+.index-icon {
+  background: url(../styles/icons/wallets.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  display: block;
+  position: absolute;
+  left: 11%;
+  margin-left: -20px;
+}
+.index-icon-active {
+  background: url(../styles/icons/_wallets.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  display: block;
+  position: absolute;
+  left: 11%;
+  margin-left: -20px;
+}
+
 .qr-scanner {
   background: url(../styles/icons/scan.svg) no-repeat;
   width: 40px;
   height: 40px;
   display: block;
   position: absolute;
-  left: 25%;
+  left: 50%;
+  margin-left: -20px;
+}
+
+.qr-scanner-active {
+  background: url(../styles/icons/_scan.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  display: block;
+  position: absolute;
+  left: 50%;
   margin-left: -20px;
 }
 
 .app-icon {
-  background: url(../styles/icons/apps.svg) no-repeat;
+  background: url(../styles/icons/appschat.svg) no-repeat;
   width: 40px;
   height: 40px;
   position: absolute;
   display: block;
-  left: 75%;
+  left: 89%;
+  margin-left: -20px;
+}
+
+.app-icon-active {
+  background: url(../styles/icons/_appschat.svg) no-repeat;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  display: block;
+  left: 89%;
   margin-left: -20px;
 }
 
@@ -40,12 +79,6 @@ body {
   position: absolute;
   top: 16%;
   left: 4%;
-}
-
-.back-button:hover {
-  background: url(../styles/icons/hover/back-hover.svg) no-repeat;
-  width: 20px;
-  height: 20px;
 }
 
 .qrScanner-title {
@@ -70,7 +103,7 @@ body {
   height: 2em;
   line-height: 2em;
   position: fixed;
-  bottom: 93%;
+  top: 0.9em;
   left: 2%;
 }
 
@@ -92,12 +125,6 @@ body {
   right: 28%;
 }
 
-.send-button:hover {
-  background: url(../styles/icons/hover/sendHover.svg) no-repeat;
-  width: 40px;
-  height: 40px;
-}
-
 .receive-button {
   background: url(../styles/icons/receive.svg) no-repeat;
   width: 40px;
@@ -106,20 +133,14 @@ body {
   left: 28%;
 }
 
-.receive-button:hover {
-  background: url(../styles/icons/hover/getHover.svg) no-repeat;
-  width: 40px;
-  height: 40px;
-}
-
 .listAddChannel {
   color: #c8d5d3;
-  margin-top: 50px;
+  margin-top: 60px;
   background-color: #24293d;
   padding: 10px;
 }
 
-.listAddChannel div:not(:last-child) {
+.listAddChannel > div:not(:last-child) {
   padding: 10px 0;
   border-bottom: 1px solid #191c2f;
 }
@@ -200,7 +221,7 @@ body {
   width: 98%;
   height: 2em;
   border: 0;
-  color: #505663;
+  color: #656d7a;
   border-bottom: 1px solid rgba(#c8d5d3, 0.5);
   background-color: $background;
   text-align: center;
@@ -224,9 +245,4 @@ body {
   background: #444fa5;
   position: relative;
   top: 50px;
-}
-
-.button-send-submit:hover {
-  color: #a4afad;
-  background: #3c4692;
 }

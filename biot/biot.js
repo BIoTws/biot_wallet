@@ -7,7 +7,7 @@ for (let k in lconf) {
 	conf[k] = lconf[k];
 }
 
-window.bInit = 'waiting';
+window.stepInit = 'waiting';
 window.objectHash = objectHash;
 window.eventBus = eventBus;
 document.addEventListener("deviceready", onDeviceReady, false);
@@ -16,20 +16,21 @@ async function onDeviceReady() {
 	const core = require('biot-core');
 	const ChannelsManager = require('biot-core/lib/ChannelsManager');
 	
-	window.bInitialize = async function () {
+	window.InitializeBIoT = async function () {
 		let init = await core.init('1029384756');
-		if (init === true) {
-			window.bInit = 'ok';
+		if (init.split && init.split(' ').length % 3 === 0) {
+			window.stepInit = 'ok';
+			window.seed = init;
 			const device = require('ocore/device');
 			window.myDeviceAddress = device.getMyDeviceAddress();
 		} else if (init === 'Please set device name') {
-			window.bInit = 'errorDeviceName';
+			window.stepInit = 'errorDeviceName';
 		} else {
-			window.bInit = 'error';
+			window.stepInit = 'error';
 		}
 	};
 	
-	await bInitialize();
+	await InitializeBIoT();
 	window.biot = {core};
 	window.ChannelsManager = ChannelsManager;
 	

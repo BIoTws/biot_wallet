@@ -38,6 +38,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		console.error('sendPayment', this.state.address, this.state.amount);
 		getBiot(async (biot: any) => {
 			try {
+				console.error('addresses', (await biot.core.getAddressesInWallet(this.props.walletId)));
 				console.error('paym', await biot.core.sendPaymentFromWallet({
 					asset: 'base',
 					wallet: this.props.walletId,
@@ -48,7 +49,8 @@ export class SendPage extends React.Component<ISendPage, {}> {
 				}));
 				alert('payment sent');
 			} catch (e) {
-				alert('Error');
+				console.error('Error payment: ', e);
+				alert('Error: ' + e);
 			}
 			this.props.back();
 		});

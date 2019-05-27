@@ -6,6 +6,7 @@ import { Wallet } from "./WalletPage";
 import { ReceivePage } from "./ReceivePage";
 import { SendPage } from "./SendPage";
 import { Apps } from "./Apps";
+import { Menu } from "./Menu";
 import getBiot from "../getBiot";
 import { EventEmitter } from './EventEmitter';
 
@@ -15,35 +16,12 @@ interface IPage {
 	page: string;
 }
 
-export class Menu extends React.Component<any, IPage> {
-
-	constructor (props: any) {
-		super(props);
-		this.state = { page: "qrScanner" };
-	}
-
-	render () {
-		return (
-			<div className={'menu'}>
-				<a onClick={() => {
-					this.props.setPage("qrScanner")
-				}} className={'qr-scanner'}>
-				</a>
-				<a onClick={() => {
-					this.props.setPage("apps")
-				}} className={'app-icon'}>
-				</a>
-			</div>
-		)
-	}
-}
-
 export class QRScanner extends React.Component<any, IPage> {
 
 	componentDidMount () {
 		let self = this;
 		// @ts-ignore
-		getQR(function (err, text) {
+		getQR((err, text) => {
 			console.error('text QR: ', text);
 			if (err) {
 				alert('Error');
@@ -56,8 +34,8 @@ export class QRScanner extends React.Component<any, IPage> {
 					json = null;
 				}
 
-				if (text.indexOf('byteball:') !== -1 || text.indexOf('byteball-tn:') !== -1) {
-					let r = text.match(/^byteball(|-tn):([A-Z0-9]+)/);
+				if (text.indexOf('obyte:') !== -1 || text.indexOf('obyte-tn:') !== -1) {
+					let r = text.match(/^obyte(|-tn):(.+)/);
 					if (r && r[2]) {
 						// @ts-ignore
 						if (OBValidation.isValidAddress(r[2])) {
@@ -73,6 +51,21 @@ export class QRScanner extends React.Component<any, IPage> {
 								address: r[2],
 								amount: paramsObj['amount'] || 0
 							});
+							// @ts-ignore
+						} else {
+							if (r[2]) {
+								let matches = r[2].match(/^([\w\/+]+)@([\w.:\/-]+)#([\w\/+-]+)$/);
+								if (matches) {
+									getBiot(async biot => {
+										try {
+											await biot.core.addCorrespondent(r[2]);
+											self.props.setPage('apps');
+										} catch (e) {
+											alert(e);
+										}
+									});
+								}
+							}
 						}
 					}
 				} else if (json && json.app && json.app === 'biot') {
@@ -85,6 +78,8 @@ export class QRScanner extends React.Component<any, IPage> {
 								self.props.setPage('index');
 							}
 
+							//@ts-ignore
+							window.plugins.toast.showLongBottom('You were offered to open the channel');
 							self.props.setPage('setWallet', null, 'reqChannel', {
 								pairingCode: json.pairingCode,
 								myAmount: json.peerAmount,
@@ -148,12 +143,16 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 		getBiot(async (biot: any) => {
 			let wallets: any = [];
 			let walletsInDb = await biot.core.getWallets();
+			let lWN = localStorage.getItem('assocWalletToName');
+			let assocWalletToName = {};
+			if (lWN) assocWalletToName = JSON.parse(lWN);
+
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
 				let balance = await biot.core.getWalletBalance(wallet);
 				wallets = [...wallets, {
 					id: wallet,
-					name: wallet.substr(0, 25) + '...',
+					name: assocWalletToName[wallet] ? assocWalletToName[wallet] : wallet.substr(0, 25) + '...',
 					coin: 'Byteball',
 					balance: balance.base.stable + balance.base.pending
 				}];
@@ -181,7 +180,9 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 			);
 		});
 		return <div>
-			<div className={'state-wallets'}>{wallets}</div>
+			<div className={'state-wallets'} style={{ paddingTop: '45px' }}>
+				{wallets}
+			</div>
 		</div>
 	}
 }
@@ -283,7 +284,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 	approve = () => {
 		if (this.props.params.needProfile && this.state.profile.address === '') return alert('Please choose profile');
 		getBiot(async (biot: any) => {
-			let pubKey = this.props.params.pairingCode.match(/^[A-Za-z0-9/=]+/)[0];
+			let pubKey = this.props.params.pairingCode.match(/^[A-Za-z0-9/=+\-]+/)[0];
 
 			console.error('pubKey', pubKey, this.props.params.pairingCode);
 			// @ts-ignore
@@ -298,6 +299,8 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			} else {
 				console.error('add');
 				await biot.core.addCorrespondent(this.props.params.pairingCode);
+				console.error('adddd', peerDeviceAddress, '___', this.props.params.pairingCode);
+				console.error(await biot.core.listCorrespondents());
 				await this.openChannel(biot, peerDeviceAddress);
 			}
 		});
@@ -347,13 +350,18 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 					<a onClick={() => this.props.setPage('index')} className={'back-button'}> </a>
 				</div>
 				<div className={'listAddChannel'}>
-					<div>My amount: {this.props.params.myAmount}</div>
-					<div>Peer amount: {this.props.params.peerAmount}</div>
-					<div>Age: {this.props.params.age}</div>
-					<div>Amount: {this.props.params.rate} bytes</div>
-					<div>Number of Payments: {this.props.params.count}</div>
-					<div>Interval: {this.props.params.interval} sec</div>
-					<div>{this.props.params.needProfile ?
+					<div>You were offered to open the channel</div>
+					<div>You will pay: {this.props.params.myAmount}</div>
+					<div>Peer will pay: {this.props.params.peerAmount}</div>
+					<div>Amount of one payment: {this.props.params.rate} bytes</div>
+					<div>Number of payments: {this.props.params.count}</div>
+					<div>Payment interval: {this.props.params.interval} sec</div>
+					<div>
+						<div>Channel closing timeout: {this.props.params.age}</div>
+						<div>(longer is safer)</div>
+					</div>
+					<div>Peer will be added to the contacts list</div>
+					<div hidden={!this.props.params.needProfile}>{this.props.params.needProfile ?
 						<a id={'choosePr'} onClick={() => this.chooseProfile()}>Choose profile</a> : ''}</div>
 					<div className={'chBtns'}>
 						<div onClick={() => this.approve()} className={'chApprove'}><a>Approve</a></div>
@@ -367,11 +375,14 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 
 export class App extends React.Component {
 	state = {
-		page: 'index',      //qrScanner, wallet, setName
+		page: 'index',
 		walletId: '',
+		walletName: '',
 		nextPage: '',
 		params: {},
-		name: ''
+		name: '',
+		seed: '',
+		textSaveName: 'Save name'
 	};
 
 	constructor (props) {
@@ -385,38 +396,19 @@ export class App extends React.Component {
 		_eventBus.on('text', self.messages);
 		_eventBus.on('object', self.objMessages);
 
-		function chInit () {
-			//@ts-ignore
-			let _bInit = window.bInit;
-			if (_bInit) {
-				if (_bInit === 'waiting') {
-					return setTimeout(chInit, 100);
-				} else if (_bInit === 'errorDeviceName') {
-					return self.setState({ page: 'setName' });
-				} else if (_bInit === 'error') {
-					return alert('error');
-				}
-			}
-		}
+		this.chInit();
 
-		chInit();
-
-		events.on('kwrk', () => {
-			this.setPage('setWallet', null, 'reqChannel', {
-				pairingCode: 'AkwrrLNRYqVj0Wt6wfT2qnUkv7vxF8bb8R78YgzEXuIp@obyte.org/bb-test#test',
-				myAmount: 1001,
-				peerAmount: 1,
-				age: 10,
-				channelType: 'pft',
-				rate: 1,
-				count: 1000,
-				interval: 30,
-				needProfile: true
+		events.on('nfc_payment', obj => {
+			this.setPage('setWallet', null, 'sendTransaction', {
+				address: obj.address,
+				amount: obj.amount
 			});
 		});
+
 		events.on('openURL', url => {
+			console.error('open url', url);
 			let u = url.match(/^biot:\/\/([a-zA-Z]+)/);
-			if (u.length < 2) return;
+			if (!u || u.length < 2) return;
 
 			let action = u[1];
 			let p = url.match(/([a-zA-Z0-9]+=[a-zA-Z0-9]+)/g).map((v) => v.split('='));
@@ -438,6 +430,31 @@ export class App extends React.Component {
 			}
 		});
 	}
+
+	chInit = () => {
+		//@ts-ignore
+		let _stepInit = window.stepInit;
+		if (_stepInit) {
+			console.error('qweqweqwe', _stepInit);
+			if (_stepInit === 'waiting') {
+				return setTimeout(this.chInit, 100);
+			} else if (_stepInit === 'errorDeviceName') {
+				return this.setState({ page: 'setName' });
+			} else if (_stepInit === 'error') {
+				return alert('error');
+			}
+			let isShownSeed = localStorage.getItem('isShownSeed');
+			if (!isShownSeed) {
+				localStorage.setItem('isShownSeed', '1');
+				//@ts-ignore
+				let seed = window.seed;
+				this.setState({ page: 'showSeed', seed });
+			}
+
+			//@ts-ignore
+			delete window.seed;
+		}
+	};
 
 	messages = (from_address, text) => {
 		if (this.state.page !== 'apps') {
@@ -461,7 +478,13 @@ export class App extends React.Component {
 
 
 	setPage = (page, walletId?, nextPage?, params?) => {
-		this.setState({ page: page, walletId: walletId, nextPage: nextPage || '', params: params || {} });
+		let walletName = walletId;
+		if (walletId) {
+			let lWN = localStorage.getItem('assocWalletToName');
+			let assocWalletToName = lWN ? JSON.parse(lWN) : {};
+			if (assocWalletToName[walletId]) walletName = assocWalletToName[walletId];
+		}
+		this.setState({ page: page, walletId: walletId, nextPage: nextPage || '', params: params || {}, walletName });
 	};
 
 	setName = (evt) => {
@@ -470,25 +493,39 @@ export class App extends React.Component {
 		});
 	};
 
+	nowSaveName = false;
 	saveName = () => {
-		getBiot(async (biot: any) => {
-			await biot.core.setDeviceName(this.state.name);
-			//@ts-ignore
-			window.bInitialize();
-			this.setState({ page: 'index' });
-		});
+		if(!this.nowSaveName) {
+			this.nowSaveName = true;
+			this.setState({textSaveName: 'Please wait'});
+			getBiot(async (biot: any) => {
+				await biot.core.setDeviceName(this.state.name);
+				//@ts-ignore
+				await window.InitializeBIoT();
+				this.setState({ page: 'index' });
+				this.chInit();
+			});
+		}
+	};
+
+	copySeed = () => {
+		//@ts-ignore
+		window.cordova.plugins.clipboard.copy(this.state.seed);
+		//@ts-ignore
+		window.plugins.toast.showShortBottom('Seed successfully copied');
+		this.setState({ page: 'index' });
 	};
 
 	render () {
 		if (this.state.page == 'index') {
 			return <div className={'app-body'}>
 				<WalletsList setPage={this.setPage}/>
-				<Menu setPage={this.setPage}/>
+				<Menu page={'index'} setPage={this.setPage}/>
 			</div>
 		} else if (this.state.page === 'setWallet') {
 			return <div>
 				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Select wallet</text>
+					<text className={'wallet-title'}>Please select the wallet</text>
 					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
 				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
@@ -500,7 +537,17 @@ export class App extends React.Component {
 				</div>
 				<div className={'button-block'}>
 					<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
-						Save name
+						{this.state.textSaveName}
+					</button>
+				</div>
+			</div>
+		} else if (this.state.page === 'showSeed') {
+			return <div className={'app-body'} style={{ textAlign: 'center' }}>
+				<div className={'name-title'}>Please save your seed</div>
+				<div style={{ color: '#fff' }}>{this.state.seed}</div>
+				<div className={'button-block'}>
+					<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
+						Copy seed and close
 					</button>
 				</div>
 			</div>
@@ -514,7 +561,11 @@ export class App extends React.Component {
 		} else if (this.state.page == 'wallet') {
 			return <div>
 				<div className={'top-bar'}>
-					<text className={'wallet-title'}>{this.state.walletId.substr(0, 25) + '...'}</text>
+					<text
+						className={'wallet-title'}>{
+						this.state.walletName.length > 25 ?
+							this.state.walletName.substr(0, 25) + '...' :
+							this.state.walletName}</text>
 					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
 				<div className={'wallet-menu'}>
@@ -542,7 +593,7 @@ export class App extends React.Component {
 			</div>
 		} else if (this.state.page == 'apps') {
 			return <div>
-				<Apps goIndex={() => this.setState({ page: 'index' })}/>
+				<Apps setPage={this.setPage}/>
 			</div>
 		}
 	}
@@ -558,17 +609,38 @@ nfc.addNdefListener(
 		console.error('nfc error');
 	}
 );
+// @ts-ignore
+nfc.addMimeTypeListener("text/plain", parseTag,
+	function () {
+		console.error('nfc ok');
+	},
+	function () {
+		console.error('nfc error');
+	}
+);
 
 function parseTag (nfcEvent) {
-	let records = nfcEvent.tag.ndefMessage;
+	getBiot((biot: any) => {
+		console.error('NFCCWA', nfcEvent);
+		let records = nfcEvent.tag.ndefMessage;
 
-	for (let i = 0; i < records.length; i++) {
-		// @ts-ignore
-		let text = nfc.bytesToString(records[i].payload).substr(3);
-		if (text === 'kwrk') {
-			events.emit('kwrk');
+		for (let i = 0; i < records.length; i++) {
+			// @ts-ignore
+			let text = nfc.bytesToString(records[i].payload).substr(3);
+			console.error('text nfc', text);
+			if (/^biot:/.test(text)) {
+				let t = text.substr(5).split('|');
+				let amount = parseInt(t[1]);
+				// @ts-ignore
+				if (OBValidation.isValidAddress(t[0]) && typeof amount === "number") {
+					events.emit('nfc_payment', {
+						address: t[0],
+						amount: amount
+					});
+				}
+			}
 		}
-	}
+	});
 }
 
 

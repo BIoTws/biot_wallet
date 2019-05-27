@@ -7,7 +7,7 @@ $background: #191c2f;
   line-height: 2em;
   text-align: left;
   position: absolute;
-  bottom: 93%;
+  top: 0.9em;
   left: 2%;
 }
 
@@ -24,6 +24,7 @@ $background: #191c2f;
   height: 72px;
   display: block;
   position: relative;
+  overflow: hidden;
 }
 
 .wallets-list-body-name {
@@ -71,11 +72,6 @@ $background: #191c2f;
   border-width: 0;
 }
 
-.state-wallets::-webkit-scrollbar-track:hover {
-  border-left: solid 1px #5765d7;
-  background-color: #191c2f;
-}
-
 .state-wallets::-webkit-scrollbar-track {
   border-width: 0;
 }
@@ -97,12 +93,6 @@ $background: #191c2f;
   background: #444fa5;
 }
 
-.button-submit:hover {
-  color: #a4afad;
-  background: #3c4692;
-}
-
-
 .add-wallet-button {
   background: url(../styles/icons/plus.svg) no-repeat;
   width: 25px;
@@ -112,12 +102,6 @@ $background: #191c2f;
   right: 15px;
 }
 
-.add-wallet-button:hover {
-  background: url(../styles/icons/hover/plusHover.svg) no-repeat;
-  width: 25px;
-  height: 25px;
-}
-
 //modal window content
 
 .tdl-input {
@@ -125,7 +109,7 @@ $background: #191c2f;
   left: 27%;
   top: 37%;
   border: 0;
-  color: #505663;
+  color: #656d7a;
   border-bottom: 1px solid rgba(#c8d5d3, 0.5);
   background-color: $background;
   text-align: center;
@@ -143,7 +127,7 @@ $background: #191c2f;
 
 .tdl-input::placeholder {
   text-align: center;
-  color: #505663;
+  color: #656d7a;
 }
 
 .input-radio {
