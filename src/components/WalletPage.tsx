@@ -6,7 +6,8 @@ interface ITransactions {
 	name: string;
 	id: number;
 	transaction: string;
-	balance: number
+	balance: number,
+	time: number
 }
 
 interface IChannels {
@@ -104,7 +105,6 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 	}
 
 	componentDidMount () {
-		let self = this;
 		getBiot(async (biot: any) => {
 			let upd = async () => {
 				let balance = await biot.core.getWalletBalance(this.props.walletId);
@@ -161,6 +161,10 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 					</div>
 					<div className={'list-body-name'}>{transaction.name}</div>
 					<div className={'list-body-balance'}>{transaction.balance}</div>
+					<div className={'list-body-date'}>{
+						//@ts-ignore
+						moment(transaction.time * 1000).format("MM.DD.YYYY HH:mm")
+					}</div>
 				</div>
 			);
 		});

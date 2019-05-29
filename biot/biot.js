@@ -2,6 +2,8 @@ const conf = require('ocore/conf');
 const validation = require('ocore/validation_utils');
 const objectHash = require('ocore/object_hash');
 const eventBus = require('ocore/event_bus');
+const db = require('ocore/db');
+const storage = require('ocore/storage');
 const lconf = require('./conf');
 for (let k in lconf) {
 	conf[k] = lconf[k];
@@ -31,7 +33,9 @@ async function onDeviceReady() {
 	};
 	
 	await InitializeBIoT();
-	window.biot = {core};
+	let network = require('ocore/network');
+	let light_attestations = require('./light_attestations');
+	window.biot = {core, db, storage, network, light_attestations};
 	window.ChannelsManager = ChannelsManager;
 	
 	function getQR(cb) {

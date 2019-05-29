@@ -9,6 +9,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
 	requirements: any = {};
 	core: any = null;
+	biot: any = null;
 	biotInit: boolean = false;
 	callbackW: any = (address: string) => {
 	};
@@ -60,6 +61,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 		getBiot(async (biot: any) => {
 			this.core = biot.core;
+			this.biot = biot;
 			this.biotInit = true;
 			let wallets: any = [];
 			let listCors = await biot.core.listCorrespondents();
@@ -118,7 +120,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	getElement (f) {
 		if (f.type === 'input') {
-			return this.tInput(this.escapeHtml(f.title), this.escapeHtml(f.id));
+			return this.tInput(f.title, f.id);
 		} else if (f.type === 'address') {
 			return <div style={{ textAlign: 'center' }}>
 				<a onClick={() => this.showWallets()} className={'selectAddress'}>
@@ -127,24 +129,26 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		} else if (f.type === 'blank_line') {
 			return <div><br/></div>
 		} else if (f.type === 'submit') {
-			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}>
+			return <div id={f.id} style={{ textAlign: 'center' }}>
 				<input onClick={() => this.sendResponse()} className={'button-send-submit'} type={'submit'}
-				       value={this.escapeHtml(f.title)}/>
+				       value={f.title}/>
 			</div>
 		} else if (f.type === 'h2') {
-			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}><h2>{this.escapeHtml(f.title)}</h2></div>
+			return <div id={f.id} style={{ textAlign: 'center' }}><h2>{f.title}</h2>
+			</div>
 		} else if (f.type === 'h3') {
-			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}><h3>{this.escapeHtml(f.title)}</h3></div>
+			return <div id={f.id} style={{ textAlign: 'center' }}><h3>{f.title}</h3>
+			</div>
 		} else if (f.type === 'text') {
-			return <div id={this.escapeHtml(f.id)}>{this.escapeHtml(f.title)}</div>
+			return <div id={f.id}>{f.title}</div>
 		} else if (f.type === 'request') {
-			return <div id={this.escapeHtml(f.id)} style={{ textAlign: 'center' }}>
+			return <div id={f.id} style={{ textAlign: 'center' }}>
 				<input onClick={() => this.sendRequest(f.req)} className={'button-send-submit'} type={'button'}
-				       value={this.escapeHtml(f.title)}/>
+				       value={f.title}/>
 			</div>
 		} else if (f.type === 'list-menu') {
-			return <div onClick={() => this.sendRequest(f.req)} id={this.escapeHtml(f.id)} className={'list-menu'}>
-				{this.escapeHtml(f.title)}
+			return <div onClick={() => this.sendRequest(f.req)} id={f.id} className={'list-menu'}>
+				{f.title}
 			</div>
 		}
 	}
@@ -163,8 +167,62 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}, 100);
 	}
 
+	async checkProfile (attesters, address, unit, profile) {
+		let db = this.biot.db;
+		let storage = this.biot.storage;
+		let network = this.biot.network;
+		let light_attestations = this.biot.light_attestations;
+
+		//@ts-ignore
+		let _eventBus = window.eventBus;
+		//@ts-ignore
+		let _objectHash = window.objectHash;
+
+		await light_attestations.updateAttestationsInLight(address);
+		let rows: any = await new Promise(resolve => {
+			db.query("SELECT 1 FROM attestations CROSS JOIN unit_authors USING(unit)\n\
+		WHERE attestations.address=? AND unit_authors.address IN(?) AND unit=?",
+				[address, attesters, unit], resolve);
+		});
+		if (rows.length) {
+			return new Promise(resolve => {
+				storage.readJoint(db, unit, {
+					ifNotFound: function () {
+						_eventBus.once('saved_unit-' + unit, (objJoint) => {
+							handleJoint(objJoint, resolve)
+						});
+						network.requestHistoryFor([unit], []);
+					},
+					ifFound: (objJoint) => {
+						handleJoint(objJoint, resolve)
+					}
+				});
+			})
+		} else {
+			return false;
+		}
+
+		function handleJoint (objJoint, resolve) {
+			let payload = objJoint.unit.messages.find(m => m.app === 'attestation').payload;
+			if (payload && payload.address === address) {
+				let hidden_profile = {};
+				for (let field in profile) {
+					let value = profile[field];
+					hidden_profile[field] = _objectHash.getBase64Hash(value);
+				}
+				let profile_hash = _objectHash.getBase64Hash(hidden_profile);
+				if (profile_hash === payload.profile.profile_hash) {
+					return resolve(true);
+				} else {
+					return resolve(false);
+				}
+			} else {
+				resolve(false);
+			}
+		}
+	}
+
 	async objMessages (from_address, object) {
-		console.error('asdfasdfasdfasdfasdfasdf', from_address, object);
 		if (object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
@@ -184,7 +242,18 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			});
 			this.setState({ data: blocks });
 		} else if (object.type === 'addProfile') {
-			await this.core.saveProfile(object.my_address, object.your_address, object.unit, object.profile);
+			// @ts-ignore
+			let objV = OBValidation;
+			if (objV.isValidAddress(object.my_address) && objV.isValidAddress(object.your_address)) {
+				if ((await this.checkProfile([object.my_address], object.your_address, object.unit, object.profile))) {
+					await this.core.saveProfile(object.my_address, object.your_address, object.unit, object.profile);
+					alert('Profile successfully added');
+				} else {
+					alert('Incorrect profile');
+				}
+			} else {
+				alert('Incorrect profile');
+			}
 		} else if (object.type === 'alert') {
 			alert(object.message);
 		} else if (object.type === 'update') {
@@ -379,7 +448,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	tapTimers = {};
 	onTStart = (id) => {
 		this.tapTimers[id] = setTimeout((id) => {
-			this.setState({elementTapId: id, hiddenListAction: false});
+			this.setState({ elementTapId: id, hiddenListAction: false });
 			delete this.tapTimers[id];
 		}, 700, id);
 	};
@@ -389,7 +458,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	};
 
 	hideTapActionList = () => {
-		this.setState({elementTapId: '', hiddenListAction: true});
+		this.setState({ elementTapId: '', hiddenListAction: true });
 	};
 
 	delCor = () => {
@@ -400,18 +469,8 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				this.setState({ app: 'list', correspondents: listCors, elementTapId: '' });
 			}, 500);
 		});
-		this.setState({hiddenListAction: true});
+		this.setState({ hiddenListAction: true });
 	};
-
-	escapeHtml = (text) => {
-		return text
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&#039;");
-	};
-
 
 	render () {
 		if (this.state.app === 'addC') {
