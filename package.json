@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "front_build": "SKIP_PREFLIGHT_CHECK=true react-scripts build && rm -rf www/static/* && cp -r build/* www/ && rm -rf build && sh replace.sh",
-    "biot": "browserify biot/*.js -u sqlite -u mysql -u ws -u nw.gui -u regedit -u fs -o www/biot.js"
+    "front_build_win": "(react-scripts build) && (del /F/Q/S www\\static\\*) && (xcopy /s/Y build www) && (del /F/Q/S build) && node replace.js",
+    "biot": "browserify biot/biot.js biot/conf.js biot/light_attestations.js -u sqlite -u mysql -u ws -u nw.gui -u regedit -u fs > www/biot.js"
   },
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
@@ -21,7 +22,7 @@
     "aws-sdk": "^2.393.0",
     "biot-core": "^0.2.x",
     "clean-webpack-plugin": "^1.0.0",
-    "cordova-android": "^7.1.4",
+    "cordova-android": "^8.0.0",
     "cordova-clipboard": "^1.2.1",
     "cordova-ios": "^4.5.5",
     "cordova-plugin-add-swift-support": "^1.7.2",

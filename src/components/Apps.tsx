@@ -3,7 +3,7 @@ import "../styles/apps.scss";
 import "../styles/style.scss";
 import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
-import { Menu } from "./Menu";
+import {Menu} from "./Menu";
 
 export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
@@ -26,24 +26,26 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		correspondents: [],
 		pairingCode: '',
 		peerPairingCode: '',
-		thisChat: { name: '', device_address: '' },
+		thisChat: {name: '', device_address: ''},
 		currentText: '',
 		messages: {},
 		isShowBlockSendAddress: false,
 		hiddenListAction: true,
-		elementTapId: ''
+		elementTapId: '',
 	};
 
 	private messages_scroll: React.RefObject<any>;
 	private messages_height: React.RefObject<any>;
+	private elms: any;
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		this.messages_scroll = React.createRef();
 		this.messages_height = React.createRef();
+		this.elms = {};
 	}
 
-	componentDidMount () {
+	componentDidMount() {
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
 		this.changeValue = this.changeValue.bind(this);
@@ -67,7 +69,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			let listCors = await biot.core.listCorrespondents();
 			let pairingCode = biot.core.getMyParingCode() + 'add';
 			console.error('Pairing code: ', pairingCode);
-			this.setState({ correspondents: listCors, pairingCode: pairingCode });
+			this.setState({correspondents: listCors, pairingCode: pairingCode});
 			let walletsInDb = await biot.core.getWallets();
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
@@ -79,30 +81,30 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					balance: balance.base.stable + balance.base.pending
 				}];
 			}
-			this.setState({ wallets: wallets });
+			this.setState({wallets: wallets});
 
 
 			setTimeout(async () => {
 				let listCors = await biot.core.listCorrespondents();
-				this.setState({ correspondents: listCors });
+				this.setState({correspondents: listCors});
 			}, 1000);
 		});
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('text', this.messages);
 		_eventBus.removeListener('object', this.objMessages);
 	}
 
-	goList () {
+	goList() {
 		this.setState({
 			app: 'list',
 			data: '',
 			page: '',
 			message: '',
-			thisChat: { name: '', device_address: '' }
+			thisChat: {name: '', device_address: ''}
 		});
 		this.values = {};
 		this.callbackW = (address) => {
@@ -110,64 +112,74 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	closeApp () {
+	closeApp() {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'close'
 		});
 		this.values = {};
-		this.setState({ thisChat: { name: '', device_address: '' }, app: 'list', data: '', page: '', message: '' });
+		this.setState({thisChat: {name: '', device_address: ''}, app: 'list', data: '', page: '', message: ''});
 	}
 
-	getElement (f) {
+	getElement(f) {
 		if (f.type === 'input') {
+			if (f.id) this.elms[f.id] = React.createRef();
 			return this.tInput(f.title, f.id);
 		} else if (f.type === 'address') {
-			return <div style={{ textAlign: 'center' }}>
-				<a onClick={() => this.showWallets()} className={'selectAddress'}>
+			this.elms['setAddress'] = React.createRef();
+			return <div style={{textAlign: 'center'}}>
+				<a onClick={() => this.showWallets()} className={'selectAddress'} ref={this.elms['setAddress']}>
 					For choose address click here</a>
 			</div>
 		} else if (f.type === 'blank_line') {
 			return <div><br/></div>
 		} else if (f.type === 'submit') {
-			return <div id={f.id} style={{ textAlign: 'center' }}>
-				<input onClick={() => this.sendResponse()} className={'button-send-submit'} type={'submit'}
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div id={f.id} style={{textAlign: 'center'}}>
+				<input ref={this.elms[f.id]} onClick={() => this.sendResponse()} className={'button-send-submit'}
+				       type={'submit'}
 				       value={f.title}/>
 			</div>
 		} else if (f.type === 'h2') {
-			return <div id={f.id} style={{ textAlign: 'center' }}><h2>{f.title}</h2>
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div id={f.id} style={{textAlign: 'center'}}><h2 ref={this.elms[f.id]}>{f.title}</h2>
 			</div>
 		} else if (f.type === 'h3') {
-			return <div id={f.id} style={{ textAlign: 'center' }}><h3>{f.title}</h3>
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div id={f.id} ref={this.elms[f.id]} style={{textAlign: 'center'}}><h3>{f.title}</h3>
 			</div>
 		} else if (f.type === 'text') {
-			return <div id={f.id}>{f.title}</div>
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div id={f.id} ref={this.elms[f.id]}>{f.title}</div>
 		} else if (f.type === 'request') {
-			return <div id={f.id} style={{ textAlign: 'center' }}>
-				<input onClick={() => this.sendRequest(f.req)} className={'button-send-submit'} type={'button'}
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div id={f.id} style={{textAlign: 'center'}}>
+				<input ref={this.elms[f.id]} onClick={() => this.sendRequest(f.req)} className={'button-send-submit'}
+				       type={'button'}
 				       value={f.title}/>
 			</div>
 		} else if (f.type === 'list-menu') {
-			return <div onClick={() => this.sendRequest(f.req)} id={f.id} className={'list-menu'}>
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div ref={this.elms[f.id]} onClick={() => this.sendRequest(f.req)} id={f.id} className={'list-menu'}>
 				{f.title}
 			</div>
 		}
 	}
 
-	messages (from_address, text) {
+	messages(from_address, text) {
 		console.error('messages', from_address, text);
 		let cm = this.state.messages;
 		if (!cm[from_address]) {
 			cm[from_address] = [];
 		}
-		cm[from_address].push({ text, i: false });
+		cm[from_address].push({text, i: false});
 		localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
-		this.setState({ messages: cm });
+		this.setState({messages: cm});
 		setTimeout(() => {
 			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
 		}, 100);
 	}
 
-	async checkProfile (attesters, address, unit, profile) {
+	async checkProfile(attesters, address, unit, profile) {
 		let db = this.biot.db;
 		let storage = this.biot.storage;
 		let network = this.biot.network;
@@ -202,7 +214,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			return false;
 		}
 
-		function handleJoint (objJoint, resolve) {
+		function handleJoint(objJoint, resolve) {
 			let payload = objJoint.unit.messages.find(m => m.app === 'attestation').payload;
 			if (payload && payload.address === address) {
 				let hidden_profile = {};
@@ -222,7 +234,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	async objMessages (from_address, object) {
+	async objMessages(from_address, object) {
 		if (object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
@@ -232,15 +244,19 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			return;
 		}
 
-		this.setState({ hiddenWaiting: true });
+		this.setState({hiddenWaiting: true});
 		let blocks: any = [];
 		if (object.type === 'render') {
-			this.setState({ page: object.page });
+			this.elms = {};
+			this.setState({page: object.page});
 			object.form.forEach(f => {
-				if (f.required) this.requirements[f.id] = { type: f.type, title: f.title };
+				if (f.required) this.requirements[f.id] = {type: f.type, title: f.title};
 				blocks = [...blocks, this.getElement(f)];
 			});
-			this.setState({ data: blocks });
+			let data = <div>
+				{blocks.map(b => b)}
+			</div>;
+			this.setState({data: data, values: {}});
 		} else if (object.type === 'addProfile') {
 			// @ts-ignore
 			let objV = OBValidation;
@@ -261,24 +277,35 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			let index = blocks.findIndex(b => {
 				return b.props.id === object.id
 			});
+			delete this.elms[object.id];
 			blocks.splice(index, 1, this.getElement(object.value));
-			this.setState({ data: blocks });
+			this.setState({data: blocks});
+		} else if (object.type === 'setValue') {
+			let el = this.elms[object.id];
+			if (el && el.current) {
+				el = el.current;
+				if (el.tagName === 'INPUT') {
+					el.value = object.value;
+				} else if (el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'DIV') {
+					el.innerText = object.value;
+				}
+			}
 		}
 	}
 
-	changeValue (id, value) {
+	changeValue(id, value) {
 		this.values[id] = value;
 	}
 
-	tInput (title, id) {
+	tInput(title, id) {
 		return <div>
 			<div><input className={'input'} onChange={(e) => {
 				this.changeValue(id, e.target.value)
-			}} id={id} placeholder={title}/></div>
+			}} id={id} placeholder={title} ref={this.elms[id]} type={'text'}/></div>
 		</div>
 	}
 
-	getWallet () {
+	getWallet() {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => this.setWallet(wallet.id)} key={wallet.id} className={'wallets-list-body'}>
@@ -294,18 +321,18 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		</div>
 	}
 
-	async setWallet (id) {
+	async setWallet(id) {
 		let addresses = await this.core.getAddressesInWallet(id);
 		this.values['address'] = addresses[0];
-		this.setState({ hiddenBlock: false, hiddenWallets: true });
+		this.setState({hiddenBlock: false, hiddenWallets: true});
 		this.callbackW(addresses[0]);
 	}
 
-	showWallets () {
-		this.setState({ hiddenBlock: true, hiddenWallets: false });
+	showWallets() {
+		this.setState({hiddenBlock: true, hiddenWallets: false});
 	}
 
-	sendResponse () {
+	sendResponse() {
 		for (let key in this.requirements) {
 			if (this.values[key] === undefined || (this.values[key] !== undefined && this.values[key] === '')) {
 				if (this.requirements[key].type === 'input') {
@@ -320,10 +347,10 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			page: this.state.page,
 			response: this.values
 		});
-		this.setState({ hiddenWaiting: false });
+		this.setState({hiddenWaiting: false});
 	}
 
-	sendRequest (req) {
+	sendRequest(req) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'request',
 			page: this.state.page,
@@ -331,7 +358,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	listCorrespondents () {
+	listCorrespondents() {
 		return this.state.correspondents.map((correspondent: any) => {
 			// @ts-ignore
 			let icon = makeBlockie(correspondent.device_address);
@@ -339,22 +366,22 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			            onClick={() => this.openChatOrApp(correspondent)}
 			            onTouchStart={() => this.onTStart(correspondent.device_address)}
 			            onTouchEnd={() => this.onTEnd(correspondent.device_address)}>
-				<div style={{ padding: '10px 7px' }}><img width={'50px'} height={'50px'} src={icon}/></div>
+				<div style={{padding: '10px 7px'}}><img width={'50px'} height={'50px'} src={icon}/></div>
 				<div className={'wallets-list-body-name'}>{correspondent.name}</div>
 				<div className={'cors-list'}>{correspondent.device_address}</div>
 			</div>
 		});
 	}
 
-	copyPairingCode () {
+	copyPairingCode() {
 		//@ts-ignore
 		window.cordova.plugins.clipboard.copy(this.state.pairingCode);
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Pairing code successfully copied');
 	}
 
-	showAddC () {
-		this.setState({ app: 'addC' });
+	showAddC() {
+		this.setState({app: 'addC'});
 	}
 
 	setPeerPairingCode = (evt) => {
@@ -374,7 +401,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			await biot.core.addCorrespondent(this.state.peerPairingCode).catch(e => alert(e));
 			let listCors = await biot.core.listCorrespondents();
 			setTimeout(() => {
-				this.setState({ app: 'list', correspondents: listCors });
+				this.setState({app: 'list', correspondents: listCors});
 			}, 500);
 		});
 	};
@@ -390,10 +417,10 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	};
 
 	openApp = (correspondent) => {
-		this.setState({ app: 'app', thisChat: correspondent, hiddenWaiting: false });
+		this.setState({app: 'app', thisChat: correspondent, hiddenWaiting: false});
 		let send = () => {
 			if (this.biotInit) {
-				this.core.sendTechMessageToDevice(correspondent.device_address, { type: 'hello' });
+				this.core.sendTechMessageToDevice(correspondent.device_address, {type: 'hello'});
 			} else {
 				setTimeout(send, 70);
 			}
@@ -405,7 +432,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		let cm = this.state.messages;
 		let ls = localStorage.getItem('m_' + correspondent.device_address);
 		cm[correspondent.device_address] = ls ? JSON.parse(ls) : [];
-		this.setState({ thisChat: correspondent, app: 'chat', messages: cm });
+		this.setState({thisChat: correspondent, app: 'chat', messages: cm});
 		setTimeout(() => {
 			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
 		}, 100);
@@ -418,29 +445,29 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		if (!cm[this.state.thisChat.device_address]) {
 			cm[this.state.thisChat.device_address] = [];
 		}
-		cm[this.state.thisChat.device_address].push({ text: message, i: true });
+		cm[this.state.thisChat.device_address].push({text: message, i: true});
 		localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
-		this.setState({ messages: cm, currentText: '' });
+		this.setState({messages: cm, currentText: ''});
 		setTimeout(() => {
 			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
 		}, 100);
 	};
 
 	showOrHideBlock = () => {
-		this.setState({ isShowBlockSendAddress: !this.state.isShowBlockSendAddress });
+		this.setState({isShowBlockSendAddress: !this.state.isShowBlockSendAddress});
 	};
 
 	hideBlockAndShowWallets = (insert) => {
 		this.callbackW = (address) => {
 			if (insert) {
-				this.setState({ currentText: this.state.currentText + address });
+				this.setState({currentText: this.state.currentText + address});
 			} else {
-				this.setState({ currentText: address }, () => {
+				this.setState({currentText: address}, () => {
 					this.sendMessage();
 				});
 			}
 		};
-		this.setState({ isShowBlockSendAddress: false });
+		this.setState({isShowBlockSendAddress: false});
 		this.showWallets();
 	};
 
@@ -448,7 +475,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	tapTimers = {};
 	onTStart = (id) => {
 		this.tapTimers[id] = setTimeout((id) => {
-			this.setState({ elementTapId: id, hiddenListAction: false });
+			this.setState({elementTapId: id, hiddenListAction: false});
 			delete this.tapTimers[id];
 		}, 700, id);
 	};
@@ -458,7 +485,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	};
 
 	hideTapActionList = () => {
-		this.setState({ elementTapId: '', hiddenListAction: true });
+		this.setState({elementTapId: '', hiddenListAction: true});
 	};
 
 	delCor = () => {
@@ -466,13 +493,13 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			await biot.core.removeCorrespondent(this.state.elementTapId).catch(e => alert(e));
 			let listCors = await biot.core.listCorrespondents();
 			setTimeout(() => {
-				this.setState({ app: 'list', correspondents: listCors, elementTapId: '' });
+				this.setState({app: 'list', correspondents: listCors, elementTapId: ''});
 			}, 500);
 		});
-		this.setState({ hiddenListAction: true });
+		this.setState({hiddenListAction: true});
 	};
 
-	render () {
+	render() {
 		if (this.state.app === 'addC') {
 			return <div>
 				<div className={'top-bar'}>
@@ -482,7 +509,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				<div className={'data'}>
 					<div><input className={'input'} placeholder={'Pairing code'} onChange={this.setPeerPairingCode}/>
 					</div>
-					<div style={{ textAlign: 'center' }}>
+					<div style={{textAlign: 'center'}}>
 						<input type={'button'} value={'Accept invitation'} className={'button-send-submit'}
 						       onClick={this.addCorrespondent}/>
 					</div>
@@ -522,7 +549,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 						<a onClick={() => this.closeApp()} className={'back-button'}> </a>
 					</div>
 					<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
-					<div key={'ident_data'} className={'data'}>{this.state.data}</div>
+					<div key={'data'} className={'data'}>{this.state.data}</div>
 				</div>
 			</div>
 		} else if (this.state.app === 'chat') {
@@ -550,7 +577,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 							</div>
 							<input id={'text_input'} type={'text'} placeholder={'Your message'}
 							       value={this.state.currentText} onChange={this.setCurrentText}/>
-							<div id={'send_img'} onClick={() => this.sendMessage()}></div>
+							<div id={'send_img'} onClick={() => this.sendMessage()}/>
 						</div>
 					</div>
 				</div>
