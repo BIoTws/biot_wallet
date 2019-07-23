@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "front_build": "SKIP_PREFLIGHT_CHECK=true react-scripts build && rm -rf www/static/* && cp -r build/* www/ && rm -rf build && sh replace.sh",
     "front_build_win": "(react-scripts build) && (del /F/Q/S www\\static\\*) && (xcopy /s/Y build www) && (del /F/Q/S build) && node replace.js",
-    "biot": "browserify biot/biot.js biot/conf.js biot/light_attestations.js -u sqlite -u mysql -u ws -u nw.gui -u regedit -u fs > www/biot.js"
+    "biot": "grunt cordova"
   },
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
@@ -72,9 +72,14 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^1.0.1",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "grunt": "^1.0.4",
+    "grunt-babel": "^8.0.0",
+    "grunt-browserify": "^5.3.0",
     "node-sass": "^4.10.0",
     "sass-loader": "^7.1.0",
     "webpack-cli": "^3.1.2"
@@ -84,5 +89,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "browser": {
+    "request": "browser-request",
+    "secp256k1": "secp256k1/js"
+  }
 }
