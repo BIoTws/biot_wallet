@@ -63,6 +63,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 
 	state = { show: false, wallets: [], page: 'wallets', name: '' };
 
+
 	addWallet = () => {
 		let name = this.state.name;
 		getBiot(async (biot: any) => {
@@ -98,6 +99,9 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		this.addWallet = this.addWallet.bind(this);
 		this.setName = this.setName.bind(this);
 		this.showSetName = this.showSetName.bind(this);
+		// @ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.on('backbutton', this.backKeyClick);
 
 		let self = this;
 		getBiot(async (biot: any) => {
@@ -127,6 +131,9 @@ export class WalletsList extends React.Component<walletsProps, any> {
 
 	componentWillUnmount () {
 		if (this.timerWL) clearInterval(this.timerWL);
+		// @ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.removeListener('backbutton', this.backKeyClick);
 	}
 
 	showWallets = () => {
@@ -156,6 +163,12 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		this.setState({
 			name: evt.target.value
 		});
+	};
+
+	backKeyClick = () => {
+		if(this.state.page === 'setName') {
+			this.hideSetName()
+		}
 	};
 
 	render () {

@@ -12,6 +12,9 @@ import { EventEmitter } from './EventEmitter';
 
 let events = new EventEmitter();
 
+// @ts-ignore
+let obEvents = window.eventBus;
+
 interface IPage {
 	page: string;
 }
@@ -19,6 +22,10 @@ interface IPage {
 export class QRScanner extends React.Component<any, IPage> {
 
 	componentDidMount () {
+		// @ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.on('backbutton', this.backKeyClick);
+
 		let self = this;
 		// @ts-ignore
 		getQR((err, text) => {
@@ -111,6 +118,9 @@ export class QRScanner extends React.Component<any, IPage> {
 
 	componentWillUnmount () {
 		// @ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.removeListener('backbutton', this.backKeyClick);
+		// @ts-ignore
 		hideQR(function () {
 			// @ts-ignore
 			setTimeout(function () {
@@ -118,6 +128,10 @@ export class QRScanner extends React.Component<any, IPage> {
 			}, 50);
 		});
 	}
+
+	backKeyClick = () => {
+		this.props.setPage('index')
+	};
 
 	render () {
 		return (
@@ -395,6 +409,7 @@ export class App extends React.Component {
 		let _eventBus = window.eventBus;
 		_eventBus.on('text', self.messages);
 		_eventBus.on('object', self.objMessages);
+		_eventBus.on('backbutton', this.backKeyClick);
 
 		this.chInit();
 
@@ -476,7 +491,6 @@ export class App extends React.Component {
 		}
 	};
 
-
 	setPage = (page, walletId?, nextPage?, params?) => {
 		let walletName = walletId;
 		if (walletId) {
@@ -514,6 +528,18 @@ export class App extends React.Component {
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Seed successfully copied');
 		this.setState({ page: 'index' });
+	};
+
+	backKeyClick = () => {
+		if(this.state.page === 'setWallet') {
+			this.setState({ page: 'index' })
+		} else if(this.state.page == 'wallet') {
+			this.setState({ page: 'index' })
+		} else if (this.state.page == 'sendTransaction') {
+			this.setState({ page: 'wallet' })
+		} else if (this.state.page == 'receiveTransaction') {
+			this.setState({ page: 'wallet' })
+		}
 	};
 
 	render () {
@@ -646,8 +672,9 @@ function parseTag (nfcEvent) {
 
 document.addEventListener("backbutton", onBackKeyDown, false);
 
-function onBackKeyDown () {
-
+function onBackKeyDown() {
+    obEvents.emit('backbutton', {
+    });
 }
 
 // @ts-ignore
