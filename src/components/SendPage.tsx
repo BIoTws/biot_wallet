@@ -5,7 +5,7 @@ import getBiot from "../getBiot";
 interface ISendPage {
 	walletId: string,
 	back: () => void,
-	params?: { address: string, amount: number } | {}
+	params?: {address: string, amount: number} | {}
 }
 
 export class SendPage extends React.Component<ISendPage, {}> {
@@ -26,11 +26,11 @@ export class SendPage extends React.Component<ISendPage, {}> {
 
 	componentDidMount () {
 		console.error('params2', this.props.params);
-		if (this.props.params) {
+		if(this.props.params) {
 			// @ts-ignore
-			if (this.props.params.address) this.setState({address: this.props.params.address});
+			if(this.props.params.address) this.setState({address: this.props.params.address});
 			// @ts-ignore
-			if (this.props.params.amount) this.setState({amount: this.props.params.amount});
+			if(this.props.params.amount) this.setState({amount: this.props.params.amount});
 		}
 	}
 

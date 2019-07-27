@@ -21,7 +21,7 @@ interface walletsProps {
 }
 
 export class CreateWallet extends React.Component<any, IState> {
-	constructor(props: any) {
+	constructor (props: any) {
 		super(props);
 
 		this.state = {
@@ -32,12 +32,12 @@ export class CreateWallet extends React.Component<any, IState> {
 		};
 	}
 
-	public handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
+	public handleSubmit (e: React.FormEvent<HTMLFormElement>): void {
 		e.preventDefault();
 		this.props.addWallet(this.state.currentWallet, this.state.coin, this.state.balance);
 	}
 
-	public render(): JSX.Element {
+	public render (): JSX.Element {
 		return (
 			<div>
 				<form onSubmit={e => this.handleSubmit(e)}>
@@ -69,7 +69,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		getBiot(async (biot: any) => {
 			let walletId = await biot.core.createNewWallet();
 			let balance = await biot.core.getWalletBalance(walletId);
-			if (!name) name = walletId.substr(0, 25) + '...';
+			if(!name) name = walletId.substr(0, 25) + '...';
 			let lWN = localStorage.getItem('assocWalletToName');
 			let assocWalletToName = lWN ? JSON.parse(lWN) : {};
 			assocWalletToName[walletId] = name;
@@ -95,7 +95,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 
 	timerWL: any = null;
 
-	componentDidMount() {
+	componentDidMount () {
 		this.addWallet = this.addWallet.bind(this);
 		this.setName = this.setName.bind(this);
 		this.showSetName = this.showSetName.bind(this);
@@ -105,7 +105,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 
 		let self = this;
 		getBiot(async (biot: any) => {
-			async function updWL() {
+			async function updWL () {
 				let wallets: any = [];
 				let walletsInDb = await biot.core.getWallets();
 				let lWN = localStorage.getItem('assocWalletToName');
@@ -129,8 +129,8 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		});
 	}
 
-	componentWillUnmount() {
-		if (this.timerWL) clearInterval(this.timerWL);
+	componentWillUnmount () {
+		if(this.timerWL) clearInterval(this.timerWL);
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('backbutton', this.backKeyClick);
@@ -151,11 +151,11 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		});
 	};
 
-	showSetName() {
+	showSetName () {
 		this.setState({page: 'setName'});
 	}
 
-	hideSetName() {
+	hideSetName () {
 		this.setState({page: 'wallets'});
 	}
 
@@ -166,13 +166,13 @@ export class WalletsList extends React.Component<walletsProps, any> {
 	};
 
 	backKeyClick = () => {
-		if (this.state.page === 'setName') {
+		if(this.state.page === 'setName') {
 			this.hideSetName()
 		}
 	};
 
-	render() {
-		if (this.state.page === 'setName') {
+	render () {
+		if(this.state.page === 'setName') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Create new wallet</text>
