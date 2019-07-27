@@ -43,9 +43,9 @@ export class App extends React.Component<{}, IState> {
 		return this.state.tasks.map((task: ITask, index: number) => {
 			return (
 				<div key={task.id} className="tdl-task">
-					<span className={task.completed ? "is-completed" : ""}>{task.value}</span>
+					<span className={task.completed ? "is-completed" :""}>{task.value}</span>
 					<button onClick={() => this.deleteTask(task.id)}>Delete</button>
-					<button onClick={() => this.toggleDone(index)}>{task.completed ? "Undo" : "Done"}</button>
+					<button onClick={() => this.toggleDone(index)}>{task.completed ? "Undo" :"Done"}</button>
 				</div>
 			);
 		});
