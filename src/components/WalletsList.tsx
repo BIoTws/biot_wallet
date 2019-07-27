@@ -21,7 +21,7 @@ interface walletsProps {
 }
 
 export class CreateWallet extends React.Component<any, IState> {
-	constructor (props: any) {
+	constructor(props: any) {
 		super(props);
 
 		this.state = {
@@ -32,12 +32,12 @@ export class CreateWallet extends React.Component<any, IState> {
 		};
 	}
 
-	public handleSubmit (e: React.FormEvent<HTMLFormElement>): void {
+	public handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
 		e.preventDefault();
 		this.props.addWallet(this.state.currentWallet, this.state.coin, this.state.balance);
 	}
 
-	public render (): JSX.Element {
+	public render(): JSX.Element {
 		return (
 			<div>
 				<form onSubmit={e => this.handleSubmit(e)}>
@@ -47,7 +47,7 @@ export class CreateWallet extends React.Component<any, IState> {
 						className="tdl-input"
 						placeholder="Wallet name"
 						value={this.state.currentWallet}
-						onChange={e => this.setState({ currentWallet: e.target.value })}
+						onChange={e => this.setState({currentWallet: e.target.value})}
 					/><br>
 				</br>
 					<button className={'button-submit'} type="submit">Add</button>
@@ -61,7 +61,7 @@ export class CreateWallet extends React.Component<any, IState> {
 export class WalletsList extends React.Component<walletsProps, any> {
 
 
-	state = { show: false, wallets: [], page: 'wallets', name: '' };
+	state = {show: false, wallets: [], page: 'wallets', name: ''};
 
 
 	addWallet = () => {
@@ -95,7 +95,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 
 	timerWL: any = null;
 
-	componentDidMount () {
+	componentDidMount() {
 		this.addWallet = this.addWallet.bind(this);
 		this.setName = this.setName.bind(this);
 		this.showSetName = this.showSetName.bind(this);
@@ -105,7 +105,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 
 		let self = this;
 		getBiot(async (biot: any) => {
-			async function updWL () {
+			async function updWL() {
 				let wallets: any = [];
 				let walletsInDb = await biot.core.getWallets();
 				let lWN = localStorage.getItem('assocWalletToName');
@@ -121,7 +121,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 						balance: balance.base.stable + balance.base.pending
 					}];
 				}
-				self.setState({ wallets: wallets });
+				self.setState({wallets: wallets});
 			}
 
 			await updWL();
@@ -129,7 +129,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		});
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		if (this.timerWL) clearInterval(this.timerWL);
 		// @ts-ignore
 		let _eventBus = window.eventBus;
@@ -151,12 +151,12 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		});
 	};
 
-	showSetName () {
-		this.setState({ page: 'setName' });
+	showSetName() {
+		this.setState({page: 'setName'});
 	}
 
-	hideSetName () {
-		this.setState({ page: 'wallets' });
+	hideSetName() {
+		this.setState({page: 'wallets'});
 	}
 
 	setName = (evt) => {
@@ -171,14 +171,14 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		}
 	};
 
-	render () {
+	render() {
 		if (this.state.page === 'setName') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Create new wallet</text>
 					<a onClick={() => this.hideSetName()} className={'back-button'}> </a>
 				</div>
-				<div className={'app-body'} style={{ textAlign: 'center', marginTop: '4em' }}>
+				<div className={'app-body'} style={{textAlign: 'center', marginTop: '4em'}}>
 					<div className={'name-title'}>Enter wallet name</div>
 					<div><input type={'text'} className={'name-input'} placeholder={'Wallet name'}
 					            onChange={this.setName}/>
