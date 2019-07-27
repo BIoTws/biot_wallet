@@ -34,7 +34,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 	timerB: any = null;
 
-	calcListTransactions(objTransactions, myAddresses) {
+	calcListTransactions (objTransactions, myAddresses) {
 		let list: any = [];
 
 		for (let key in objTransactions) {
@@ -104,7 +104,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		return list;
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		getBiot(async (biot: any) => {
 			let upd = async () => {
 				let balance = await biot.core.getWalletBalance(this.props.walletId);
@@ -123,12 +123,12 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 				for (let i = 0; i < listChannels.length; i++) {
 					let channel = listChannels[i];
 					if (channel.step !== "null" && channel.step !== 'reject') {
-						arrChannels = [...arrChannels, {
+						arrChannels = [ ...arrChannels, {
 							id: channel.id,
 							myAmount: channel.myAmount,
 							peerAmount: channel.peerAmount,
 							row: channel
-						}];
+						} ];
 					}
 				}
 
@@ -149,7 +149,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		});
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount () {
 		if (this.timerB) clearInterval(this.timerB);
 	}
 
@@ -219,7 +219,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		this.setState({isShowModalChannel: false});
 	};
 
-	render() {
+	render () {
 		let getBlock = () => {
 			if (this.state.list == 'transactions') {
 				return <div key={'transactions'} className={'transactions'}>
@@ -271,7 +271,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		return (
 			<div>
 				{modal()}
-				<div className={'balance'}>ы
+				<div className={'balance'}>
 					<div className={'balance-title-block'}>
 						<span className={'balance-title'}>Total balance</span>
 					</div>

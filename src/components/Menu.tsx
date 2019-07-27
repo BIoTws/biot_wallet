@@ -10,7 +10,7 @@ export class Menu extends React.Component<any, IPage> {
 		super(props);
 	}
 
-	setP(name) {
+	setP (name) {
 		this.props.setPage(name);
 	}
 
@@ -19,7 +19,7 @@ export class Menu extends React.Component<any, IPage> {
 			<div className={'menu'}>
 				<a onClick={() => {
 					this.setP("index")
-				}} className={this.props.page === 'index' ? 'index-icon-active' :'index-icon'}>
+				}} className={this.props.page === 'index' ? 'index-icon-active' : 'index-icon'}>
 				</a>
 				<a onClick={() => {
 					this.setP("qrScanner")

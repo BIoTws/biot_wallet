@@ -3,7 +3,7 @@ import "../styles/apps.scss";
 import "../styles/style.scss";
 import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
-import {Menu} from "./Menu";
+import { Menu } from "./Menu";
 
 export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
@@ -41,14 +41,14 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	private messages_height: React.RefObject<any>;
 	private elms: any;
 
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		this.messages_scroll = React.createRef();
 		this.messages_height = React.createRef();
 		this.elms = {};
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
 		this.changeValue = this.changeValue.bind(this);
@@ -81,21 +81,21 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
 				let balance = await biot.core.getWalletBalance(wallet);
-				wallets = [...wallets, {
+				wallets = [ ...wallets, {
 					id: wallet,
 					name: wallet.substr(0, 25) + '...',
 					coin: 'Byteball',
 					balance: balance.base.stable + balance.base.pending
-				}];
+				} ];
 			}
 			for (let i = 0; i < profilesInDb.length; i++) {
 				let profile = profilesInDb[i];
-				profiles = [...profiles, {
+				profiles = [ ...profiles, {
 					address: profile.address,
 					attester: profile.attester,
 					object: profile.object,
 					unit: profile.unit,
-				}];
+				} ];
 			}
 			this.setState({wallets: wallets, profiles: profiles});
 
@@ -107,7 +107,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount () {
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('text', this.messages);
@@ -116,7 +116,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	goList() {
+	goList () {
 		this.setState({
 			app: 'list',
 			data: '',
@@ -130,7 +130,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	closeApp() {
+	closeApp () {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'close'
 		});
@@ -138,7 +138,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({thisChat: {name: '', device_address: ''}, app: 'list', data: '', page: '', message: ''});
 	}
 
-	getElement(f) {
+	getElement (f) {
 		if (f.type === 'input') {
 			if (f.id) this.elms[f.id] = React.createRef();
 			return this.tInput(f.title, f.id);
@@ -199,7 +199,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	handleCheck(id, isChecked) {
+	handleCheck (id, isChecked) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'update_value',
 			page: this.state.page,
@@ -208,11 +208,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.changeValue(id, isChecked)
 	};
 
-	chooseProfile() {
+	chooseProfile () {
 		this.setState({hiddenBlock: true, hiddenProfiles: false});
 	}
 
-	setProfile(profile) {
+	setProfile (profile) {
 		console.error(profile);
 		let prf = JSON.parse(profile.object);
 		this.values['profile'] = profile.object;
@@ -223,7 +223,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		//console.error('set', address, unit, object);
 	}
 
-	getProfile() {
+	getProfile () {
 		let wallets = this.state.profiles.map((profile: any) => {
 			let prf = JSON.parse(profile.object);
 			console.error('profile', profile);
@@ -242,7 +242,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	messages(from_address, text) {
+	messages (from_address, text) {
 		console.error('messages', from_address, text);
 		let cm = this.state.messages;
 		if (!cm[from_address]) {
@@ -256,7 +256,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}, 100);
 	}
 
-	async checkProfile(attesters, address, unit, profile) {
+	async checkProfile (attesters, address, unit, profile) {
 		let db = this.biot.db;
 		let storage = this.biot.storage;
 		let network = this.biot.network;
@@ -271,7 +271,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		let rows: any = await new Promise(resolve => {
 			db.query("SELECT 1 FROM attestations CROSS JOIN unit_authors USING(unit)\n\
 		WHERE attestations.address=? AND unit_authors.address IN(?) AND unit=?",
-				[address, attesters, unit], resolve);
+				[ address, attesters, unit ], resolve);
 		});
 		if (rows.length) {
 			return new Promise(resolve => {
@@ -280,7 +280,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 						_eventBus.once('saved_unit-' + unit, (objJoint) => {
 							handleJoint(objJoint, resolve)
 						});
-						network.requestHistoryFor([unit], []);
+						network.requestHistoryFor([ unit ], []);
 					},
 					ifFound: (objJoint) => {
 						handleJoint(objJoint, resolve)
@@ -291,7 +291,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			return false;
 		}
 
-		function handleJoint(objJoint, resolve) {
+		function handleJoint (objJoint, resolve) {
 			let payload = objJoint.unit.messages.find(m => m.app === 'attestation').payload;
 			if (payload && payload.address === address) {
 				let hidden_profile = {};
@@ -311,7 +311,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	async objMessages(from_address, object) {
+	async objMessages (from_address, object) {
 		if (object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
@@ -328,7 +328,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			this.setState({page: object.page});
 			object.form.forEach(f => {
 				if (f.required) this.requirements[f.id] = {type: f.type, title: f.title};
-				blocks = [...blocks, this.getElement(f)];
+				blocks = [ ...blocks, this.getElement(f) ];
 			});
 			let data = <div>
 				{blocks.map(b => b)}
@@ -338,7 +338,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			// @ts-ignore
 			let objV = OBValidation;
 			if (objV.isValidAddress(object.my_address) && objV.isValidAddress(object.your_address)) {
-				if ((await this.checkProfile([object.my_address], object.your_address, object.unit, object.profile))) {
+				if ((await this.checkProfile([ object.my_address ], object.your_address, object.unit, object.profile))) {
 					await this.core.saveProfile(object.my_address, object.your_address, object.unit, object.profile);
 					alert('Profile successfully added');
 				} else {
@@ -375,12 +375,12 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	changeValue(id, value) {
+	changeValue (id, value) {
 		this.values[id] = value;
 		console.error(value);
 	}
 
-	tInput(title, id) {
+	tInput (title, id) {
 		return <div>
 			<div><input className={'input'} onChange={(e) => {
 				this.changeValue(id, e.target.value)
@@ -388,7 +388,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		</div>
 	}
 
-	getWallet() {
+	getWallet () {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => this.setWallet(wallet.id)} key={wallet.id} className={'wallets-list-body'}>
@@ -404,7 +404,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		</div>
 	}
 
-	async setWallet(id) {
+	async setWallet (id) {
 		let addresses = await this.core.getAddressesInWallet(id);
 		this.values['address'] = addresses[0];
 		this.elms['setAddress'].current.innerText = this.values['address'];
@@ -412,11 +412,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.callbackW(addresses[0]);
 	}
 
-	showWallets() {
+	showWallets () {
 		this.setState({hiddenBlock: true, hiddenWallets: false});
 	}
 
-	sendResponse() {
+	sendResponse () {
 		for (let key in this.requirements) {
 			if (this.values[key] === undefined || (this.values[key] !== undefined && this.values[key] === '')) {
 				if (this.requirements[key].type === 'input') {
@@ -434,7 +434,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({hiddenWaiting: false});
 	}
 
-	sendRequest(req) {
+	sendRequest (req) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'request',
 			page: this.state.page,
@@ -442,7 +442,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	listCorrespondents() {
+	listCorrespondents () {
 		return this.state.correspondents.map((correspondent: any) => {
 			// @ts-ignore
 			let icon = makeBlockie(correspondent.device_address);
@@ -457,14 +457,14 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	copyPairingCode() {
+	copyPairingCode () {
 		//@ts-ignore
 		window.cordova.plugins.clipboard.copy(this.state.pairingCode);
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Pairing code successfully copied');
 	}
 
-	showAddC() {
+	showAddC () {
 		this.setState({app: 'addC'});
 	}
 
@@ -595,7 +595,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({hiddenListAction: true});
 	};
 
-	render() {
+	render () {
 		if (this.state.app === 'addC') {
 			return <div>
 				<div className={'top-bar'}>

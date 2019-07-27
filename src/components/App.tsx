@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 import "../styles/style.scss";
-import {WalletsList} from "./WalletsList";
-import {Wallet} from "./WalletPage";
-import {ReceivePage} from "./ReceivePage";
-import {SendPage} from "./SendPage";
-import {Apps} from "./Apps";
-import {Menu} from "./Menu";
+import { WalletsList } from "./WalletsList";
+import { Wallet } from "./WalletPage";
+import { ReceivePage } from "./ReceivePage";
+import { SendPage } from "./SendPage";
+import { Apps } from "./Apps";
+import { Menu } from "./Menu";
 import getBiot from "../getBiot";
-import {EventEmitter} from './EventEmitter';
+import { EventEmitter } from './EventEmitter';
 
 let events = new EventEmitter();
 
@@ -21,10 +21,9 @@ interface IPage {
 
 export class QRScanner extends React.Component<any, IPage> {
 
-	componentDidMount() {
+	componentDidMount () {
 		// @ts-ignore
-		let _eventBus = window.eventBus;
-		_eventBus.on('backbutton', this.backKeyClick);
+		obEvents.on('backbutton', this.backKeyClick);
 
 		let self = this;
 		// @ts-ignore
@@ -116,10 +115,9 @@ export class QRScanner extends React.Component<any, IPage> {
 		document.body.style.backgroundColor = 'rgba(0,0,0,0)';
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount () {
 		// @ts-ignore
-		let _eventBus = window.eventBus;
-		_eventBus.removeListener('backbutton', this.backKeyClick);
+		obEvents.removeListener('backbutton', this.backKeyClick);
 		// @ts-ignore
 		hideQR(function () {
 			// @ts-ignore
@@ -133,7 +131,7 @@ export class QRScanner extends React.Component<any, IPage> {
 		this.props.setPage('index')
 	};
 
-	render() {
+	render () {
 		return (
 			<div className={'top-bar'}>
 				<text className={'qrScanner-title'}>QR Scanner</text>
@@ -153,7 +151,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 
 	state = {wallets: []};
 
-	componentDidMount() {
+	componentDidMount () {
 		getBiot(async (biot: any) => {
 			let wallets: any = [];
 			let walletsInDb = await biot.core.getWallets();
@@ -164,12 +162,12 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
 				let balance = await biot.core.getWalletBalance(wallet);
-				wallets = [...wallets, {
+				wallets = [ ...wallets, {
 					id: wallet,
 					name: assocWalletToName[wallet] ? assocWalletToName[wallet] : wallet.substr(0, 25) + '...',
 					coin: 'Byteball',
 					balance: balance.base.stable + balance.base.pending
-				}];
+				} ];
 			}
 			if (wallets.length === 1) {
 				console.error(wallets[0]);
@@ -180,7 +178,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 		});
 	}
 
-	render() {
+	render () {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => {
@@ -211,7 +209,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		hiddenWaiting: true
 	};
 
-	componentDidMount() {
+	componentDidMount () {
 		this.getProfile = this.getProfile.bind(this);
 		this.setProfile = this.setProfile.bind(this);
 	}
@@ -324,19 +322,19 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		this.props.setPage('index');
 	};
 
-	async chooseProfile() {
+	async chooseProfile () {
 		getBiot(async (biot: any) => {
 			let profiles = await biot.core.getProfiles();
 			this.setState({hiddenProfiles: false, profiles});
 		});
 	}
 
-	setProfile(address, unit, object) {
+	setProfile (address, unit, object) {
 		this.setState({profile: {address, unit, object}, hiddenProfiles: true});
 		console.error('set', address, unit, object);
 	}
 
-	getProfile() {
+	getProfile () {
 		let wallets = this.state.profiles.map((profile: any) => {
 			let prf = JSON.parse(profile.object);
 			console.error('prf', prf);
@@ -353,7 +351,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		</div>
 	}
 
-	render() {
+	render () {
 		console.error('prps', this.props);
 		return <div>
 			<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
@@ -399,17 +397,16 @@ export class App extends React.Component {
 		textSaveName: 'Save name'
 	};
 
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		let self = this;
 
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
 		//@ts-ignore
-		let _eventBus = window.eventBus;
-		_eventBus.on('text', self.messages);
-		_eventBus.on('object', self.objMessages);
-		_eventBus.on('backbutton', this.backKeyClick);
+		obEvents.on('text', self.messages);
+		obEvents.on('object', self.objMessages);
+		obEvents.on('backbutton', this.backKeyClick);
 
 		this.chInit();
 
@@ -542,7 +539,7 @@ export class App extends React.Component {
 		}
 	};
 
-	render() {
+	render () {
 		if (this.state.page == 'index') {
 			return <div className={'app-body'}>
 				<WalletsList setPage={this.setPage}/>
@@ -645,7 +642,7 @@ nfc.addMimeTypeListener("text/plain", parseTag,
 	}
 );
 
-function parseTag(nfcEvent) {
+function parseTag (nfcEvent) {
 	getBiot((biot: any) => {
 		console.error('NFCCWA', nfcEvent);
 		let records = nfcEvent.tag.ndefMessage;
@@ -672,7 +669,7 @@ function parseTag(nfcEvent) {
 
 document.addEventListener("backbutton", onBackKeyDown, false);
 
-function onBackKeyDown() {
+function onBackKeyDown () {
 	obEvents.emit('backbutton', {});
 }
 
