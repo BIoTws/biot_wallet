@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 import "../styles/style.scss";
-import { WalletsList } from "./WalletsList";
-import { Wallet } from "./WalletPage";
-import { ReceivePage } from "./ReceivePage";
-import { SendPage } from "./SendPage";
-import { Apps } from "./Apps";
-import { Menu } from "./Menu";
+import {WalletsList} from "./WalletsList";
+import {Wallet} from "./WalletPage";
+import {ReceivePage} from "./ReceivePage";
+import {SendPage} from "./SendPage";
+import {Apps} from "./Apps";
+import {Menu} from "./Menu";
 import getBiot from "../getBiot";
-import { EventEmitter } from './EventEmitter';
+import {EventEmitter} from './EventEmitter';
 
 let events = new EventEmitter();
 
@@ -21,7 +21,7 @@ interface IPage {
 
 export class QRScanner extends React.Component<any, IPage> {
 
-	componentDidMount () {
+	componentDidMount() {
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.on('backbutton', this.backKeyClick);
@@ -116,7 +116,7 @@ export class QRScanner extends React.Component<any, IPage> {
 		document.body.style.backgroundColor = 'rgba(0,0,0,0)';
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('backbutton', this.backKeyClick);
@@ -133,7 +133,7 @@ export class QRScanner extends React.Component<any, IPage> {
 		this.props.setPage('index')
 	};
 
-	render () {
+	render() {
 		return (
 			<div className={'top-bar'}>
 				<text className={'qrScanner-title'}>QR Scanner</text>
@@ -151,9 +151,9 @@ interface ISetWallet {
 
 export class SetWallet extends React.Component<ISetWallet, any> {
 
-	state = { wallets: [] };
+	state = {wallets: []};
 
-	componentDidMount () {
+	componentDidMount() {
 		getBiot(async (biot: any) => {
 			let wallets: any = [];
 			let walletsInDb = await biot.core.getWallets();
@@ -175,12 +175,12 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 				console.error(wallets[0]);
 				this.props.setPage(this.props.nextPage, wallets[0].id, null, this.props.params)
 			} else {
-				this.setState({ wallets: wallets });
+				this.setState({wallets: wallets});
 			}
 		});
 	}
 
-	render () {
+	render() {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => {
@@ -194,7 +194,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 			);
 		});
 		return <div>
-			<div className={'state-wallets'} style={{ paddingTop: '45px' }}>
+			<div className={'state-wallets'} style={{paddingTop: '45px'}}>
 				{wallets}
 			</div>
 		</div>
@@ -206,12 +206,12 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 	state = {
 		wallets: [],
 		profiles: [],
-		profile: { address: '', unit: '', object: '' },
+		profile: {address: '', unit: '', object: ''},
 		hiddenProfiles: true,
 		hiddenWaiting: true
 	};
 
-	componentDidMount () {
+	componentDidMount() {
 		this.getProfile = this.getProfile.bind(this);
 		this.setProfile = this.setProfile.bind(this);
 	}
@@ -249,7 +249,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			console.error('channelError', error, channel.id);
 		});
 		channel.events.on('start', async () => {
-			this.setState({ hiddenWaiting: true });
+			this.setState({hiddenWaiting: true});
 			console.error('channel start. id:', channel.id);
 			let i = 1;
 			interval = setInterval(async () => {
@@ -280,7 +280,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		channel.events.on('new_transfer', async (amount) => {
 			console.error('new_transfer: ', amount, channel.id);
 		});
-		this.setState({ hiddenWaiting: false });
+		this.setState({hiddenWaiting: false});
 		try {
 			let i = await channel.init();
 			console.error('init', i);
@@ -324,19 +324,19 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		this.props.setPage('index');
 	};
 
-	async chooseProfile () {
+	async chooseProfile() {
 		getBiot(async (biot: any) => {
 			let profiles = await biot.core.getProfiles();
-			this.setState({ hiddenProfiles: false, profiles });
+			this.setState({hiddenProfiles: false, profiles});
 		});
 	}
 
-	setProfile (address, unit, object) {
-		this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
+	setProfile(address, unit, object) {
+		this.setState({profile: {address, unit, object}, hiddenProfiles: true});
 		console.error('set', address, unit, object);
 	}
 
-	getProfile () {
+	getProfile() {
 		let wallets = this.state.profiles.map((profile: any) => {
 			let prf = JSON.parse(profile.object);
 			console.error('prf', prf);
@@ -353,7 +353,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		</div>
 	}
 
-	render () {
+	render() {
 		console.error('prps', this.props);
 		return <div>
 			<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
@@ -399,7 +399,7 @@ export class App extends React.Component {
 		textSaveName: 'Save name'
 	};
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		let self = this;
 
@@ -454,7 +454,7 @@ export class App extends React.Component {
 			if (_stepInit === 'waiting') {
 				return setTimeout(this.chInit, 100);
 			} else if (_stepInit === 'errorDeviceName') {
-				return this.setState({ page: 'setName' });
+				return this.setState({page: 'setName'});
 			} else if (_stepInit === 'error') {
 				return alert('error');
 			}
@@ -463,7 +463,7 @@ export class App extends React.Component {
 				localStorage.setItem('isShownSeed', '1');
 				//@ts-ignore
 				let seed = window.seed;
-				this.setState({ page: 'showSeed', seed });
+				this.setState({page: 'showSeed', seed});
 			}
 
 			//@ts-ignore
@@ -475,7 +475,7 @@ export class App extends React.Component {
 		if (this.state.page !== 'apps') {
 			let cm = localStorage.getItem('m_' + from_address);
 			let messages = cm ? JSON.parse(cm) : [];
-			messages.push({ text, i: false });
+			messages.push({text, i: false});
 			localStorage.setItem('m_' + from_address, JSON.stringify(messages));
 		}
 	};
@@ -498,7 +498,7 @@ export class App extends React.Component {
 			let assocWalletToName = lWN ? JSON.parse(lWN) : {};
 			if (assocWalletToName[walletId]) walletName = assocWalletToName[walletId];
 		}
-		this.setState({ page: page, walletId: walletId, nextPage: nextPage || '', params: params || {}, walletName });
+		this.setState({page: page, walletId: walletId, nextPage: nextPage || '', params: params || {}, walletName});
 	};
 
 	setName = (evt) => {
@@ -509,14 +509,14 @@ export class App extends React.Component {
 
 	nowSaveName = false;
 	saveName = () => {
-		if(!this.nowSaveName) {
+		if (!this.nowSaveName) {
 			this.nowSaveName = true;
 			this.setState({textSaveName: 'Please wait'});
 			getBiot(async (biot: any) => {
 				await biot.core.setDeviceName(this.state.name);
 				//@ts-ignore
 				await window.InitializeBIoT();
-				this.setState({ page: 'index' });
+				this.setState({page: 'index'});
 				this.chInit();
 			});
 		}
@@ -527,22 +527,22 @@ export class App extends React.Component {
 		window.cordova.plugins.clipboard.copy(this.state.seed);
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Seed successfully copied');
-		this.setState({ page: 'index' });
+		this.setState({page: 'index'});
 	};
 
 	backKeyClick = () => {
-		if(this.state.page === 'setWallet') {
-			this.setState({ page: 'index' })
-		} else if(this.state.page == 'wallet') {
-			this.setState({ page: 'index' })
+		if (this.state.page === 'setWallet') {
+			this.setState({page: 'index'})
+		} else if (this.state.page == 'wallet') {
+			this.setState({page: 'index'})
 		} else if (this.state.page == 'sendTransaction') {
-			this.setState({ page: 'wallet' })
+			this.setState({page: 'wallet'})
 		} else if (this.state.page == 'receiveTransaction') {
-			this.setState({ page: 'wallet' })
+			this.setState({page: 'wallet'})
 		}
 	};
 
-	render () {
+	render() {
 		if (this.state.page == 'index') {
 			return <div className={'app-body'}>
 				<WalletsList setPage={this.setPage}/>
@@ -552,12 +552,12 @@ export class App extends React.Component {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Please select the wallet</text>
-					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
+					<a onClick={() => this.setState({page: 'index'})} className={'back-button'}> </a>
 				</div>
 				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
 			</div>
 		} else if (this.state.page === 'setName') {
-			return <div className={'app-body'} style={{ textAlign: 'center' }}>
+			return <div className={'app-body'} style={{textAlign: 'center'}}>
 				<div className={'name-title'}>What's your name?</div>
 				<div><input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
 				</div>
@@ -568,9 +568,9 @@ export class App extends React.Component {
 				</div>
 			</div>
 		} else if (this.state.page === 'showSeed') {
-			return <div className={'app-body'} style={{ textAlign: 'center' }}>
+			return <div className={'app-body'} style={{textAlign: 'center'}}>
 				<div className={'name-title'}>Please save your seed</div>
-				<div style={{ color: '#fff' }}>{this.state.seed}</div>
+				<div style={{color: '#fff'}}>{this.state.seed}</div>
 				<div className={'button-block'}>
 					<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
 						Copy seed and close
@@ -592,11 +592,11 @@ export class App extends React.Component {
 						this.state.walletName.length > 25 ?
 							this.state.walletName.substr(0, 25) + '...' :
 							this.state.walletName}</text>
-					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
+					<a onClick={() => this.setState({page: 'index'})} className={'back-button'}> </a>
 				</div>
 				<div className={'wallet-menu'}>
-					<a onClick={() => this.setState({ page: 'sendTransaction' })} className={'send-button'}> </a>
-					<a onClick={() => this.setState({ page: 'receiveTransaction' })} className={'receive-button'}> </a>
+					<a onClick={() => this.setState({page: 'sendTransaction'})} className={'send-button'}> </a>
+					<a onClick={() => this.setState({page: 'receiveTransaction'})} className={'receive-button'}> </a>
 				</div>
 				<Wallet walletId={this.state.walletId}/>
 			</div>
@@ -604,16 +604,16 @@ export class App extends React.Component {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Send</text>
-					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
+					<a onClick={() => this.setState({page: 'wallet'})} className={'back-button'}> </a>
 				</div>
-				<SendPage walletId={this.state.walletId} back={() => this.setState({ page: 'wallet' })}
+				<SendPage walletId={this.state.walletId} back={() => this.setState({page: 'wallet'})}
 				          params={this.state.params}/>
 			</div>
 		} else if (this.state.page == 'receiveTransaction') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Receive</text>
-					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
+					<a onClick={() => this.setState({page: 'wallet'})} className={'back-button'}> </a>
 				</div>
 				<ReceivePage walletId={this.state.walletId}/>
 			</div>
@@ -645,7 +645,7 @@ nfc.addMimeTypeListener("text/plain", parseTag,
 	}
 );
 
-function parseTag (nfcEvent) {
+function parseTag(nfcEvent) {
 	getBiot((biot: any) => {
 		console.error('NFCCWA', nfcEvent);
 		let records = nfcEvent.tag.ndefMessage;
@@ -673,8 +673,7 @@ function parseTag (nfcEvent) {
 document.addEventListener("backbutton", onBackKeyDown, false);
 
 function onBackKeyDown() {
-    obEvents.emit('backbutton', {
-    });
+	obEvents.emit('backbutton', {});
 }
 
 // @ts-ignore
