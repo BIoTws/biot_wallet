@@ -6,15 +6,15 @@ interface IPage {
 
 export class Menu extends React.Component<any, IPage> {
 
-	constructor (props: any) {
+	constructor(props: any) {
 		super(props);
 	}
 
-	setP (name) {
+	setP(name) {
 		this.props.setPage(name);
 	}
 
-	render () {
+	render() {
 		return (
 			<div className={'menu'}>
 				<a onClick={() => {
