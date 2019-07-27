@@ -5,7 +5,7 @@ import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
 import { Menu } from "./Menu";
 
-export class Apps extends React.Component<{ setPage: (page) => void }, any> {
+export class Apps extends React.Component<{setPage: (page) => void}, any> {
 	values: any = {};
 	requirements: any = {};
 	core: any = null;
@@ -81,21 +81,21 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
 				let balance = await biot.core.getWalletBalance(wallet);
-				wallets = [ ...wallets, {
+				wallets = [...wallets, {
 					id: wallet,
 					name: wallet.substr(0, 25) + '...',
 					coin: 'Byteball',
 					balance: balance.base.stable + balance.base.pending
-				} ];
+				}];
 			}
 			for (let i = 0; i < profilesInDb.length; i++) {
 				let profile = profilesInDb[i];
-				profiles = [ ...profiles, {
+				profiles = [...profiles, {
 					address: profile.address,
 					attester: profile.attester,
 					object: profile.object,
 					unit: profile.unit,
-				} ];
+				}];
 			}
 			this.setState({wallets: wallets, profiles: profiles});
 
@@ -139,44 +139,44 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 	getElement (f) {
-		if (f.type === 'input') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		if(f.type === 'input') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return this.tInput(f.title, f.id);
-		} else if (f.type === 'address') {
+		} else if(f.type === 'address') {
 			this.elms['setAddress'] = React.createRef();
 			return <div className={'setAddress'}>
 				<a onClick={() => this.showWallets()} className={'selectAddress'} ref={this.elms['setAddress']}>
 					For choose address click here</a>
 			</div>
-		} else if (f.type === 'blank_line') {
+		} else if(f.type === 'blank_line') {
 			return <div><br/></div>
-		} else if (f.type === 'submit') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'submit') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} style={{textAlign: 'center'}}>
 				<input ref={this.elms[f.id]} onClick={() => this.sendResponse()} className={'button-send-submit'}
 				       type={'submit'}
 				       value={f.title}/>
 			</div>
-		} else if (f.type === 'h2') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'h2') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} style={{textAlign: 'center'}}><h2 ref={this.elms[f.id]}>{f.title}</h2>
 			</div>
-		} else if (f.type === 'h3') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'h3') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} ref={this.elms[f.id]} style={{textAlign: 'center'}}><h3>{f.title}</h3>
 			</div>
-		} else if (f.type === 'text') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'text') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} ref={this.elms[f.id]}>{f.title}</div>
-		} else if (f.type === 'request') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'request') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} style={{textAlign: 'center'}}>
 				<input ref={this.elms[f.id]} onClick={() => this.sendRequest(f.req)} className={'button-send-submit'}
 				       type={'button'}
 				       value={f.title}/>
 			</div>
-		} else if (f.type === 'checkbox') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'checkbox') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div className={'checkbox'} style={{textAlign: 'center'}}>
 				<label className={'switch'} htmlFor={f.id}>
 					<text className={'checkboxTitle'}>{f.title}</text>
@@ -185,14 +185,14 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					<div className={'slider round'}></div>
 				</label>
 			</div>
-		} else if (f.type === 'profile') {
+		} else if(f.type === 'profile') {
 			this.elms['setProfile'] = React.createRef();
 			return <div className={'setProfile'}>
 				<a id={'chooseProfile'} onClick={() => this.chooseProfile()} ref={this.elms['setProfile']}>For choose
 					profile click here</a>
 			</div>
-		} else if (f.type === 'list-menu') {
-			if (f.id) this.elms[f.id] = React.createRef();
+		} else if(f.type === 'list-menu') {
+			if(f.id) this.elms[f.id] = React.createRef();
 			return <div ref={this.elms[f.id]} onClick={() => this.sendRequest(f.req)} id={f.id} className={'list-menu'}>
 				{f.title}
 			</div>
@@ -245,7 +245,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	messages (from_address, text) {
 		console.error('messages', from_address, text);
 		let cm = this.state.messages;
-		if (!cm[from_address]) {
+		if(!cm[from_address]) {
 			cm[from_address] = [];
 		}
 		cm[from_address].push({text, i: false});
@@ -271,16 +271,16 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		let rows: any = await new Promise(resolve => {
 			db.query("SELECT 1 FROM attestations CROSS JOIN unit_authors USING(unit)\n\
 		WHERE attestations.address=? AND unit_authors.address IN(?) AND unit=?",
-				[ address, attesters, unit ], resolve);
+				[address, attesters, unit], resolve);
 		});
-		if (rows.length) {
+		if(rows.length) {
 			return new Promise(resolve => {
 				storage.readJoint(db, unit, {
 					ifNotFound: function () {
 						_eventBus.once('saved_unit-' + unit, (objJoint) => {
 							handleJoint(objJoint, resolve)
 						});
-						network.requestHistoryFor([ unit ], []);
+						network.requestHistoryFor([unit], []);
 					},
 					ifFound: (objJoint) => {
 						handleJoint(objJoint, resolve)
@@ -293,14 +293,14 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 		function handleJoint (objJoint, resolve) {
 			let payload = objJoint.unit.messages.find(m => m.app === 'attestation').payload;
-			if (payload && payload.address === address) {
+			if(payload && payload.address === address) {
 				let hidden_profile = {};
 				for (let field in profile) {
 					let value = profile[field];
 					hidden_profile[field] = _objectHash.getBase64Hash(value);
 				}
 				let profile_hash = _objectHash.getBase64Hash(hidden_profile);
-				if (profile_hash === payload.profile.profile_hash) {
+				if(profile_hash === payload.profile.profile_hash) {
 					return resolve(true);
 				} else {
 					return resolve(false);
@@ -312,7 +312,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 	async objMessages (from_address, object) {
-		if (object.type === 'imapp') {
+		if(object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
 			console.error('listapps', listApps);
@@ -323,22 +323,22 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 		this.setState({hiddenWaiting: true});
 		let blocks: any = [];
-		if (object.type === 'render') {
+		if(object.type === 'render') {
 			this.elms = {};
 			this.setState({page: object.page});
 			object.form.forEach(f => {
-				if (f.required) this.requirements[f.id] = {type: f.type, title: f.title};
-				blocks = [ ...blocks, this.getElement(f) ];
+				if(f.required) this.requirements[f.id] = {type: f.type, title: f.title};
+				blocks = [...blocks, this.getElement(f)];
 			});
 			let data = <div>
 				{blocks.map(b => b)}
 			</div>;
 			this.setState({data: data, values: {}});
-		} else if (object.type === 'addProfile') {
+		} else if(object.type === 'addProfile') {
 			// @ts-ignore
 			let objV = OBValidation;
-			if (objV.isValidAddress(object.my_address) && objV.isValidAddress(object.your_address)) {
-				if ((await this.checkProfile([ object.my_address ], object.your_address, object.unit, object.profile))) {
+			if(objV.isValidAddress(object.my_address) && objV.isValidAddress(object.your_address)) {
+				if((await this.checkProfile([object.my_address], object.your_address, object.unit, object.profile))) {
 					await this.core.saveProfile(object.my_address, object.your_address, object.unit, object.profile);
 					alert('Profile successfully added');
 				} else {
@@ -347,9 +347,9 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			} else {
 				alert('Incorrect profile');
 			}
-		} else if (object.type === 'alert') {
+		} else if(object.type === 'alert') {
 			alert(object.message);
-		} else if (object.type === 'update') {
+		} else if(object.type === 'update') {
 			blocks = this.state.data;
 			let index = blocks.findIndex(b => {
 				return b.props.id === object.id
@@ -357,18 +357,18 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			delete this.elms[object.id];
 			blocks.splice(index, 1, this.getElement(object.value));
 			this.setState({data: blocks});
-		} else if (object.type === 'setValue') {
+		} else if(object.type === 'setValue') {
 			let el = this.elms[object.id];
-			if (el && el.current) {
+			if(el && el.current) {
 				el = el.current;
-				if (el.tagName === 'INPUT') {
+				if(el.tagName === 'INPUT') {
 					this.values[object.id] = object.value;
-					if (el.type === 'checkbox') {
+					if(el.type === 'checkbox') {
 						el.checked = object.value;
 					} else {
 						el.value = object.value;
 					}
-				} else if (el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'DIV') {
+				} else if(el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'DIV') {
 					el.innerText = object.value;
 				}
 			}
@@ -389,7 +389,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 	getWallet () {
-		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
+		let wallets = this.state.wallets.map((wallet: {id: string, name: string, balance: number, coin: string}) => {
 			return (
 				<div onClick={() => this.setWallet(wallet.id)} key={wallet.id} className={'wallets-list-body'}>
 					<div className={wallet.coin}>
@@ -418,10 +418,10 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	sendResponse () {
 		for (let key in this.requirements) {
-			if (this.values[key] === undefined || (this.values[key] !== undefined && this.values[key] === '')) {
-				if (this.requirements[key].type === 'input') {
+			if(this.values[key] === undefined || (this.values[key] !== undefined && this.values[key] === '')) {
+				if(this.requirements[key].type === 'input') {
 					return alert('Please fill "' + this.requirements[key].title + '"');
-				} else if (this.requirements[key].type === 'address') {
+				} else if(this.requirements[key].type === 'address') {
 					return alert('Please choose address');
 				}
 			}
@@ -491,13 +491,13 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	};
 
 	backKeyClick = () => {
-		if (this.state.app === 'app' && !this.state.hiddenBlock && this.state.hiddenProfiles) {
+		if(this.state.app === 'app' && !this.state.hiddenBlock && this.state.hiddenProfiles) {
 			this.closeApp();
-		} else if (this.state.app === 'addC' || this.state.app === 'chat') {
+		} else if(this.state.app === 'addC' || this.state.app === 'chat') {
 			this.goList();
-		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenWallets) {
+		} else if(this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenWallets) {
 			this.setState({hiddenBlock: false, hiddenWallets: true});
-		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenProfiles) {
+		} else if(this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenProfiles) {
 			this.setState({hiddenBlock: false, hiddenProfiles: true});
 		}
 	};
@@ -505,7 +505,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	openChatOrApp = (correspondent) => {
 		let ls = localStorage.getItem('listApps');
 		let listApps = ls ? JSON.parse(ls) : {};
-		if (listApps[correspondent.device_address]) {
+		if(listApps[correspondent.device_address]) {
 			this.openApp(correspondent);
 		} else {
 			this.openChat(correspondent);
@@ -515,7 +515,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	openApp = (correspondent) => {
 		this.setState({app: 'app', thisChat: correspondent, hiddenWaiting: false});
 		let send = () => {
-			if (this.biotInit) {
+			if(this.biotInit) {
 				this.core.sendTechMessageToDevice(correspondent.device_address, {type: 'hello'});
 			} else {
 				setTimeout(send, 70);
@@ -538,7 +538,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		let message = this.state.currentText;
 		this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
 		let cm = this.state.messages;
-		if (!cm[this.state.thisChat.device_address]) {
+		if(!cm[this.state.thisChat.device_address]) {
 			cm[this.state.thisChat.device_address] = [];
 		}
 		cm[this.state.thisChat.device_address].push({text: message, i: true});
@@ -555,7 +555,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	hideBlockAndShowWallets = (insert) => {
 		this.callbackW = (address) => {
-			if (insert) {
+			if(insert) {
 				this.setState({currentText: this.state.currentText + address});
 			} else {
 				this.setState({currentText: address}, () => {
@@ -596,7 +596,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	};
 
 	render () {
-		if (this.state.app === 'addC') {
+		if(this.state.app === 'addC') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Accept invitation</text>
@@ -611,7 +611,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					</div>
 				</div>
 			</div>
-		} else if (this.state.app === 'list') {
+		} else if(this.state.app === 'list') {
 			return <div>
 				<div id={'action_tap'} hidden={this.state.hiddenListAction}>
 					<div id={'action_tab_bg'} onClick={this.hideTapActionList}></div>
@@ -636,7 +636,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				</div>
 				<Menu page={'apps'} setPage={this.props.setPage}/>
 			</div>
-		} else if (this.state.app === 'app') {
+		} else if(this.state.app === 'app') {
 			return <div>
 				{this.getWallet()}
 				{this.getProfile()}
@@ -649,7 +649,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					<div key={'data'} className={'data'}>{this.state.data}</div>
 				</div>
 			</div>
-		} else if (this.state.app === 'chat') {
+		} else if(this.state.app === 'chat') {
 			return <div>
 				{this.getWallet()}
 				<div hidden={this.state.hiddenBlock}>
