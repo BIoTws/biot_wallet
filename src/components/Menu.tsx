@@ -10,7 +10,7 @@ export class Menu extends React.Component<any, IPage> {
 		super(props);
 	}
 
-	setP (name) {
+	setP(name) {
 		this.props.setPage(name);
 	}
 
