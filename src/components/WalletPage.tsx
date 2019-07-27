@@ -34,7 +34,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 	timerB: any = null;
 
-	calcListTransactions(objTransactions, myAddresses) {
+	calcListTransactions (objTransactions, myAddresses) {
 		let list: any = [];
 
 		for (let key in objTransactions) {
@@ -104,7 +104,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		return list;
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		getBiot(async (biot: any) => {
 			let upd = async () => {
 				let balance = await biot.core.getWalletBalance(this.props.walletId);
@@ -149,7 +149,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		});
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount () {
 		if (this.timerB) clearInterval(this.timerB);
 	}
 
@@ -216,10 +216,10 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 			}, 60000);
 		}
 		console.error('start', 7);
-		this.setState({isShowModalChannel: false});
+		this.setState({ isShowModalChannel: false });
 	};
 
-	render() {
+	render () {
 		let getBlock = () => {
 			if (this.state.list == 'transactions') {
 				return <div key={'transactions'} className={'transactions'}>
@@ -244,7 +244,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 						right: '5px',
 						color: '#c8d5d3'
 					}}>
-						<div>Id: <span style={{fontSize: '12px'}}>{this.state.modalChannelId}</span></div>
+						<div>Id: <span style={{ fontSize: '12px' }}>{this.state.modalChannelId}</span></div>
 						<div>Status: {this.state.modalChannelStatus}</div>
 						{this.state.modalChannelStatus === 'Open' ? <div>
 							<button onClick={() => this.closeChannel()} className={'button-send-submit'} style={{
@@ -263,7 +263,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 							width: '100%',
 							height: '100%'
 						}}
-						onClick={() => this.setState({isShowModalChannel: false})}>_
+						onClick={() => this.setState({ isShowModalChannel: false })}>_
 					</div>
 				</div>
 		};
@@ -280,11 +280,11 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 					</div>
 				</div>
 
-				<div onClick={() => this.setState({list: 'transactions'})}
+				<div onClick={() => this.setState({ list: 'transactions' })}
 				     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
 					<text>Transactions</text>
 				</div>
-				<div onClick={() => this.setState({list: 'channels'})}
+				<div onClick={() => this.setState({ list: 'channels' })}
 				     className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
 					<text>Channels</text>
 				</div>
