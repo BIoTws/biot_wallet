@@ -28,7 +28,7 @@ export class QRScanner extends React.Component<any, IPage> {
 		// @ts-ignore
 		getQR((err, text) => {
 			console.error('text QR: ', text);
-			if (err) {
+			if(err) {
 				alert('Error');
 				self.props.setPage('index');
 			} else {
@@ -39,14 +39,14 @@ export class QRScanner extends React.Component<any, IPage> {
 					json = null;
 				}
 
-				if (text.indexOf('obyte:') !== -1 || text.indexOf('obyte-tn:') !== -1) {
+				if(text.indexOf('obyte:') !== -1 || text.indexOf('obyte-tn:') !== -1) {
 					let r = text.match(/^obyte(|-tn):(.+)/);
-					if (r && r[2]) {
+					if(r && r[2]) {
 						// @ts-ignore
-						if (OBValidation.isValidAddress(r[2])) {
+						if(OBValidation.isValidAddress(r[2])) {
 							let paramsObj = {};
 							let resMatch = text.match(/[a-z]+=[0-9]+/);
-							if (resMatch) {
+							if(resMatch) {
 								resMatch.forEach(v => {
 									let splitV = v.split('=');
 									paramsObj[splitV[0]] = parseInt(splitV[1]);
@@ -58,9 +58,9 @@ export class QRScanner extends React.Component<any, IPage> {
 							});
 							// @ts-ignore
 						} else {
-							if (r[2]) {
+							if(r[2]) {
 								let matches = r[2].match(/^([\w\/+]+)@([\w.:\/-]+)#([\w\/+-]+)$/);
-								if (matches) {
+								if(matches) {
 									getBiot(async biot => {
 										try {
 											await biot.core.addCorrespondent(r[2]);
@@ -73,10 +73,10 @@ export class QRScanner extends React.Component<any, IPage> {
 							}
 						}
 					}
-				} else if (json && json.app && json.app === 'biot') {
-					if (json.type && json.type === 'channel') {
-						if (json.step && json.step === 'init') {
-							if (!json.pairingCode || !json.myAmount || !json.peerAmount || !json.age
+				} else if(json && json.app && json.app === 'biot') {
+					if(json.type && json.type === 'channel') {
+						if(json.step && json.step === 'init') {
+							if(!json.pairingCode || !json.myAmount || !json.peerAmount || !json.age
 								|| !json.channelType || (json.channelType && json.channelType !== 'pft')
 								|| !json.rate || !json.count || !json.interval) {
 								alert('Error_ch');
@@ -148,7 +148,7 @@ interface ISetWallet {
 
 export class SetWallet extends React.Component<ISetWallet, any> {
 
-	state = {wallets: []};
+	state = { wallets: [] };
 
 	componentDidMount () {
 		getBiot(async (biot: any) => {
@@ -156,23 +156,23 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 			let walletsInDb = await biot.core.getWallets();
 			let lWN = localStorage.getItem('assocWalletToName');
 			let assocWalletToName = {};
-			if (lWN) assocWalletToName = JSON.parse(lWN);
+			if(lWN) assocWalletToName = JSON.parse(lWN);
 
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
 				let balance = await biot.core.getWalletBalance(wallet);
 				wallets = [...wallets, {
 					id: wallet,
-					name: assocWalletToName[wallet] ? assocWalletToName[wallet] :wallet.substr(0, 25) + '...',
+					name: assocWalletToName[wallet] ? assocWalletToName[wallet] : wallet.substr(0, 25) + '...',
 					coin: 'Byteball',
 					balance: balance.base.stable + balance.base.pending
 				}];
 			}
-			if (wallets.length === 1) {
+			if(wallets.length === 1) {
 				console.error(wallets[0]);
 				this.props.setPage(this.props.nextPage, wallets[0].id, null, this.props.params)
 			} else {
-				this.setState({wallets: wallets});
+				this.setState({ wallets: wallets });
 			}
 		});
 	}
@@ -191,7 +191,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 			);
 		});
 		return <div>
-			<div className={'state-wallets'} style={{paddingTop: '45px'}}>
+			<div className={'state-wallets'} style={{ paddingTop: '45px' }}>
 				{wallets}
 			</div>
 		</div>
@@ -203,7 +203,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 	state = {
 		wallets: [],
 		profiles: [],
-		profile: {address: '', unit: '', object: ''},
+		profile: { address: '', unit: '', object: '' },
 		hiddenProfiles: true,
 		hiddenWaiting: true
 	};
@@ -226,10 +226,10 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			peerAmount: this.props.params.peerAmount,
 			age: this.props.params.age
 		};
-		if (this.props.params.messageOnOpening) {
+		if(this.props.params.messageOnOpening) {
 			params['messageOnOpening'] = this.props.params.messageOnOpening;
 		}
-		if (this.props.params.needProfile) {
+		if(this.props.params.needProfile) {
 			params['messageOnOpening'] = {
 				address: this.state.profile.address,
 				unit: this.state.profile.unit,
@@ -239,27 +239,27 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		let channel = channelsManager.newChannel(params);
 		let interval;
 		channel.events.on('error', error => {
-			if (error.type === 'reject') {
+			if(error.type === 'reject') {
 				alert('Channel rejected');
 				this.props.setPage('index');
 			}
 			console.error('channelError', error, channel.id);
 		});
 		channel.events.on('start', async () => {
-			this.setState({hiddenWaiting: true});
+			this.setState({ hiddenWaiting: true });
 			console.error('channel start. id:', channel.id);
 			let i = 1;
 			interval = setInterval(async () => {
 				await channel.transfer(this.props.params.rate);
 				console.error('info', channel.info());
 				i++;
-				if (i >= this.props.params.count) {
+				if(i >= this.props.params.count) {
 					clearInterval(interval);
 					setImmediate(async () => {
 						await channel.closeMutually();
 					});
 					setTimeout(async () => {
-						if (channel.step !== 'mutualClose') {
+						if(channel.step !== 'mutualClose') {
 							await channel.closeOneSide();
 						}
 					}, 60000);
@@ -270,20 +270,20 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			await channel.transfer(this.props.params.rate);
 		});
 		channel.events.on('changed_step', (step) => {
-			if (step === 'mutualClose') clearInterval(interval);
-			if (step === 'close') clearInterval(interval);
+			if(step === 'mutualClose') clearInterval(interval);
+			if(step === 'close') clearInterval(interval);
 			console.error('changed_step: ', step, channel.id);
 		});
 		channel.events.on('new_transfer', async (amount) => {
 			console.error('new_transfer: ', amount, channel.id);
 		});
-		this.setState({hiddenWaiting: false});
+		this.setState({ hiddenWaiting: false });
 		try {
 			let i = await channel.init();
 			console.error('init', i);
 		} catch (e) {
 			console.error(e, JSON.stringify(e), e.message);
-			if (e.message.indexOf('Insufficient funds') !== -1) {
+			if(e.message.indexOf('Insufficient funds') !== -1) {
 				alert('Insufficient funds');
 			} else {
 				alert('Error');
@@ -293,7 +293,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 	};
 
 	approve = () => {
-		if (this.props.params.needProfile && this.state.profile.address === '') return alert('Please choose profile');
+		if(this.props.params.needProfile && this.state.profile.address === '') return alert('Please choose profile');
 		getBiot(async (biot: any) => {
 			let pubKey = this.props.params.pairingCode.match(/^[A-Za-z0-9/=+\-]+/)[0];
 
@@ -302,7 +302,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 			let peerDeviceAddress = objectHash.getDeviceAddress(pubKey);
 			let listCorrespondents = await biot.core.listCorrespondents();
 			console.error(listCorrespondents, peerDeviceAddress);
-			if (listCorrespondents.length && listCorrespondents.filter(v => {
+			if(listCorrespondents.length && listCorrespondents.filter(v => {
 				return v.device_address === peerDeviceAddress
 			}).length) {
 				console.error('!add');
@@ -324,12 +324,12 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 	async chooseProfile () {
 		getBiot(async (biot: any) => {
 			let profiles = await biot.core.getProfiles();
-			this.setState({hiddenProfiles: false, profiles});
+			this.setState({ hiddenProfiles: false, profiles });
 		});
 	}
 
 	setProfile (address, unit, object) {
-		this.setState({profile: {address, unit, object}, hiddenProfiles: true});
+		this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
 		console.error('set', address, unit, object);
 	}
 
@@ -373,7 +373,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 					</div>
 					<div>Peer will be added to the contacts list</div>
 					<div hidden={!this.props.params.needProfile}>{this.props.params.needProfile ?
-						<a id={'choosePr'} onClick={() => this.chooseProfile()}>Choose profile</a> :''}</div>
+						<a id={'choosePr'} onClick={() => this.chooseProfile()}>Choose profile</a> : ''}</div>
 					<div className={'chBtns'}>
 						<div onClick={() => this.approve()} className={'chApprove'}><a>Approve</a></div>
 						<div onClick={() => this.reject()} className={'chReject'}><a>Reject</a></div>
@@ -419,7 +419,7 @@ export class App extends React.Component {
 		events.on('openURL', url => {
 			console.error('open url', url);
 			let u = url.match(/^biot:\/\/([a-zA-Z]+)/);
-			if (!u || u.length < 2) return;
+			if(!u || u.length < 2) return;
 
 			let action = u[1];
 			let p = url.match(/([a-zA-Z0-9]+=[a-zA-Z0-9]+)/g).map((v) => v.split('='));
@@ -428,9 +428,9 @@ export class App extends React.Component {
 				params[v[0]] = v[1];
 			});
 
-			if (action === 'transfer') {
+			if(action === 'transfer') {
 				// @ts-ignore
-				if (OBValidation.isValidAddress(params['to'])) {
+				if(OBValidation.isValidAddress(params['to'])) {
 					this.setPage('setWallet', null, 'sendTransaction', {
 						address: params['to'],
 						amount: parseInt(params['amount']) || 0
@@ -445,21 +445,21 @@ export class App extends React.Component {
 	chInit = () => {
 		//@ts-ignore
 		let _stepInit = window.stepInit;
-		if (_stepInit) {
+		if(_stepInit) {
 			console.error('qweqweqwe', _stepInit);
-			if (_stepInit === 'waiting') {
+			if(_stepInit === 'waiting') {
 				return setTimeout(this.chInit, 100);
-			} else if (_stepInit === 'errorDeviceName') {
-				return this.setState({page: 'setName'});
-			} else if (_stepInit === 'error') {
+			} else if(_stepInit === 'errorDeviceName') {
+				return this.setState({ page: 'setName' });
+			} else if(_stepInit === 'error') {
 				return alert('error');
 			}
 			let isShownSeed = localStorage.getItem('isShownSeed');
-			if (!isShownSeed) {
+			if(!isShownSeed) {
 				localStorage.setItem('isShownSeed', '1');
 				//@ts-ignore
 				let seed = window.seed;
-				this.setState({page: 'showSeed', seed});
+				this.setState({ page: 'showSeed', seed });
 			}
 
 			//@ts-ignore
@@ -468,19 +468,19 @@ export class App extends React.Component {
 	};
 
 	messages = (from_address, text) => {
-		if (this.state.page !== 'apps') {
+		if(this.state.page !== 'apps') {
 			let cm = localStorage.getItem('m_' + from_address);
-			let messages = cm ? JSON.parse(cm) :[];
-			messages.push({text, i: false});
+			let messages = cm ? JSON.parse(cm) : [];
+			messages.push({ text, i: false });
 			localStorage.setItem('m_' + from_address, JSON.stringify(messages));
 		}
 	};
 
 	objMessages = (from_address, object) => {
-		if (this.state.page !== 'apps') {
-			if (object.type === 'imapp') {
+		if(this.state.page !== 'apps') {
+			if(object.type === 'imapp') {
 				let ls = localStorage.getItem('listApps');
-				let listApps = ls ? JSON.parse(ls) :{};
+				let listApps = ls ? JSON.parse(ls) : {};
 				listApps[from_address] = true;
 				localStorage.setItem('listApps', JSON.stringify(listApps));
 			}
@@ -489,12 +489,12 @@ export class App extends React.Component {
 
 	setPage = (page, walletId?, nextPage?, params?) => {
 		let walletName = walletId;
-		if (walletId) {
+		if(walletId) {
 			let lWN = localStorage.getItem('assocWalletToName');
-			let assocWalletToName = lWN ? JSON.parse(lWN) :{};
-			if (assocWalletToName[walletId]) walletName = assocWalletToName[walletId];
+			let assocWalletToName = lWN ? JSON.parse(lWN) : {};
+			if(assocWalletToName[walletId]) walletName = assocWalletToName[walletId];
 		}
-		this.setState({page: page, walletId: walletId, nextPage: nextPage || '', params: params || {}, walletName});
+		this.setState({ page: page, walletId: walletId, nextPage: nextPage || '', params: params || {}, walletName });
 	};
 
 	setName = (evt) => {
@@ -505,14 +505,14 @@ export class App extends React.Component {
 
 	nowSaveName = false;
 	saveName = () => {
-		if (!this.nowSaveName) {
+		if(!this.nowSaveName) {
 			this.nowSaveName = true;
-			this.setState({textSaveName: 'Please wait'});
+			this.setState({ textSaveName: 'Please wait' });
 			getBiot(async (biot: any) => {
 				await biot.core.setDeviceName(this.state.name);
 				//@ts-ignore
 				await window.InitializeBIoT();
-				this.setState({page: 'index'});
+				this.setState({ page: 'index' });
 				this.chInit();
 			});
 		}
@@ -523,37 +523,37 @@ export class App extends React.Component {
 		window.cordova.plugins.clipboard.copy(this.state.seed);
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Seed successfully copied');
-		this.setState({page: 'index'});
+		this.setState({ page: 'index' });
 	};
 
 	backKeyClick = () => {
-		if (this.state.page === 'setWallet') {
-			this.setState({page: 'index'})
-		} else if (this.state.page == 'wallet') {
-			this.setState({page: 'index'})
-		} else if (this.state.page == 'sendTransaction') {
-			this.setState({page: 'wallet'})
-		} else if (this.state.page == 'receiveTransaction') {
-			this.setState({page: 'wallet'})
+		if(this.state.page === 'setWallet') {
+			this.setState({ page: 'index' })
+		} else if(this.state.page == 'wallet') {
+			this.setState({ page: 'index' })
+		} else if(this.state.page == 'sendTransaction') {
+			this.setState({ page: 'wallet' })
+		} else if(this.state.page == 'receiveTransaction') {
+			this.setState({ page: 'wallet' })
 		}
 	};
 
 	render () {
-		if (this.state.page == 'index') {
+		if(this.state.page == 'index') {
 			return <div className={'app-body'}>
 				<WalletsList setPage={this.setPage}/>
 				<Menu page={'index'} setPage={this.setPage}/>
 			</div>
-		} else if (this.state.page === 'setWallet') {
+		} else if(this.state.page === 'setWallet') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Please select the wallet</text>
-					<a onClick={() => this.setState({page: 'index'})} className={'back-button'}> </a>
+					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
 				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
 			</div>
-		} else if (this.state.page === 'setName') {
-			return <div className={'app-body'} style={{textAlign: 'center'}}>
+		} else if(this.state.page === 'setName') {
+			return <div className={'app-body'} style={{ textAlign: 'center' }}>
 				<div className={'name-title'}>What's your name?</div>
 				<div><input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
 				</div>
@@ -563,24 +563,24 @@ export class App extends React.Component {
 					</button>
 				</div>
 			</div>
-		} else if (this.state.page === 'showSeed') {
-			return <div className={'app-body'} style={{textAlign: 'center'}}>
+		} else if(this.state.page === 'showSeed') {
+			return <div className={'app-body'} style={{ textAlign: 'center' }}>
 				<div className={'name-title'}>Please save your seed</div>
-				<div style={{color: '#fff'}}>{this.state.seed}</div>
+				<div style={{ color: '#fff' }}>{this.state.seed}</div>
 				<div className={'button-block'}>
 					<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
 						Copy seed and close
 					</button>
 				</div>
 			</div>
-		} else if (this.state.page === 'reqChannel') {
+		} else if(this.state.page === 'reqChannel') {
 			return <div><ReqChannel params={this.state.params} walletId={this.state.walletId} setPage={this.setPage}/>
 			</div>
-		} else if (this.state.page == 'qrScanner') {
+		} else if(this.state.page == 'qrScanner') {
 			return <div>
 				<QRScanner setPage={this.setPage}/>
 			</div>
-		} else if (this.state.page == 'wallet') {
+		} else if(this.state.page == 'wallet') {
 			return <div>
 				<div className={'top-bar'}>
 					<text
@@ -588,32 +588,32 @@ export class App extends React.Component {
 						this.state.walletName.length > 25 ?
 							this.state.walletName.substr(0, 25) + '...' :
 							this.state.walletName}</text>
-					<a onClick={() => this.setState({page: 'index'})} className={'back-button'}> </a>
+					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
 				<div className={'wallet-menu'}>
-					<a onClick={() => this.setState({page: 'sendTransaction'})} className={'send-button'}> </a>
-					<a onClick={() => this.setState({page: 'receiveTransaction'})} className={'receive-button'}> </a>
+					<a onClick={() => this.setState({ page: 'sendTransaction' })} className={'send-button'}> </a>
+					<a onClick={() => this.setState({ page: 'receiveTransaction' })} className={'receive-button'}> </a>
 				</div>
 				<Wallet walletId={this.state.walletId}/>
 			</div>
-		} else if (this.state.page == 'sendTransaction') {
+		} else if(this.state.page == 'sendTransaction') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Send</text>
-					<a onClick={() => this.setState({page: 'wallet'})} className={'back-button'}> </a>
+					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
 				</div>
-				<SendPage walletId={this.state.walletId} back={() => this.setState({page: 'wallet'})}
+				<SendPage walletId={this.state.walletId} back={() => this.setState({ page: 'wallet' })}
 				          params={this.state.params}/>
 			</div>
-		} else if (this.state.page == 'receiveTransaction') {
+		} else if(this.state.page == 'receiveTransaction') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Receive</text>
-					<a onClick={() => this.setState({page: 'wallet'})} className={'back-button'}> </a>
+					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
 				</div>
 				<ReceivePage walletId={this.state.walletId}/>
 			</div>
-		} else if (this.state.page == 'apps') {
+		} else if(this.state.page == 'apps') {
 			return <div>
 				<Apps setPage={this.setPage}/>
 			</div>
@@ -650,11 +650,11 @@ function parseTag (nfcEvent) {
 			// @ts-ignore
 			let text = nfc.bytesToString(records[i].payload).substr(3);
 			console.error('text nfc', text);
-			if (/^biot:/.test(text)) {
+			if(/^biot:/.test(text)) {
 				let t = text.substr(5).split('|');
 				let amount = parseInt(t[1]);
 				// @ts-ignore
-				if (OBValidation.isValidAddress(t[0]) && typeof amount === "number") {
+				if(OBValidation.isValidAddress(t[0]) && typeof amount === "number") {
 					events.emit('nfc_payment', {
 						address: t[0],
 						amount: amount

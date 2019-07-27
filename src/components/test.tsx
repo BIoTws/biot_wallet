@@ -29,23 +29,23 @@ export class App extends React.Component<{}, IState> {
 		const tasks: Array<ITask> = this.state.tasks.filter(
 			(task: ITask) => task.id !== id
 		);
-		this.setState({tasks});
+		this.setState({ tasks });
 	}
 
 	public toggleDone (index: number): void {
 		let task: ITask[] = this.state.tasks.splice(index, 1);
 		task[0].completed = !task[0].completed;
 		const tasks: ITask[] = [...this.state.tasks, ...task];
-		this.setState({tasks});
+		this.setState({ tasks });
 	}
 
 	public renderTasks (): JSX.Element[] {
 		return this.state.tasks.map((task: ITask, index: number) => {
 			return (
 				<div key={task.id} className="tdl-task">
-					<span className={task.completed ? "is-completed" :""}>{task.value}</span>
+					<span className={task.completed ? "is-completed" : ""}>{task.value}</span>
 					<button onClick={() => this.deleteTask(task.id)}>Delete</button>
-					<button onClick={() => this.toggleDone(index)}>{task.completed ? "Undo" :"Done"}</button>
+					<button onClick={() => this.toggleDone(index)}>{task.completed ? "Undo" : "Done"}</button>
 				</div>
 			);
 		});
@@ -62,7 +62,7 @@ export class App extends React.Component<{}, IState> {
 						className="tdl-input"
 						placeholder="Add a Task"
 						value={this.state.currentTask}
-						onChange={e => this.setState({currentTask: e.target.value})}
+						onChange={e => this.setState({ currentTask: e.target.value })}
 					/>
 					<button type="submit">Add Task</button>
 				</form>

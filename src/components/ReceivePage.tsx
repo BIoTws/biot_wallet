@@ -25,7 +25,7 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 			qrCode.addData("ocore-tn:" + address);
 			qrCode.make();
 			let base64ImageString = qrCode.toDataURL();
-			this.setState({address: address, imgUrl: base64ImageString, hidden: false});
+			this.setState({ address: address, imgUrl: base64ImageString, hidden: false });
 		});
 
 		_eventBus.on('text', this.message);
@@ -36,27 +36,27 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 	}
 
 	message = (from_address, text) => {
-		if (!text.match(/free blackbytes/)) {
-			if (text.match(/You can request free bytes only once per 24 hours/)) {
+		if(!text.match(/free blackbytes/)) {
+			if(text.match(/You can request free bytes only once per 24 hours/)) {
 				alert('You can request free bytes only once per 24 hours')
 			}
 			console.error('text', from_address, ' - ', text);
-			this.setState({faucetText: 'Get from faucet'});
+			this.setState({ faucetText: 'Get from faucet' });
 		} else {
 			alert('Your address is replenished');
-			this.setState({faucetText: 'Get from faucet'});
+			this.setState({ faucetText: 'Get from faucet' });
 		}
 	};
 
 	getFromFaucet () {
-		if (this.state.getting) return;
-		this.setState({getting: true, faucetText: 'Please wait'});
+		if(this.state.getting) return;
+		this.setState({ getting: true, faucetText: 'Please wait' });
 
 		getBiot(async (biot: any) => {
 			let address = (await biot.core.getAddressesInWallet(this.props.walletId))[0];
 
 			let list = await biot.core.listCorrespondents();
-			if (list.find(e => e.device_address === "0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB")) {
+			if(list.find(e => e.device_address === "0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB")) {
 				biot.core.sendTextMessageToDevice('0TFZHX7UTVQUWEPGLQDWEV5A4KLHFA5WB', address);
 			} else {
 				await biot.core.addCorrespondent('AxBxXDnPOzE/AxLHmidAjwLPFtQ6dK3k70zM0yKVeDzC@byteball.org/bb-test#0000');
