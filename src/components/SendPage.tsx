@@ -10,7 +10,7 @@ interface ISendPage {
 
 export class SendPage extends React.Component<ISendPage, {}> {
 
-	state = {address: '', amount: ''};
+	state = { address: '', amount: '' };
 
 	setAddress = (evt) => {
 		this.setState({
@@ -26,11 +26,11 @@ export class SendPage extends React.Component<ISendPage, {}> {
 
 	componentDidMount () {
 		console.error('params2', this.props.params);
-		if (this.props.params) {
+		if(this.props.params) {
 			// @ts-ignore
-			if (this.props.params.address) this.setState({address: this.props.params.address});
+			if(this.props.params.address) this.setState({ address: this.props.params.address });
 			// @ts-ignore
-			if (this.props.params.amount) this.setState({amount: this.props.params.amount});
+			if(this.props.params.amount) this.setState({ amount: this.props.params.amount });
 		}
 	}
 
