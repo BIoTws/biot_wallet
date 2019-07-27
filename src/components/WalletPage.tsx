@@ -19,7 +19,7 @@ interface IChannels {
 }
 
 
-export class Wallet extends React.Component<{ walletId: String }, {}> {
+export class Wallet extends React.Component<{walletId: String}, {}> {
 
 	state = {
 		balance: 0,
@@ -44,19 +44,19 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 			let useMyAddress = false;
 			let otherAddresses = objT.from.filter(v => {
-				if (myAddresses.indexOf(v) !== -1) {
+				if(myAddresses.indexOf(v) !== -1) {
 					useMyAddress = true;
 					return false;
 				}
 				return true;
 			});
 
-			if (otherAddresses.length && !useMyAddress) {
+			if(otherAddresses.length && !useMyAddress) {
 				let amount = 0;
 				let address = '';
 				for (let k in objT.to) {
 					let output = objT.to[k];
-					if (myAddresses.indexOf(output.address) !== -1) {
+					if(myAddresses.indexOf(output.address) !== -1) {
 						address = output.address;
 						amount += output.amount;
 					}
@@ -65,12 +65,12 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 				obj.id = objT.date;
 				obj.balance = amount;
 				obj.transaction = 'receive';
-			} else if (useMyAddress && !otherAddresses.length) {
+			} else if(useMyAddress && !otherAddresses.length) {
 				let amount = 0;
 				let address = '';
 				for (let k in objT.to) {
 					let output = objT.to[k];
-					if (myAddresses.indexOf(output.address) === -1) {
+					if(myAddresses.indexOf(output.address) === -1) {
 						address = output.address;
 						amount += output.amount;
 					}
@@ -85,7 +85,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 				console.error('obJT', objT.to);
 				for (let k in objT.to) {
 					let output = objT.to[k];
-					if (myAddresses.indexOf(output.address) !== -1) {
+					if(myAddresses.indexOf(output.address) !== -1) {
 						amount += output.amount;
 					} else {
 						address = output.address;
@@ -122,13 +122,13 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 				let arrChannels: any = [];
 				for (let i = 0; i < listChannels.length; i++) {
 					let channel = listChannels[i];
-					if (channel.step !== "null" && channel.step !== 'reject') {
-						arrChannels = [ ...arrChannels, {
+					if(channel.step !== "null" && channel.step !== 'reject') {
+						arrChannels = [...arrChannels, {
 							id: channel.id,
 							myAmount: channel.myAmount,
 							peerAmount: channel.peerAmount,
 							row: channel
-						} ];
+						}];
 					}
 				}
 
@@ -150,7 +150,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 	}
 
 	componentWillUnmount () {
-		if (this.timerB) clearInterval(this.timerB);
+		if(this.timerB) clearInterval(this.timerB);
 	}
 
 	showTransactions = () => {
@@ -185,7 +185,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 	showModalChannel = (row) => {
 		let status = 'Close';
-		if (row.step === 'waiting_transfers') status = 'Open';
+		if(row.step === 'waiting_transfers') status = 'Open';
 		this.setState({
 			modalChannelId: row.id,
 			modalChannelStatus: status,
@@ -196,7 +196,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 	closeChannel = async () => {
 		console.error('start', 1);
-		if (this.state.modalChannelRow) {
+		if(this.state.modalChannelRow) {
 			console.error('start', 2);
 			// @ts-ignore
 			let channelsManager = new ChannelsManager(this.props.walletId);
@@ -210,7 +210,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 			});
 			console.error('start', 6);
 			setTimeout(async () => {
-				if (channel.step !== 'mutualClose') {
+				if(channel.step !== 'mutualClose') {
 					await channel.closeOneSide();
 				}
 			}, 60000);
@@ -221,7 +221,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 
 	render () {
 		let getBlock = () => {
-			if (this.state.list == 'transactions') {
+			if(this.state.list == 'transactions') {
 				return <div key={'transactions'} className={'transactions'}>
 					{this.showTransactions()}
 				</div>;
@@ -233,7 +233,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		};
 
 		let modal = () => {
-			if (this.state.isShowModalChannel)
+			if(this.state.isShowModalChannel)
 				return <div>
 					<div style={{
 						position: 'fixed',
