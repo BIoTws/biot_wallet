@@ -47,7 +47,7 @@ export class CreateWallet extends React.Component<any, IState> {
 						className="tdl-input"
 						placeholder="Wallet name"
 						value={this.state.currentWallet}
-						onChange={e => this.setState({currentWallet: e.target.value})}
+						onChange={e => this.setState({ currentWallet: e.target.value })}
 					/><br>
 				</br>
 					<button className={'button-submit'} type="submit">Add</button>
@@ -61,7 +61,7 @@ export class CreateWallet extends React.Component<any, IState> {
 export class WalletsList extends React.Component<walletsProps, any> {
 
 
-	state = {show: false, wallets: [], page: 'wallets', name: ''};
+	state = { show: false, wallets: [], page: 'wallets', name: '' };
 
 
 	addWallet = () => {
@@ -69,9 +69,9 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		getBiot(async (biot: any) => {
 			let walletId = await biot.core.createNewWallet();
 			let balance = await biot.core.getWalletBalance(walletId);
-			if (!name) name = walletId.substr(0, 25) + '...';
+			if(!name) name = walletId.substr(0, 25) + '...';
 			let lWN = localStorage.getItem('assocWalletToName');
-			let assocWalletToName = lWN ? JSON.parse(lWN) :{};
+			let assocWalletToName = lWN ? JSON.parse(lWN) : {};
 			assocWalletToName[walletId] = name;
 			window.localStorage.setItem('assocWalletToName', JSON.stringify(assocWalletToName));
 
@@ -109,19 +109,19 @@ export class WalletsList extends React.Component<walletsProps, any> {
 				let wallets: any = [];
 				let walletsInDb = await biot.core.getWallets();
 				let lWN = localStorage.getItem('assocWalletToName');
-				let assocWalletToName = lWN ? JSON.parse(lWN) :{};
+				let assocWalletToName = lWN ? JSON.parse(lWN) : {};
 				for (let i = 0; i < walletsInDb.length; i++) {
 					let wallet = walletsInDb[i];
 					let balance = await biot.core.getWalletBalance(wallet);
 					console.error('name', assocWalletToName[wallet], wallet);
 					wallets = [...wallets, {
 						id: wallet,
-						name: assocWalletToName[wallet] ? assocWalletToName[wallet] :wallet.substr(0, 25) + '...',
+						name: assocWalletToName[wallet] ? assocWalletToName[wallet] : wallet.substr(0, 25) + '...',
 						coin: 'Byteball',
 						balance: balance.base.stable + balance.base.pending
 					}];
 				}
-				self.setState({wallets: wallets});
+				self.setState({ wallets: wallets });
 			}
 
 			await updWL();
@@ -130,7 +130,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 	}
 
 	componentWillUnmount () {
-		if (this.timerWL) clearInterval(this.timerWL);
+		if(this.timerWL) clearInterval(this.timerWL);
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('backbutton', this.backKeyClick);
@@ -152,11 +152,11 @@ export class WalletsList extends React.Component<walletsProps, any> {
 	};
 
 	showSetName () {
-		this.setState({page: 'setName'});
+		this.setState({ page: 'setName' });
 	}
 
 	hideSetName () {
-		this.setState({page: 'wallets'});
+		this.setState({ page: 'wallets' });
 	}
 
 	setName = (evt) => {
@@ -166,19 +166,19 @@ export class WalletsList extends React.Component<walletsProps, any> {
 	};
 
 	backKeyClick = () => {
-		if (this.state.page === 'setName') {
+		if(this.state.page === 'setName') {
 			this.hideSetName()
 		}
 	};
 
 	render () {
-		if (this.state.page === 'setName') {
+		if(this.state.page === 'setName') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Create new wallet</text>
 					<a onClick={() => this.hideSetName()} className={'back-button'}> </a>
 				</div>
-				<div className={'app-body'} style={{textAlign: 'center', marginTop: '4em'}}>
+				<div className={'app-body'} style={{ textAlign: 'center', marginTop: '4em' }}>
 					<div className={'name-title'}>Enter wallet name</div>
 					<div><input type={'text'} className={'name-input'} placeholder={'Wallet name'}
 					            onChange={this.setName}/>
