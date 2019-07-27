@@ -69,9 +69,9 @@ export class WalletsList extends React.Component<walletsProps, any> {
 		getBiot(async (biot: any) => {
 			let walletId = await biot.core.createNewWallet();
 			let balance = await biot.core.getWalletBalance(walletId);
-			if(!name) name = walletId.substr(0, 25) + '...';
+			if (!name) name = walletId.substr(0, 25) + '...';
 			let lWN = localStorage.getItem('assocWalletToName');
-			let assocWalletToName = lWN ? JSON.parse(lWN) : {};
+			let assocWalletToName = lWN ? JSON.parse(lWN) :{};
 			assocWalletToName[walletId] = name;
 			window.localStorage.setItem('assocWalletToName', JSON.stringify(assocWalletToName));
 
@@ -109,14 +109,14 @@ export class WalletsList extends React.Component<walletsProps, any> {
 				let wallets: any = [];
 				let walletsInDb = await biot.core.getWallets();
 				let lWN = localStorage.getItem('assocWalletToName');
-				let assocWalletToName = lWN ? JSON.parse(lWN) : {};
+				let assocWalletToName = lWN ? JSON.parse(lWN) :{};
 				for (let i = 0; i < walletsInDb.length; i++) {
 					let wallet = walletsInDb[i];
 					let balance = await biot.core.getWalletBalance(wallet);
 					console.error('name', assocWalletToName[wallet], wallet);
 					wallets = [...wallets, {
 						id: wallet,
-						name: assocWalletToName[wallet] ? assocWalletToName[wallet] : wallet.substr(0, 25) + '...',
+						name: assocWalletToName[wallet] ? assocWalletToName[wallet] :wallet.substr(0, 25) + '...',
 						coin: 'Byteball',
 						balance: balance.base.stable + balance.base.pending
 					}];
@@ -130,7 +130,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
 	}
 
 	componentWillUnmount () {
-		if(this.timerWL) clearInterval(this.timerWL);
+		if (this.timerWL) clearInterval(this.timerWL);
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('backbutton', this.backKeyClick);
@@ -166,13 +166,13 @@ export class WalletsList extends React.Component<walletsProps, any> {
 	};
 
 	backKeyClick = () => {
-		if(this.state.page === 'setName') {
+		if (this.state.page === 'setName') {
 			this.hideSetName()
 		}
 	};
 
 	render () {
-		if(this.state.page === 'setName') {
+		if (this.state.page === 'setName') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Create new wallet</text>
