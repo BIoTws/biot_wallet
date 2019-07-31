@@ -3,7 +3,7 @@ import "../styles/apps.scss";
 import "../styles/style.scss";
 import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
-import {Menu} from "./Menu";
+import { Menu } from "./Menu";
 
 export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
@@ -18,9 +18,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		app: 'list',
 		data: [],
 		wallets: [],
+		profiles: [],
 		hiddenBlock: false,
 		hiddenWallets: true,
 		hiddenWaiting: true,
+		hiddenProfiles: true,
 		page: '',
 		message: '',
 		correspondents: [],
@@ -32,6 +34,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		isShowBlockSendAddress: false,
 		hiddenListAction: true,
 		elementTapId: '',
+		isChecked: false,
 	};
 
 	private messages_scroll: React.RefObject<any>;
@@ -60,17 +63,21 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		let _eventBus = window.eventBus;
 		_eventBus.on('text', this.messages);
 		_eventBus.on('object', this.objMessages);
+		_eventBus.on('backbutton', this.backKeyClick);
+
 
 		getBiot(async (biot: any) => {
 			this.core = biot.core;
 			this.biot = biot;
 			this.biotInit = true;
+			let profiles: any = [];
 			let wallets: any = [];
 			let listCors = await biot.core.listCorrespondents();
 			let pairingCode = biot.core.getMyParingCode() + 'add';
 			console.error('Pairing code: ', pairingCode);
 			this.setState({correspondents: listCors, pairingCode: pairingCode});
 			let walletsInDb = await biot.core.getWallets();
+			let profilesInDb = await biot.core.getProfiles();
 			for (let i = 0; i < walletsInDb.length; i++) {
 				let wallet = walletsInDb[i];
 				let balance = await biot.core.getWalletBalance(wallet);
@@ -81,7 +88,16 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					balance: balance.base.stable + balance.base.pending
 				}];
 			}
-			this.setState({wallets: wallets});
+			for (let i = 0; i < profilesInDb.length; i++) {
+				let profile = profilesInDb[i];
+				profiles = [...profiles, {
+					address: profile.address,
+					attester: profile.attester,
+					object: profile.object,
+					unit: profile.unit,
+				}];
+			}
+			this.setState({wallets: wallets, profiles: profiles});
 
 
 			setTimeout(async () => {
@@ -96,7 +112,9 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('text', this.messages);
 		_eventBus.removeListener('object', this.objMessages);
+		_eventBus.removeListener('backbutton', this.backKeyClick);
 	}
+
 
 	goList() {
 		this.setState({
@@ -126,7 +144,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			return this.tInput(f.title, f.id);
 		} else if (f.type === 'address') {
 			this.elms['setAddress'] = React.createRef();
-			return <div style={{textAlign: 'center'}}>
+			return <div className={'setAddress'}>
 				<a onClick={() => this.showWallets()} className={'selectAddress'} ref={this.elms['setAddress']}>
 					For choose address click here</a>
 			</div>
@@ -157,6 +175,22 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				       type={'button'}
 				       value={f.title}/>
 			</div>
+		} else if (f.type === 'checkbox') {
+			if (f.id) this.elms[f.id] = React.createRef();
+			return <div className={'checkbox'} style={{textAlign: 'center'}}>
+				<label className={'switch'} htmlFor={f.id}>
+					<text className={'checkboxTitle'}>{f.title}</text>
+					<input ref={this.elms[f.id]} onChange={(e) => this.handleCheck(f.id, e.target.checked)}
+					       type={'checkbox'} id={f.id}/>
+					<div className={'slider round'}></div>
+				</label>
+			</div>
+		} else if (f.type === 'profile') {
+			this.elms['setProfile'] = React.createRef();
+			return <div className={'setProfile'}>
+				<a id={'chooseProfile'} onClick={() => this.chooseProfile()} ref={this.elms['setProfile']}>For choose
+					profile click here</a>
+			</div>
 		} else if (f.type === 'list-menu') {
 			if (f.id) this.elms[f.id] = React.createRef();
 			return <div ref={this.elms[f.id]} onClick={() => this.sendRequest(f.req)} id={f.id} className={'list-menu'}>
@@ -164,6 +198,49 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			</div>
 		}
 	}
+
+	handleCheck(id, isChecked) {
+		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
+			type: 'update_value',
+			page: this.state.page,
+			update: {id: id, value: isChecked},
+		});
+		this.changeValue(id, isChecked)
+	};
+
+	chooseProfile() {
+		this.setState({hiddenBlock: true, hiddenProfiles: false});
+	}
+
+	setProfile(profile) {
+		console.error(profile);
+		let prf = JSON.parse(profile.object);
+		this.values['profile'] = profile.object;
+		this.elms['setProfile'].current.innerText = prf.name[0] + ' ' + prf.lname[0];
+		this.setState({hiddenBlock: false, hiddenProfiles: true});
+		this.callbackW(profile);
+		//this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
+		//console.error('set', address, unit, object);
+	}
+
+	getProfile() {
+		let wallets = this.state.profiles.map((profile: any) => {
+			let prf = JSON.parse(profile.object);
+			console.error('profile', profile);
+			console.error('prf', prf);
+			return (
+				<div onClick={() => this.setProfile(profile)} key={profile.unit}
+				     className={'wallets-list-body'}>
+					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
+					<div className={'profiles-list-body-balance'}>{profile.attester}</div>
+				</div>
+			);
+		});
+		return <div hidden={this.state.hiddenProfiles}>
+			<div className={'state-wallets'}>{wallets}</div>
+		</div>
+	}
+
 
 	messages(from_address, text) {
 		console.error('messages', from_address, text);
@@ -285,7 +362,12 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			if (el && el.current) {
 				el = el.current;
 				if (el.tagName === 'INPUT') {
-					el.value = object.value;
+					this.values[object.id] = object.value;
+					if (el.type === 'checkbox') {
+						el.checked = object.value;
+					} else {
+						el.value = object.value;
+					}
 				} else if (el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'DIV') {
 					el.innerText = object.value;
 				}
@@ -295,6 +377,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	changeValue(id, value) {
 		this.values[id] = value;
+		console.error(value);
 	}
 
 	tInput(title, id) {
@@ -324,6 +407,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	async setWallet(id) {
 		let addresses = await this.core.getAddressesInWallet(id);
 		this.values['address'] = addresses[0];
+		this.elms['setAddress'].current.innerText = this.values['address'];
 		this.setState({hiddenBlock: false, hiddenWallets: true});
 		this.callbackW(addresses[0]);
 	}
@@ -404,6 +488,18 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				this.setState({app: 'list', correspondents: listCors});
 			}, 500);
 		});
+	};
+
+	backKeyClick = () => {
+		if (this.state.app === 'app' && !this.state.hiddenBlock && this.state.hiddenProfiles) {
+			this.closeApp();
+		} else if (this.state.app === 'addC' || this.state.app === 'chat') {
+			this.goList();
+		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenWallets) {
+			this.setState({hiddenBlock: false, hiddenWallets: true});
+		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenProfiles) {
+			this.setState({hiddenBlock: false, hiddenProfiles: true});
+		}
 	};
 
 	openChatOrApp = (correspondent) => {
@@ -543,6 +639,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		} else if (this.state.app === 'app') {
 			return <div>
 				{this.getWallet()}
+				{this.getProfile()}
 				<div hidden={this.state.hiddenBlock}>
 					<div className={'top-bar'}>
 						<text className={'wallet-title'}>{this.state.thisChat.name}</text>

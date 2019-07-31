@@ -176,7 +176,8 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 				<div key={channel.id} className={'channels-list-body'}
 				     onClick={() => this.showModalChannel(channel.row)}>
 					<div className={'channels-list-body-name'}>{channel.id.substr(0, 20) + '...'}</div>
-					<div className={'list-body-balance-ch'}>My amount: {channel.myAmount} | Peer amount: {channel.peerAmount}</div>
+					<div className={'list-body-balance-ch'}>My amount: {channel.myAmount} | Peer
+						amount: {channel.peerAmount}</div>
 				</div>
 			);
 		});

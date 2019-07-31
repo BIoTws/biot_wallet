@@ -32,25 +32,90 @@
 }
 
 .input {
-  width: 98%;
+  width: 97%;
   height: 2em;
   border: 0;
-  color: #616775;
-  border-bottom: 1px solid rgba(#c8d5d3, 0.5);
+  color: #c8d5d3;
+  border-bottom: 1px solid #24293d;
   background-color: #191c2f;
-  text-align: center;
+  text-align: left;
+  padding-left: 10px;
   margin-bottom: 15px;
 }
 
 .input:focus {
-  text-align: center;
-  outline: 0;
+  text-align: left;
+  padding-left: 10px;
+  outline: none;
   border-bottom: 1px solid rgba(#5765d7, 0.7);
 }
 
 .input::placeholder {
-  text-align: center;
-  color: #7E8494;
+  text-align: left;
+  color: #616775;
+}
+
+.checkbox {
+  padding: 8px 0;
+  border-bottom: 1px solid #24293d;
+}
+
+
+.checkboxTitle {
+  font-family: 'Roboto', sans-serif;
+  color: #c8d5d3;
+  position: relative;
+  right: 325px;
+}
+.switch {
+  display: inline-block;
+  height: 22px;
+  width: 43px;
+  position: relative;
+  top: 1px;
+  left: 160px;
+}
+
+.switch input {
+  display:none;
+}
+
+.slider {
+  background-color: #616775;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .1s;
+}
+
+.slider:before {
+  background-color: #b3bebc;
+  bottom: 1px;
+  content: "";
+  height: 20px;
+  left: 0;
+  position: absolute;
+  transition: .1s;
+  width: 20px;
+}
+
+input:checked + .slider {
+  background-color: #444fa5;
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+.slider.round {
+  border-radius: 17px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 
 .button-send-submit {
@@ -66,10 +131,28 @@
   transition: 0.1s;
   background: #444fa5;
   position: relative;
+  top: 50px;
 }
 
+.setAddress {
+  width: 97%;
+  border-bottom: 1px solid #24293d;
+  text-align: left;
+  padding: 8px
+}
 .selectAddress {
-  color: #5356a5;
+  font-family: 'Roboto', sans-serif;
+  color: #5762ef;
+}
+.setProfile {
+  width: 97%;
+  border-bottom: 1px solid #24293d;
+  text-align: left;
+  padding: 8px
+}
+#chooseProfile {
+  font-family: 'Roboto', sans-serif;
+  color: #5762ef;
 }
 
 .plsWaiting {

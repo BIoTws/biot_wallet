@@ -27,7 +27,7 @@ export class Menu extends React.Component<any, IPage> {
 				</a>
 				<a onClick={() => {
 					this.setP("apps")
-				}} className={this.props.page === 'apps' ? 'app-icon-active' : 'app-icon'}>
+				}} className={this.props.page === 'apps' ? 'app-icon-active' :'app-icon'}>
 				</a>
 			</div>
 		)

@@ -4,6 +4,11 @@ body {
   background-color: $background;
 }
 
+:focus, :active, :hover {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .menu {
   height: 60px;
   bottom: 0;

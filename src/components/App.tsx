@@ -12,6 +12,9 @@ import { EventEmitter } from './EventEmitter';
 
 let events = new EventEmitter();
 
+// @ts-ignore
+let obEvents = window.eventBus;
+
 interface IPage {
 	page: string;
 }
@@ -19,6 +22,8 @@ interface IPage {
 export class QRScanner extends React.Component<any, IPage> {
 
 	componentDidMount () {
+		obEvents.on('backbutton', this.backKeyClick);
+
 		let self = this;
 		// @ts-ignore
 		getQR((err, text) => {
@@ -111,6 +116,8 @@ export class QRScanner extends React.Component<any, IPage> {
 
 	componentWillUnmount () {
 		// @ts-ignore
+		obEvents.removeListener('backbutton', this.backKeyClick);
+		// @ts-ignore
 		hideQR(function () {
 			// @ts-ignore
 			setTimeout(function () {
@@ -118,6 +125,10 @@ export class QRScanner extends React.Component<any, IPage> {
 			}, 50);
 		});
 	}
+
+	backKeyClick = () => {
+		this.props.setPage('index')
+	};
 
 	render () {
 		return (
@@ -391,10 +402,10 @@ export class App extends React.Component {
 
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
-		//@ts-ignore
-		let _eventBus = window.eventBus;
-		_eventBus.on('text', self.messages);
-		_eventBus.on('object', self.objMessages);
+
+		obEvents.on('text', self.messages);
+		obEvents.on('object', self.objMessages);
+		obEvents.on('backbutton', this.backKeyClick);
 
 		this.chInit();
 
@@ -476,7 +487,6 @@ export class App extends React.Component {
 		}
 	};
 
-
 	setPage = (page, walletId?, nextPage?, params?) => {
 		let walletName = walletId;
 		if (walletId) {
@@ -495,9 +505,9 @@ export class App extends React.Component {
 
 	nowSaveName = false;
 	saveName = () => {
-		if(!this.nowSaveName) {
+		if (!this.nowSaveName) {
 			this.nowSaveName = true;
-			this.setState({textSaveName: 'Please wait'});
+			this.setState({ textSaveName: 'Please wait' });
 			getBiot(async (biot: any) => {
 				await biot.core.setDeviceName(this.state.name);
 				//@ts-ignore
@@ -514,6 +524,18 @@ export class App extends React.Component {
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Seed successfully copied');
 		this.setState({ page: 'index' });
+	};
+
+	backKeyClick = () => {
+		if (this.state.page === 'setWallet') {
+			this.setState({ page: 'index' })
+		} else if (this.state.page == 'wallet') {
+			this.setState({ page: 'index' })
+		} else if (this.state.page == 'sendTransaction') {
+			this.setState({ page: 'wallet' })
+		} else if (this.state.page == 'receiveTransaction') {
+			this.setState({ page: 'wallet' })
+		}
 	};
 
 	render () {
@@ -647,7 +669,7 @@ function parseTag (nfcEvent) {
 document.addEventListener("backbutton", onBackKeyDown, false);
 
 function onBackKeyDown () {
-
+	obEvents.emit('backbutton', {});
 }
 
 // @ts-ignore
