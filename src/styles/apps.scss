@@ -187,6 +187,46 @@ input:checked + .slider:before {
   top: 40px;
 }
 
+.qr-invite {
+  width: 14em;
+  height: 14em;
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  margin-left: -7em;
+  background-color: #24293d;
+}
+
+.invite-code {
+  word-wrap: break-word;
+  width: 24em;
+  height: 3.3em;
+  line-height: 1.7em;
+  position: absolute;
+  top: 310px;
+  left: 50%;
+  margin-left: -12em;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  background-color: #24293d;
+  color: #e9f5f3;
+}
+.copy-pairing {
+  font-family: 'Roboto', sans-serif;
+  color: #b3bebc;
+  font-weight: 600;
+  text-decoration: none;
+  user-select: none;
+  padding: .4em 3.5em;
+  outline: none;
+  border: 0 solid;
+  border-radius: 0;
+  transition: 0.1s;
+  background: #444fa5;
+  position: relative;
+  top: 340px;
+}
 
 .invDev {
   background: url(../styles/icons/pairingcode.svg) no-repeat;
@@ -292,7 +332,7 @@ input:checked + .slider:before {
   background-color: #5568bf
 }
 
-#send_my_address, #insert_my_address {
+#send_my_address, #insert_my_address, #insert_my_profile {
   position: absolute;
   width: 250px;
   padding: 10px;
@@ -305,7 +345,10 @@ input:checked + .slider:before {
 }
 
 #insert_my_address {
-  margin-top: -84px;
+  margin-top: -60px;
+}
+#insert_my_profile {
+  margin-top: -100px;
 }
 
 #action_tab_bg {
