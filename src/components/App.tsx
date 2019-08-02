@@ -350,6 +350,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		</div>
 	}
 
+
 	render () {
 		console.error('prps', this.props);
 		return <div>

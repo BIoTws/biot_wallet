@@ -38,6 +38,8 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		hiddenListAction: true,
 		elementTapId: '',
 		isChecked: false,
+		chatProfileValues: [],
+		hiddenChatProfileInfo: true,
 	};
 
 	private messages_scroll: React.RefObject<any>;
@@ -548,22 +550,6 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	sendMessage = () => {
 		let message = this.state.currentText;
-		/*
-		if (message.indexOf('profile:')) {
-			let parsedMessage;
-			try {
-				parsedMessage = JSON.parse(message);
-			} catch (e) {
-
-			}
-
-			if(Object.keys(parsedMessage.profile).length) {
-
-			}
-		} else {
-
-		}
-		*/
 
 		this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
 		let cm = this.state.messages;
@@ -627,6 +613,45 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	hideTapActionList = () => {
 		this.setState({ elementTapId: '', hiddenListAction: true });
 	};
+
+	/*
+		getProfile () {
+		let wallets = this.state.profiles.map((profile: any) => {
+			let prf = JSON.parse(profile.object);
+			return (
+				<div onClick={() => this.setProfile(profile)} key={profile.unit}
+				     className={'wallets-list-body'}>
+					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
+					<div className={'profiles-list-body-balance'}>{profile.attester}</div>
+				</div>
+			);
+		});
+		return <div hidden={this.state.hiddenProfiles}>
+			<div className={'state-wallets'}>{wallets}</div>
+		</div>
+	}
+	 */
+
+	openProfileInfo = (profile) => {
+		this.setState({ chatProfile: profile, hiddenChatProfileInfo: false })
+	};
+
+	async profileInfoInChat () {
+		let profile:any = this.state.chatProfileValues;
+		let prf = JSON.parse(profile.object);
+		let values = await this.valuesFromObject(prf);
+		return <div hidden={this.state.hiddenChatProfileInfo} className={'info-background'}>
+			<div className={'state-wallets'}> </div>
+		</div>
+	}
+
+	valuesFromObject = (prf) => {
+		let prfArray = [];
+		for (let key in prf) {
+
+		}
+	};
+
 
 	delCor = () => {
 		getBiot(async (biot) => {
@@ -739,7 +764,44 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 							<div id={'messages_block'} ref={this.messages_height}>
 								{this.state.messages[this.state.thisChat.device_address] ?
 									this.state.messages[this.state.thisChat.device_address].map((value, index) => {
-										return <div key={index} className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+										let message = value.text;
+										if (message.indexOf('profile:')) {
+											let parsedMessage;
+											try {
+												parsedMessage = JSON.parse(message);
+											} catch (e) {
+												return <div key={index}
+												            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+											}
+											if (Object.keys(parsedMessage.profile).length) {
+												let parsedMessageObject = JSON.parse(parsedMessage.profile.object);
+												console.error('length', Object.keys(parsedMessageObject).length);
+												if (Object.keys(parsedMessageObject).length > 1) {
+													return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+														User sent you his profile:<br/>
+														{Object.keys(parsedMessageObject)[0]}: {parsedMessageObject[Object.keys(parsedMessageObject)[0]]}<br/>
+														{Object.keys(parsedMessageObject)[1]}: {parsedMessageObject[Object.keys(parsedMessageObject)[1]]}<br/>
+														<a id={'profileInfo'}
+														   onClick={() => this.openProfileInfo(parsedMessage.profile)}>...click
+															to see more details</a>
+													</div>
+												} else {
+													return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+														User sent you his profile:<br/>
+														{Object.keys(parsedMessageObject)[0]}: {parsedMessageObject[Object.keys(parsedMessageObject)[0]]}<br/>
+														<a id={'profileInfo'}
+														   onClick={() => this.openProfileInfo(parsedMessage.profile)}>...click
+															to see more details</a>
+													</div>
+												}
+											} else {
+												return <div key={index}
+												            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+											}
+										} else {
+											return <div key={index}
+											            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+										}
 									}) : null}
 							</div>
 						</div>
