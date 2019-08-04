@@ -1,10 +1,12 @@
+@import 'vars.scss';
+
 .qr-address {
   width: 14em;
   height: 14em;
   position: absolute;
   left: 50%;
   margin-left: -7em;
-  background-color: #24293d;
+  background-color: $backgroundLight;
 }
 
 .address {
@@ -16,9 +18,9 @@
   left: 50%;
   margin-left: -12em;
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   font-size: 1em;
-  background-color: #24293d;
+  background-color: $backgroundLight;
   color: #e9f5f3;
 }
 
@@ -26,16 +28,16 @@
   position: absolute;
   top: 297px;
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   font-size: 1em;
   color: #e9f5f3;
   width: 100%;
-}
 
-.faucet a {
-  border: 1px solid #212533;
-  padding: 12px;
-  background: #24293d;
+  & a {
+    border: 1px solid #212533;
+    padding: 12px;
+    background: $backgroundLight;
+  }
 }
 
 .receive-block {

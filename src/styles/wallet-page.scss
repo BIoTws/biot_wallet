@@ -1,4 +1,4 @@
-$background: #191c2f;
+@import 'vars.scss';
 
 .balance {
   width: 95%;
@@ -11,29 +11,31 @@ $background: #191c2f;
 }
 
 .balance-title {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   color: #c8d5d3;
+
+  &-block {
+    width: 100%;
+    height: 2em;
+    line-height: 2em;
+    text-align: center;
+  }
 }
 
-.balance-title-block {
-  width: 100%;
-  height: 2em;
-  line-height: 2em;
-  text-align: center;
-}
 
-.balance-text-block {
-  width: 100%;
-  height: 3em;
-  line-height: 3em;
-  text-align: center;
-}
 
 .balance-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   font-size: 35px;
   text-align: center;
   color: #e9f5f3;
+
+  &-block {
+    width: 100%;
+    height: 3em;
+    line-height: 3em;
+    text-align: center;
+  }
 }
 
 .transactions {
@@ -43,45 +45,50 @@ $background: #191c2f;
   position: absolute;
   bottom: 3%;
   left: 2%;
-  background-color: #24293d;
+  background-color: $backgroundLight;
+
+  &-button {
+    height: 2em;
+    line-height: 2em;
+    width: 48%;
+    font-family: $font;
+    text-align: center;
+    color: #c8d5d3;
+    position: absolute;
+    bottom: 48%;
+    left: 49%;
+
+    &-active {
+      height: 2em;
+      line-height: 2em;
+      width: 48%;
+      font-family: $font;
+      background-color: $backgroundLight;
+      text-align: center;
+      color: #c8d5d3;
+      position: absolute;
+      bottom: 48%;
+      left: 49%;
+    }
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+
+    &-thumb {
+      border-width: 0.7px 0.7px 0.7px 1.4px;
+      border-color: $backgroundLight;
+      background-color: #5765d7;
+    }
+  }
+
 }
 
-.transactions-button {
-  height: 2em;
-  line-height: 2em;
-  width: 48%;
-  font-family: 'Roboto', sans-serif;
-  text-align: center;
-  color: #c8d5d3;
-  position: absolute;
-  bottom: 48%;
-  left: 49%;
-}
 
-.transactions-button-active {
-  height: 2em;
-  line-height: 2em;
-  width: 48%;
-  font-family: 'Roboto', sans-serif;
-  background-color: #24293d;
-  text-align: center;
-  color: #c8d5d3;
-  position: absolute;
-  bottom: 48%;
-  left: 49%;
-}
 
-.transactions::-webkit-scrollbar {
-  width: 6px;
-}
 
-.transactions::-webkit-scrollbar-thumb {
-  border-width: 0.7px 0.7px 0.7px 1.4px;
-  border-color: #24293d;
-  background-color: #5765d7;
-}
 
-.transactions::-webkit-scrollbar-track {
+.transactions .transactions .transactions::-webkit-scrollbar-track {
   border-width: 0;
 }
 
@@ -97,49 +104,45 @@ $background: #191c2f;
   bottom: 3%;
   left: 2%;
   background-color: #24293d;
-}
 
-.channels-button {
-  height: 2em;
-  line-height: 2em;
-  width: 47%;
-  font-family: 'Roboto', sans-serif;
-  text-align: center;
-  color: #c8d5d3;
-  position: absolute;
-  bottom: 48%;
-  left: 2%;
-}
+  &-button {
+    height: 2em;
+    line-height: 2em;
+    width: 47%;
+    font-family: $font;
+    text-align: center;
+    color: #c8d5d3;
+    position: absolute;
+    bottom: 48%;
+    left: 2%;
 
-.channels-button-active {
-  height: 2em;
-  line-height: 2em;
-  width: 47%;
-  font-family: 'Roboto', sans-serif;
-  background-color: #24293d;
-  text-align: center;
-  color: #c8d5d3;
-  position: absolute;
-  bottom: 48%;
-  left: 2%;
-}
+    &-active {
+      height: 2em;
+      line-height: 2em;
+      width: 47%;
+      font-family: $font;
+      background-color: $backgroundLight;
+      text-align: center;
+      color: #c8d5d3;
+      position: absolute;
+      bottom: 48%;
+      left: 2%;
+    }
+  }
 
-.channels::-webkit-scrollbar {
-  width: 6px;
-}
+  &::-webkit-scrollbar {
+    width: 6px;
 
-.channels::-webkit-scrollbar-thumb {
-  border-width: 0.7px 0.7px 0.7px 1.4px;
-  border-color: #24293d;
-  background-color: #5765d7;
-}
+    &-thumb {
+      border-width: 0.7px 0.7px 0.7px 1.4px;
+      border-color: $backgroundLight;
+      background-color: #5765d7;
+    }
 
-.channels::-webkit-scrollbar-track {
-  border-width: 0;
-}
-
-.channels::-webkit-scrollbar-track {
-  border-width: 0;
+    &-track {
+      border-width: 0;
+    }
+  }
 }
 
 //list of trans/channels
@@ -147,66 +150,69 @@ $background: #191c2f;
 .channels-list-body {
   margin-top: 3%;
   margin-left: 2%;
-  background-color: $background;
+  background-color: $backgroundDark;
   width: 95%;
   height: 4em;
   text-align: left;
   line-height: 3em;
   display: block;
   position: relative;
+
+  &-name {
+    font-family: $font;
+    color: #c8d5d3;
+    padding-left: 15px;
+    position: absolute;
+  }
 }
 
-.channels-list-body-name {
-  font-family: Roboto, sans-serif;
-  color: #c8d5d3;
-  padding-left: 15px;
-  position: absolute;
-}
+
 
 .list-body {
   margin-top: 3%;
   margin-left: 2%;
-  background-color: $background;
+  background-color: $backgroundDark;
   width: 95%;
   height: 7em;
   text-align: center;
   line-height: 5em;
   display: block;
   position: relative;
+
+  &-name {
+    font-family: $font;
+    color: #c8d5d3;
+    position: absolute;
+    left: 70px;
+    top: -18px;
+  }
+
+  &-balance {
+    font-family: $font;
+    color: #c8d5d3;
+    position: absolute;
+    left: 70px;
+    top: 1em;
+
+    &-ch {
+      font-family: $font;
+      color: #c8d5d3;
+      position: absolute;
+      left: 15px;
+      top: 1.5em;
+    }
+  }
+
+  &-date {
+    font-family: $font;
+    color: #c8d5d3;
+    position: absolute;
+    left: 70px;
+    top: 3.6em;
+    font-size: 14px;
+  }
 }
 
-.list-body-name {
-  font-family: 'Roboto', sans-serif;
-  color: #c8d5d3;
-  position: absolute;
-  left: 70px;
-  top: -18px;
-}
-
-.list-body-balance {
-  font-family: 'Roboto', sans-serif;
-  color: #c8d5d3;
-  position: absolute;
-  left: 70px;
-  top: 1em;
-}
-
-.list-body-date {
-  font-family: 'Roboto', sans-serif;
-  color: #c8d5d3;
-  position: absolute;
-  left: 70px;
-  top: 3.6em;
-  font-size:14px;
-}
-
-.list-body-balance-ch {
-  font-family: 'Roboto', sans-serif;
-  color: #c8d5d3;
-  position: absolute;
-  left: 15px;
-  top: 1.5em;
-}
 
 .send {
   display: inline-block;

@@ -1,3 +1,5 @@
+@import 'vars.scss';
+
 $background: #191c2f;
 
 .send-form {
@@ -24,37 +26,37 @@ $background: #191c2f;
   border-bottom: 1px solid rgba(#c8d5d3, 0.5);
   background-color: $background;
   text-align: center;
-}
 
-.send-input:focus {
-  text-align: center;
-  outline: 0;
-  border-bottom: 1px solid rgba(#5765d7, 0.7);
-}
+  &:focus {
+    text-align: center;
+    outline: 0;
+    border-bottom: 1px solid rgba(#5765d7, 0.7);
 
-.send-input:focus::-webkit-input-placeholder {
-  color: transparent
-}
+    &::-webkit-input-placeholder {
+      color: transparent
+    }
+  }
 
-.send-input::placeholder {
-  text-align: center;
-  color: #7E8494;
-}
+  &::placeholder {
+    text-align: center;
+    color: #7E8494;
+  }
 
-.button-send-submit {
-  font-family: 'Roboto', sans-serif;
-  color: #b3bebc;
-  font-weight: 600;
-  text-decoration: none;
-  user-select: none;
-  padding: .4em 3.5em;
-  outline: none;
-  border: 0 solid;
-  border-radius: 0;
-  transition: 0.1s;
-  background: #444fa5;
-  position: relative;
-  top: 50px;
+  & .button-send-submit {
+    font-family: $font;
+    color: #b3bebc;
+    font-weight: 600;
+    text-decoration: none;
+    user-select: none;
+    padding: .4em 3.5em;
+    outline: none;
+    border: 0 solid;
+    border-radius: 0;
+    transition: 0.1s;
+    background: #444fa5;
+    position: relative;
+    top: 50px;
+  }
 }
 
 .button-block {

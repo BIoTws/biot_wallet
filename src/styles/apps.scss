@@ -1,3 +1,5 @@
+@import 'vars.scss';
+
 #listApps {
   margin-top: 4em;
 }
@@ -36,37 +38,39 @@
   height: 2em;
   border: 0;
   color: #c8d5d3;
-  border-bottom: 1px solid #24293d;
-  background-color: #191c2f;
+  border-bottom: 1px solid $backgroundLight;
+  background-color: $backgroundDark;
   text-align: left;
   padding-left: 10px;
   margin-bottom: 15px;
+
+  &:focus {
+    text-align: left;
+    padding-left: 10px;
+    outline: none;
+    border-bottom: 1px solid rgba(#5765d7, 0.7);
+  }
+
+  &::placeholder {
+    text-align: left;
+    color: #616775;
+  }
 }
 
-.input:focus {
-  text-align: left;
-  padding-left: 10px;
-  outline: none;
-  border-bottom: 1px solid rgba(#5765d7, 0.7);
-}
-
-.input::placeholder {
-  text-align: left;
-  color: #616775;
-}
 
 .checkbox {
   padding: 8px 0;
-  border-bottom: 1px solid #24293d;
+  border-bottom: 1px solid $backgroundLight;
 }
 
 
 .checkboxTitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   color: #c8d5d3;
   position: relative;
   right: 325px;
 }
+
 .switch {
   display: inline-block;
   height: 22px;
@@ -77,7 +81,7 @@
 }
 
 .switch input {
-  display:none;
+  display: none;
 }
 
 .slider {
@@ -89,37 +93,38 @@
   right: 0;
   top: 0;
   transition: .1s;
+
+  &:before {
+    background-color: #b3bebc;
+    bottom: 1px;
+    content: "";
+    height: 20px;
+    left: 0;
+    position: absolute;
+    transition: .1s;
+    width: 20px;
+  }
 }
 
-.slider:before {
-  background-color: #b3bebc;
-  bottom: 1px;
-  content: "";
-  height: 20px;
-  left: 0;
-  position: absolute;
-  transition: .1s;
-  width: 20px;
-}
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #444fa5;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(22px);
 }
 
 .slider.round {
   border-radius: 17px;
-}
 
-.slider.round:before {
-  border-radius: 50%;
+  &:before {
+    border-radius: 50%;
+  }
 }
 
 .button-send-submit {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   color: #b3bebc;
   font-weight: 600;
   text-decoration: none;
@@ -136,22 +141,25 @@ input:checked + .slider:before {
 
 .setAddress {
   width: 97%;
-  border-bottom: 1px solid #24293d;
+  border-bottom: 1px solid $backgroundLight;
   text-align: left;
   padding: 8px
 }
+
 .selectAddress {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   color: #5762ef;
 }
+
 .setProfile {
   width: 97%;
-  border-bottom: 1px solid #24293d;
+  border-bottom: 1px solid $backgroundLight;
   text-align: left;
   padding: 8px
 }
+
 #chooseProfile {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   color: #5762ef;
 }
 
@@ -170,16 +178,17 @@ input:checked + .slider:before {
 
 .list-menu {
   padding: 15px 0;
-  border-top: 1px solid #24293d;
+  border-top: 1px solid $backgroundLight;
   text-align: center;
+
+  &:last-child {
+    border-bottom: 1px solid $backgroundLight;
+  }
 }
 
-.list-menu:last-child {
-  border-bottom: 1px solid #24293d;
-}
 
 .cors-list {
-  font-family: 'Roboto', sans-serif;
+  font-family: $font;
   font-size: 13px;
   color: #c8d5d3;
   position: absolute;
@@ -217,18 +226,19 @@ input:checked + .slider:before {
   background-color: #191c2f;
   text-align: left;
   padding: 0 5px;
+
+  &:focus {
+    text-align: left;
+    outline: 0;
+    border-bottom: 1px solid rgba(#5765d7, 0.7);
+  }
+
+  &::placeholder {
+    text-align: left;
+    color: #7E8494;
+  }
 }
 
-#text_input:focus {
-  text-align: left;
-  outline: 0;
-  border-bottom: 1px solid rgba(#5765d7, 0.7);
-}
-
-#text_input::placeholder {
-  text-align: left;
-  color: #7E8494;
-}
 
 #menu_img {
   position: fixed;
@@ -272,7 +282,8 @@ input:checked + .slider:before {
   color: #fff;
 }
 
-.m_l, .m_r {
+.m_l,
+.m_r {
   max-width: 80%;
   word-wrap: break-word;
   color: #fff;
@@ -292,7 +303,8 @@ input:checked + .slider:before {
   background-color: #5568bf
 }
 
-#send_my_address, #insert_my_address {
+#send_my_address,
+#insert_my_address {
   position: absolute;
   width: 250px;
   padding: 10px;
@@ -329,14 +341,14 @@ input:checked + .slider:before {
   z-index: 10000;
 }
 
-#action_tap_menu > div{
+#action_tap_menu>div {
   padding: 20px 15px;
   font-size: 16px;
   text-align: center;
 }
 
-#action_tap_menu > div:not(:last-child) {
-  border-bottom: 1px solid #191c2f;
+#action_tap_menu>div:not(:last-child) {
+  border-bottom: 1px solid $backgroundDark;
 }
 
 .redText {
