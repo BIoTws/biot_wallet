@@ -6,7 +6,7 @@ interface IPage {
 
 export class Menu extends React.Component<any, IPage> {
 
-	constructor (props: any) {
+	constructor(props: any) {
 		super(props);
 	}
 
@@ -14,12 +14,12 @@ export class Menu extends React.Component<any, IPage> {
 		this.props.setPage(name);
 	}
 
-	render () {
+	render() {
 		return (
 			<div className={'menu'}>
 				<a onClick={() => {
 					this.setP("index")
-				}} className={this.props.page === 'index' ? 'index-icon-active' :'index-icon'}>
+				}} className={this.props.page === 'index' ? 'index-icon-active' : 'index-icon'}>
 				</a>
 				<a onClick={() => {
 					this.setP("qrScanner")
@@ -27,7 +27,7 @@ export class Menu extends React.Component<any, IPage> {
 				</a>
 				<a onClick={() => {
 					this.setP("apps")
-				}} className={this.props.page === 'apps' ? 'app-icon-active' :'app-icon'}>
+				}} className={this.props.page === 'apps' ? 'app-icon-active' : 'app-icon'}>
 				</a>
 			</div>
 		)
