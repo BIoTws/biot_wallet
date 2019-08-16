@@ -4,7 +4,7 @@ import "../styles/style.scss";
 import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
 import { Menu } from "./Menu";
-import { QRCode, ErrorCorrectLevel, QRNumber, QRAlphaNum, QR8BitByte, QRKanji } from "qrcode-generator-ts/js";
+import { QRCode, ErrorCorrectLevel } from "qrcode-generator-ts/js";
 
 export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
@@ -121,7 +121,6 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		_eventBus.removeListener('backbutton', this.backKeyClick);
 	}
 
-
 	goList () {
 		this.setState({
 			app: 'list',
@@ -134,7 +133,6 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.callbackW = (address) => {
 		};
 	}
-
 
 	closeApp () {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
@@ -245,18 +243,119 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	messages (from_address, text) {
+	async messages (from_address, text) {
 		console.error('messages', from_address, text);
 		let cm = this.state.messages;
 		if (!cm[from_address]) {
 			cm[from_address] = [];
 		}
-		cm[from_address].push({ text, i: false });
-		localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
-		this.setState({ messages: cm });
-		setTimeout(() => {
-			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
-		}, 100);
+		if (text.indexOf('profile:')) {
+			let parsedProfile;
+			try {
+				parsedProfile = JSON.parse(text);
+			} catch (e) {
+			}
+			if (parsedProfile) {
+				let pr = parsedProfile.profile;
+				let parsedProfileObject = JSON.parse(pr.object);
+				let prfArray = [] as any;
+				for (let key in parsedProfileObject) {
+					prfArray = [...prfArray, { key: key, value: parsedProfileObject[key][0] }]
+				}
+				let profilesInStorage: any = localStorage.getItem('verified_profiles');
+				if (!profilesInStorage) {
+					if (await this.checkProfile(pr.attester, pr.address, pr.unit, parsedProfileObject)) {
+						profilesInStorage = [pr];
+						localStorage.setItem('verified_profiles', JSON.stringify(profilesInStorage));
+						let profileIndex = profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit);
+						cm[from_address].push({
+							text: prfArray,
+							i: false,
+							isProfile: true,
+							index: profileIndex
+						});
+						localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+						this.setState({ messages: cm });
+						setTimeout(() => {
+							this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+						}, 100);
+					} else {
+						let profileIndex = -1;
+						cm[from_address].push({
+							text: prfArray,
+							i: false,
+							isProfile: true,
+							index: profileIndex
+						});
+						localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+						this.setState({ messages: cm });
+						setTimeout(() => {
+							this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+						}, 100);
+					}
+				} else {
+					profilesInStorage = JSON.parse(profilesInStorage);
+					if (profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit) >= 0) {
+						let profileIndex = profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit);
+						cm[from_address].push({
+							text: prfArray,
+							i: false,
+							isProfile: true,
+							index: profileIndex
+						});
+						localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+						this.setState({ messages: cm });
+						setTimeout(() => {
+							this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+						}, 100);
+					} else {
+						if (await this.checkProfile(pr.attester, pr.address, pr.unit, parsedProfileObject)) {
+							profilesInStorage = [...profilesInStorage, pr];
+							localStorage.setItem('verified_profiles', JSON.stringify(profilesInStorage));
+							let profileIndex = profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit);
+							cm[from_address].push({
+								text: prfArray,
+								i: false,
+								isProfile: true,
+								index: profileIndex
+							});
+							localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+							this.setState({ messages: cm });
+							setTimeout(() => {
+								this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+							}, 100);
+						} else {
+							let profileIndex = -1;
+							cm[from_address].push({
+								text: prfArray,
+								i: false,
+								isProfile: true,
+								index: profileIndex
+							});
+							localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+							this.setState({ messages: cm });
+							setTimeout(() => {
+								this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+							}, 100);
+						}
+					}
+				}
+			} else {
+				cm[from_address].push({ text, i: false });
+				localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+				this.setState({ messages: cm });
+				setTimeout(() => {
+					this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+				}, 100);
+			}
+		} else {
+			cm[from_address].push({ text, i: false });
+			localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+			this.setState({ messages: cm });
+			setTimeout(() => {
+				this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+			}, 100);
+		}
 	}
 
 	async checkProfile (attesters, address, unit, profile) {
@@ -318,7 +417,6 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		if (object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
-			console.error('listapps', listApps);
 			listApps[from_address] = true;
 			localStorage.setItem('listApps', JSON.stringify(listApps));
 			return;
@@ -511,6 +609,8 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			this.setState({ hiddenBlock: false, hiddenProfiles: true });
 		} else if (this.state.app === 'chat' && this.state.hiddenBlock && !this.state.hiddenWallets) {
 			this.setState({ hiddenBlock: false, hiddenWallets: true });
+		} else if (this.state.app === 'chat' && !this.state.hiddenChatProfileInfo) {
+			this.setState({ hiddenChatProfileInfo: true });
 		} else if (this.state.app === 'addC' || this.state.app === 'chat') {
 			this.goList();
 		}
@@ -550,22 +650,65 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	sendMessage = () => {
 		let message = this.state.currentText;
-
-		this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
-		let cm = this.state.messages;
-		if (!cm[this.state.thisChat.device_address]) {
-			cm[this.state.thisChat.device_address] = [];
+		if (message.indexOf('profile:')) {
+			let parsedProfile;
+			try {
+				parsedProfile = JSON.parse(message);
+			} catch (e) {
+			}
+			if (parsedProfile) {
+				let pr = parsedProfile.profile;
+				let parsedProfileObject = JSON.parse(pr.object);
+				let prfArray = [] as any;
+				for (let key in parsedProfileObject) {
+					prfArray = [...prfArray, { key: key, value: parsedProfileObject[key][0] }]
+				}
+				this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
+				let cm = this.state.messages;
+				if (!cm[this.state.thisChat.device_address]) {
+					cm[this.state.thisChat.device_address] = [];
+				}
+				cm[this.state.thisChat.device_address].push({ text: prfArray, i: true, isProfile: true, index: 0 });
+				localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
+				this.setState({ messages: cm, currentText: '' });
+				setTimeout(() => {
+					this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+				}, 100);
+			} else {
+				this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
+				let cm = this.state.messages;
+				if (!cm[this.state.thisChat.device_address]) {
+					cm[this.state.thisChat.device_address] = [];
+				}
+				cm[this.state.thisChat.device_address].push({ text: message, i: true });
+				localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
+				this.setState({ messages: cm, currentText: '' });
+				setTimeout(() => {
+					this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+				}, 100);
+			}
+		} else {
+			this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
+			let cm = this.state.messages;
+			if (!cm[this.state.thisChat.device_address]) {
+				cm[this.state.thisChat.device_address] = [];
+			}
+			cm[this.state.thisChat.device_address].push({ text: message, i: true });
+			localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
+			this.setState({ messages: cm, currentText: '' });
+			setTimeout(() => {
+				this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+			}, 100);
 		}
-		cm[this.state.thisChat.device_address].push({ text: message, i: true });
-		localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
-		this.setState({ messages: cm, currentText: '' });
-		setTimeout(() => {
-			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
-		}, 100);
 	};
 
 	showOrHideBlock = () => {
 		this.setState({ isShowBlockSendAddress: !this.state.isShowBlockSendAddress });
+	};
+	hideMenuBlock = () => {
+		if (this.state.isShowBlockSendAddress) {
+			this.setState({ isShowBlockSendAddress: false });
+		}
 	};
 
 	hideBlockAndShowWallets = (insert) => {
@@ -584,7 +727,6 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	hideBlockAndShowProfiles = (insert) => {
 		this.callbackW = (profile) => {
 			let prf = JSON.stringify({ profile: profile });
-			console.error('PROFILE', prf);
 			if (insert) {
 				this.setState({ currentText: this.state.currentText + prf });
 			} else {
@@ -596,7 +738,6 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ isShowBlockSendAddress: false });
 		this.chooseProfile();
 	};
-
 
 	tapTimers = {};
 	onTStart = (id) => {
@@ -614,44 +755,44 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ elementTapId: '', hiddenListAction: true });
 	};
 
-	/*
-		getProfile () {
-		let wallets = this.state.profiles.map((profile: any) => {
-			let prf = JSON.parse(profile.object);
-			return (
-				<div onClick={() => this.setProfile(profile)} key={profile.unit}
-				     className={'wallets-list-body'}>
-					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
-					<div className={'profiles-list-body-balance'}>{profile.attester}</div>
-				</div>
-			);
-		});
-		return <div hidden={this.state.hiddenProfiles}>
-			<div className={'state-wallets'}>{wallets}</div>
-		</div>
-	}
-	 */
-
-	openProfileInfo = (profile) => {
-		this.setState({ chatProfile: profile, hiddenChatProfileInfo: false })
-	};
-
-	async profileInfoInChat () {
-		let profile:any = this.state.chatProfileValues;
-		let prf = JSON.parse(profile.object);
-		let values = await this.valuesFromObject(prf);
-		return <div hidden={this.state.hiddenChatProfileInfo} className={'info-background'}>
-			<div className={'state-wallets'}> </div>
-		</div>
-	}
-
-	valuesFromObject = (prf) => {
-		let prfArray = [];
-		for (let key in prf) {
-
+	openProfileInfo = (profileIndex) => {
+		let profiles: any = localStorage.getItem('verified_profiles');
+		profiles = JSON.parse(profiles);
+		let currentProfile = profiles[profileIndex];
+		let curPrfObject = JSON.parse(currentProfile.object);
+		let prfArray = [] as any;
+		for (let key in curPrfObject) {
+			prfArray = [...prfArray, {
+				key: key,
+				value: curPrfObject[key][0]
+			}]
 		}
+		prfArray = [...prfArray, {
+			key: 'address',
+			value: currentProfile.address,
+		}, {
+			key: 'attester',
+			value: currentProfile.attester,
+		}, {
+			key: 'unit',
+			value: currentProfile.unit,
+		}];
+		this.setState({ chatProfileValues: prfArray, hiddenChatProfileInfo: !this.state.hiddenChatProfileInfo });
 	};
 
+	profileInfoInChat () {
+		let profiles = this.state.chatProfileValues.map((value: any, index) => {
+			return <div key={index} className={'profile-key'}>
+				<div className={'profile-value-key'}>{value.key}</div>
+				<div className={'profile-value'}>{value.value}</div>
+			</div>
+		});
+		return <div hidden={this.state.hiddenChatProfileInfo}>
+			<div className={'info-background'}
+			     onClick={() => this.setState({ hiddenChatProfileInfo: true })}></div>
+			<div className={'profile_block'}>{profiles}</div>
+		</div>
+	}
 
 	delCor = () => {
 		getBiot(async (biot) => {
@@ -752,9 +893,10 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			</div>
 		} else if (this.state.app === 'chat') {
 			return <div>
+				{this.profileInfoInChat()}
 				{this.getWallet()}
 				{this.getProfile()}
-				<div hidden={this.state.hiddenBlock}>
+				<div hidden={this.state.hiddenBlock} onClick={() => this.hideMenuBlock()}>
 					<div className={'top-bar'}>
 						<text className={'wallet-title'}>{this.state.thisChat.name}</text>
 						<a onClick={() => this.goList()} className={'back-button'}> </a>
@@ -764,40 +906,40 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 							<div id={'messages_block'} ref={this.messages_height}>
 								{this.state.messages[this.state.thisChat.device_address] ?
 									this.state.messages[this.state.thisChat.device_address].map((value, index) => {
-										let message = value.text;
-										if (message.indexOf('profile:')) {
-											let parsedMessage;
-											try {
-												parsedMessage = JSON.parse(message);
-											} catch (e) {
-												return <div key={index}
-												            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
-											}
-											if (Object.keys(parsedMessage.profile).length) {
-												let parsedMessageObject = JSON.parse(parsedMessage.profile.object);
-												console.error('length', Object.keys(parsedMessageObject).length);
-												if (Object.keys(parsedMessageObject).length > 1) {
-													return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
-														User sent you his profile:<br/>
-														{Object.keys(parsedMessageObject)[0]}: {parsedMessageObject[Object.keys(parsedMessageObject)[0]]}<br/>
-														{Object.keys(parsedMessageObject)[1]}: {parsedMessageObject[Object.keys(parsedMessageObject)[1]]}<br/>
-														<a id={'profileInfo'}
-														   onClick={() => this.openProfileInfo(parsedMessage.profile)}>...click
-															to see more details</a>
-													</div>
-												} else {
-													return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
-														User sent you his profile:<br/>
-														{Object.keys(parsedMessageObject)[0]}: {parsedMessageObject[Object.keys(parsedMessageObject)[0]]}<br/>
-														<a id={'profileInfo'}
-														   onClick={() => this.openProfileInfo(parsedMessage.profile)}>...click
-															to see more details</a>
-													</div>
-												}
+										if (value.isProfile && value.index >= 0) {
+											let profile = value.text;
+											profile = profile.map((value, index) => {
+												return <div key={index}>{value.key} : {value.value}</div>
+											});
+											if (value.i) {
+												return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+													<div>You successfully sent your profile:</div>
+													{profile}
+												</div>
 											} else {
-												return <div key={index}
-												            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+												return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+													<div>User sent you his profile:</div>
+													<br/>
+													<div>verified: <div className={'verified_profile'}></div>
+													</div>
+													{profile}
+													<a id={'profileInfo'}
+													   onClick={() => this.openProfileInfo(value.index)}>click
+														to see more details</a>
+												</div>
 											}
+										} else if (value.isProfile && value.index === -1) {
+											let profile = value.text;
+											profile = profile.map((value, index) => {
+												return <div key={index}>{value.key} : {value.value}</div>
+											});
+											return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+												<div>User sent you his profile:</div>
+												<br/>
+												<div>verified: <div className={'unverified_profile'}></div>
+												</div>
+												{profile}
+											</div>
 										} else {
 											return <div key={index}
 											            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
