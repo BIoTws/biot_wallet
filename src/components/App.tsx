@@ -9,7 +9,6 @@ import { Apps } from "./Apps";
 import { Menu } from "./Menu";
 import getBiot from "../getBiot";
 import { EventEmitter } from './EventEmitter';
-
 let events = new EventEmitter();
 
 // @ts-ignore
@@ -554,23 +553,40 @@ export class App extends React.Component {
 			</div>
 		} else if (this.state.page === 'setName') {
 			return <div className={'app-body'} style={{ textAlign: 'center' }}>
-				<div className={'name-title'}>What's your name?</div>
-				<div><input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
+				<div style={{ display: "flex", flexDirection:"column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+					<div className="inner">
+						<div style={{marginBottom: 8}}>What's your name?</div>
+					</div>
+					<div className="line"/>
 				</div>
-				<div className={'button-block'}>
-					<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
-						{this.state.textSaveName}
-					</button>
+				<div className="inner">
+					<div className="iconsName" />
+					<div>
+						<input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
+					</div>
+					<div className={'button-block'}>
+						<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
+							{this.state.textSaveName}
+						</button>
+					</div>
 				</div>
 			</div>
 		} else if (this.state.page === 'showSeed') {
 			return <div className={'app-body'} style={{ textAlign: 'center' }}>
-				<div className={'name-title'}>Please save your seed</div>
-				<div style={{ color: '#fff' }}>{this.state.seed}</div>
-				<div className={'button-block'}>
-					<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
-						Copy seed and close
-					</button>
+				<div style={{ display: "flex", flexDirection:"column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+					<div className="inner">
+						<div style={{marginBottom: 8}}>Please save your seed</div>
+					</div>
+					<div className="line"/>
+				</div>
+				<div className="iconsSeed" />
+				<div className="seed-block">{this.state.seed}</div>
+				<div className="inner">
+					<div className={'button-block'}>
+						<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
+							Copy seed
+						</button>
+					</div>
 				</div>
 			</div>
 		} else if (this.state.page === 'reqChannel') {

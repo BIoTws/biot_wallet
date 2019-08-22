@@ -125,18 +125,17 @@ input:checked+.slider:before {
 
 .button-send-submit {
   font-family: $font;
-  color: #b3bebc;
+  color: #ffffff;
   font-weight: 600;
   text-decoration: none;
   user-select: none;
-  padding: .4em 3.5em;
+  padding-top: 18px;
+  padding-bottom: 18px;
   outline: none;
-  border: 0 solid;
-  border-radius: 0;
-  transition: 0.1s;
-  background: #444fa5;
-  position: relative;
-  top: 50px;
+  border: none;
+  background: #008ECF;
+  width: 100%;
+  margin-top: 60px;
 }
 
 .setAddress {

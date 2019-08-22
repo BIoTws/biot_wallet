@@ -1,7 +1,5 @@
 @import 'vars.scss';
 
-$background: #191c2f;
-
 .send-form {
   width: 95%;
   height: 500px;
@@ -24,7 +22,7 @@ $background: #191c2f;
   border: 0;
   color: #7E8494;
   border-bottom: 1px solid rgba(#c8d5d3, 0.5);
-  background-color: $background;
+  background-color: $backgroundDark;
   text-align: center;
 
   &:focus {
