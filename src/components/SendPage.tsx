@@ -24,7 +24,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	componentDidMount () {
+	componentDidMount() {
 		console.error('params2', this.props.params);
 		if (this.props.params) {
 			// @ts-ignore
@@ -56,9 +56,9 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	render () {
-		return <div>
-			<div className={'send-form'}>>
+	render() {
+		return <div className="inner">
+			<div className={'send-form'}>
 				<div className={'address-input'}>
 					<input
 						required={true}
@@ -66,7 +66,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 						className="send-input"
 						placeholder="Recipient address"
 						value={this.state.address}
-						onChange={this.setAddress}/>
+						onChange={this.setAddress} />
 				</div>
 				<div className={'amount-input'}>
 					<input
@@ -75,7 +75,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 						className="send-input"
 						placeholder="Amount"
 						value={this.state.amount}
-						onChange={this.setAmount}/>
+						onChange={this.setAmount} />
 				</div>
 				<div className={'button-block'}>
 					<button onClick={() => this.sendPayment()} className={'button-send-submit'} type="submit">

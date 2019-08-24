@@ -1,35 +1,86 @@
 import * as React from "react";
 
 interface IPage {
-	page: string;
+  page: string;
 }
 
 export class Menu extends React.Component<any, IPage> {
+  constructor(props: any) {
+    super(props);
+  }
 
-	constructor (props: any) {
-		super(props);
-	}
+  setP(name) {
+    this.props.setPage(name);
+  }
+  // className={"menu"}
+  render() {
+    return (
+      <div className="menu">
+        <a
+          onClick={() => {
+            this.setP("index");
+          }}
+          className="menu__item"
+        >
+          <div
+            className={
+              this.props.page === "index" ? "index-icon-active" : "index-icon"
+            }
+          />
+          <div
+            className={
+              this.props.page === "index" ? "menu__title_active" : "menu__title"
+            }
+          >
+            Wallet
+          </div>
+        </a>
 
-	setP(name) {
-		this.props.setPage(name);
-	}
+        <a
+          onClick={() => {
+            this.setP("qrScanner");
+          }}
+          className="menu__item"
+        >
+          <div className="qr-scanner" />
+          <div className="menu__title">Scan</div>
+        </a>
 
-	render () {
-		return (
-			<div className={'menu'}>
-				<a onClick={() => {
-					this.setP("index")
-				}} className={this.props.page === 'index' ? 'index-icon-active' :'index-icon'}>
-				</a>
-				<a onClick={() => {
-					this.setP("qrScanner")
-				}} className={'qr-scanner'}>
-				</a>
-				<a onClick={() => {
-					this.setP("apps")
-				}} className={this.props.page === 'apps' ? 'app-icon-active' :'app-icon'}>
-				</a>
-			</div>
-		)
-	}
+        <a
+          onClick={() => {
+            this.setP("apps");
+          }}
+          className="menu__item"
+        >
+          <div
+            className={
+              this.props.page === "apps" ? "app-icon-active" : "app-icon"
+            }
+          />
+          <div
+            className={
+              this.props.page === "apps" ? "menu__title_active" : "menu__title"
+            }
+          >
+            Apps & Chats
+          </div>
+        </a>
+        {/* <a
+          onClick={() => {
+            this.setP("qrScanner");
+          }}
+          className={"qr-scanner"}
+        /> */}
+
+        {/* <a
+          onClick={() => {
+            this.setP("apps");
+          }}
+          className={
+            this.props.page === "apps" ? "app-icon-active" : "app-icon"
+          }
+        /> */}
+      </div>
+    );
+  }
 }

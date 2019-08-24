@@ -53,29 +53,41 @@
   position: absolute;
   left: 5px;
   top: 15%;
+  display: none;
 }
 
 
 .state-wallets {
-  background-color: $backgroundDark;
+  // background-color: #ffffff;
 
-  &::-webkit-scrollbar {
-    width: 6px;
+  // &::-webkit-scrollbar {
+  //   width: 6px;
 
-    &-thumb {
-      border-width: 0.7px 0.7px 0.7px 1.4px;
-      border-color: $backgroundDark;
-      background-color: #5765d7;
-    }
-  }
+  //   &-thumb {
+  //     border-width: 0.7px 0.7px 0.7px 1.4px;
+  //     border-color: $backgroundDark;
+  //     background-color: #5765d7;
+  //   }
+  // }
 }
 
 
 
-.state-wallets::-webkit-scrollbar-track {
-  border-width: 0;
-}
+// .state-wallets::-webkit-scrollbar-track {
+//   border-width: 0;
+// }
 
+.wallets-list-body {
+  border-top: 2px solid #DFDFE0;
+  border-bottom: 2px solid #DFDFE0;
+  background: #ffffff;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
 
 .button-submit {
   font-family: $font;

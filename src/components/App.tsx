@@ -20,7 +20,7 @@ interface IPage {
 
 export class QRScanner extends React.Component<any, IPage> {
 
-	componentDidMount () {
+	componentDidMount() {
 		obEvents.on('backbutton', this.backKeyClick);
 
 		let self = this;
@@ -113,7 +113,7 @@ export class QRScanner extends React.Component<any, IPage> {
 		document.body.style.backgroundColor = 'rgba(0,0,0,0)';
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		// @ts-ignore
 		obEvents.removeListener('backbutton', this.backKeyClick);
 		// @ts-ignore
@@ -129,11 +129,34 @@ export class QRScanner extends React.Component<any, IPage> {
 		this.props.setPage('index')
 	};
 
-	render () {
+	render() {
 		return (
-			<div className={'top-bar'}>
-				<text className={'qrScanner-title'}>QR Scanner</text>
-				<a onClick={() => this.props.setPage('index')} className={'back-button'}> </a>
+			// <div className={'top-bar'}>
+			// 	<text className={'qrScanner-title'}>QR Scanner</text>
+			// 	<a onClick={() => this.props.setPage('index')} className={'back-button'}> </a>
+			// </div>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}
+			>
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}
+				>
+					<div onClick={() => this.props.setPage('index')} className="topmenu_action">
+						<div className="topmenu_action-arrow" />
+					</div>
+					<div style={{ paddingLeft: 20, width: "100%" }}>QR Scanner</div>
+				</div>
+				<div className="line" />
 			</div>
 		)
 	}
@@ -149,7 +172,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 
 	state = { wallets: [] };
 
-	componentDidMount () {
+	componentDidMount() {
 		getBiot(async (biot: any) => {
 			let wallets: any = [];
 			let walletsInDb = await biot.core.getWallets();
@@ -176,7 +199,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 		});
 	}
 
-	render () {
+	render() {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => {
@@ -207,7 +230,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		hiddenWaiting: true
 	};
 
-	componentDidMount () {
+	componentDidMount() {
 		this.getProfile = this.getProfile.bind(this);
 		this.setProfile = this.setProfile.bind(this);
 	}
@@ -320,25 +343,25 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		this.props.setPage('index');
 	};
 
-	async chooseProfile () {
+	async chooseProfile() {
 		getBiot(async (biot: any) => {
 			let profiles = await biot.core.getProfiles();
 			this.setState({ hiddenProfiles: false, profiles });
 		});
 	}
 
-	setProfile (address, unit, object) {
+	setProfile(address, unit, object) {
 		this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
 		console.error('set', address, unit, object);
 	}
 
-	getProfile () {
+	getProfile() {
 		let wallets = this.state.profiles.map((profile: any) => {
 			let prf = JSON.parse(profile.object);
 			console.error('prf', prf);
 			return (
 				<div onClick={() => this.setProfile(profile.address, profile.unit, profile.object)} key={profile.unit}
-				     className={'wallets-list-body'}>
+					className={'wallets-list-body'}>
 					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
 					<div className={'profiles-list-body-balance'}>{profile.address}</div>
 				</div>
@@ -349,7 +372,7 @@ export class ReqChannel extends React.Component<{ params: any, walletId: string,
 		</div>
 	}
 
-	render () {
+	render() {
 		console.error('prps', this.props);
 		return <div>
 			<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
@@ -395,7 +418,7 @@ export class App extends React.Component {
 		textSaveName: 'Save name'
 	};
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		let self = this;
 
@@ -537,11 +560,11 @@ export class App extends React.Component {
 		}
 	};
 
-	render () {
+	render() {
 		if (this.state.page == 'index') {
 			return <div className={'app-body'}>
-				<WalletsList setPage={this.setPage}/>
-				<Menu page={'index'} setPage={this.setPage}/>
+				<WalletsList setPage={this.setPage} />
+				<Menu page={'index'} setPage={this.setPage} />
 			</div>
 		} else if (this.state.page === 'setWallet') {
 			return <div>
@@ -549,20 +572,20 @@ export class App extends React.Component {
 					<text className={'wallet-title'}>Please select the wallet</text>
 					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
-				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
+				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params} />
 			</div>
 		} else if (this.state.page === 'setName') {
 			return <div className={'app-body'} style={{ textAlign: 'center' }}>
-				<div style={{ display: "flex", flexDirection:"column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+				<div style={{ display: "flex", flexDirection: "column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
 					<div className="inner">
-						<div style={{marginBottom: 8}}>What's your name?</div>
+						<div style={{ marginBottom: 8 }}>What's your name?</div>
 					</div>
-					<div className="line"/>
+					<div className="line" />
 				</div>
 				<div className="inner">
 					<div className="iconsName" />
 					<div>
-						<input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
+						<input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName} />
 					</div>
 					<div className={'button-block'}>
 						<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
@@ -573,11 +596,11 @@ export class App extends React.Component {
 			</div>
 		} else if (this.state.page === 'showSeed') {
 			return <div className={'app-body'} style={{ textAlign: 'center' }}>
-				<div style={{ display: "flex", flexDirection:"column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+				<div style={{ display: "flex", flexDirection: "column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
 					<div className="inner">
-						<div style={{marginBottom: 8}}>Please save your seed</div>
+						<div style={{ marginBottom: 8 }}>Please save your seed</div>
 					</div>
-					<div className="line"/>
+					<div className="line" />
 				</div>
 				<div className="iconsSeed" />
 				<div className="seed-block">{this.state.seed}</div>
@@ -590,48 +613,126 @@ export class App extends React.Component {
 				</div>
 			</div>
 		} else if (this.state.page === 'reqChannel') {
-			return <div><ReqChannel params={this.state.params} walletId={this.state.walletId} setPage={this.setPage}/>
+			return <div><ReqChannel params={this.state.params} walletId={this.state.walletId} setPage={this.setPage} />
 			</div>
 		} else if (this.state.page == 'qrScanner') {
 			return <div>
-				<QRScanner setPage={this.setPage}/>
+				<QRScanner setPage={this.setPage} />
 			</div>
 		} else if (this.state.page == 'wallet') {
 			return <div>
-				<div className={'top-bar'}>
-					<text
-						className={'wallet-title'}>{
-						this.state.walletName.length > 25 ?
-							this.state.walletName.substr(0, 25) + '...' :
-							this.state.walletName}</text>
-					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px"
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							background: "#ffffff"
+						}}
+					>
+						<div onClick={() => this.setState({ page: 'index' })} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
+						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>
+							<text>{
+								this.state.walletName.length > 25 ?
+									this.state.walletName.substr(0, 25) + '...' :
+									this.state.walletName}
+							</text>
+						</div>
+					</div>
+					<div className="line" />
 				</div>
+
+				{/* <div className={'top-bar'}>
+			<text
+				className={'wallet-title'}>{
+				this.state.walletName.length > 25 ?
+					this.state.walletName.substr(0, 25) + '...' :
+					this.state.walletName}</text>
+			<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
+		</div> */}
+
 				<div className={'wallet-menu'}>
-					<a onClick={() => this.setState({ page: 'sendTransaction' })} className={'send-button'}> </a>
-					<a onClick={() => this.setState({ page: 'receiveTransaction' })} className={'receive-button'}> </a>
+					<div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+						<a onClick={() => this.setState({ page: 'sendTransaction' })} className={'send-button'}> </a>
+						<div>Send</div>
+					</div>
+					<div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+						<a onClick={() => this.setState({ page: 'receiveTransaction' })} className={'receive-button'}> </a>
+						<div>Recive</div>
+					</div>
 				</div>
-				<Wallet walletId={this.state.walletId}/>
+				<Wallet walletId={this.state.walletId} />
 			</div>
 		} else if (this.state.page == 'sendTransaction') {
 			return <div>
-				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Send</text>
-					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px"
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							background: "#ffffff"
+						}}
+					>
+						<div onClick={() => this.setState({ page: 'wallet' })} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
+						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>
+							Send
+						</div>
+					</div>
+					<div className="line" />
 				</div>
+
 				<SendPage walletId={this.state.walletId} back={() => this.setState({ page: 'wallet' })}
-				          params={this.state.params}/>
+					params={this.state.params} />
 			</div>
 		} else if (this.state.page == 'receiveTransaction') {
 			return <div>
-				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Receive</text>
-					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
+				{/* <div className={'top-bar'}>
+				<text className={'wallet-title'}>Receive</text>
+				<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
+			</div> */}
+				<div style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}>
+					<div style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}>
+						<div onClick={() => this.setState({ page: 'wallet' })} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
+						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>Receive</div>
+					</div>
+					<div className="line" />
 				</div>
-				<ReceivePage walletId={this.state.walletId}/>
+				<ReceivePage walletId={this.state.walletId} />
 			</div>
 		} else if (this.state.page == 'apps') {
 			return <div>
-				<Apps setPage={this.setPage}/>
+				<Apps setPage={this.setPage} />
 			</div>
 		}
 	}
@@ -657,7 +758,7 @@ nfc.addMimeTypeListener("text/plain", parseTag,
 	}
 );
 
-function parseTag (nfcEvent) {
+function parseTag(nfcEvent) {
 	getBiot((biot: any) => {
 		console.error('NFCCWA', nfcEvent);
 		let records = nfcEvent.tag.ndefMessage;
@@ -684,7 +785,7 @@ function parseTag (nfcEvent) {
 
 document.addEventListener("backbutton", onBackKeyDown, false);
 
-function onBackKeyDown () {
+function onBackKeyDown() {
 	obEvents.emit('backbutton', {});
 }
 

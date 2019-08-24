@@ -19,73 +19,52 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.menu {
-  height: 60px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px;
-  position: absolute;
-}
-
 .index-icon {
-  background: url(../styles/icons/wallets.svg) no-repeat;
-  width: 40px;
-  height: 40px;
+  background: url(../styles/icons/menu/wallet.svg) no-repeat;
+  width: 26px;
+  height: 26px;
   display: block;
-  position: absolute;
-  left: 11%;
-  margin-left: -20px;
+  margin: 0 auto;
 }
 
 .index-icon-active {
-  background: url(../styles/icons/_wallets.svg) no-repeat;
-  width: 40px;
-  height: 40px;
+  background: url(../styles/icons/menu/wallet-active.svg) no-repeat;
+  width: 26px;
+  height: 26px;
   display: block;
-  position: absolute;
-  left: 11%;
-  margin-left: -20px;
+  margin: 0 auto;
 }
 
 .qr-scanner {
-  background: url(../styles/icons/scan.svg) no-repeat;
-  width: 40px;
-  height: 40px;
+  background: url(../styles/icons/menu/scan.svg) no-repeat;
+  width: 26px;
+  height: 26px;
   display: block;
-  position: absolute;
-  left: 50%;
-  margin-left: -20px;
+  margin: 0 auto;
 }
 
 .qr-scanner-active {
-  background: url(../styles/icons/_scan.svg) no-repeat;
-  width: 40px;
-  height: 40px;
+  background: url(../styles/icons/menu/scan-active.svg) no-repeat;
+  width: 26px;
+  height: 26px;
   display: block;
-  position: absolute;
-  left: 50%;
-  margin-left: -20px;
+  margin: 0 auto;
 }
 
 .app-icon {
-  background: url(../styles/icons/appschat.svg) no-repeat;
-  width: 40px;
-  height: 40px;
-  position: absolute;
+  background: url(../styles/icons/menu/apps.svg) no-repeat;
+  width: 26px;
+  height: 26px;
   display: block;
-  left: 89%;
-  margin-left: -20px;
+  margin: 0 auto;
 }
 
 .app-icon-active {
-  background: url(../styles/icons/_appschat.svg) no-repeat;
-  width: 40px;
-  height: 40px;
-  position: absolute;
+  background: url(../styles/icons/menu/apps-active.svg) no-repeat;
+  width: 26px;
+  height: 26px;
   display: block;
-  left: 89%;
-  margin-left: -20px;
+  margin: 0 auto;
 }
 
 .back-button {
@@ -127,26 +106,25 @@ body {
   text-align: center;
   width: 95%;
   height: 4em;
-  line-height: 4em;
   position: absolute;
+  justify-content: space-around;
+  display: flex;
   bottom: 58%;
   left: 2%;
 }
 
 .send-button {
-  background: url(../styles/icons/send.svg) no-repeat;
+  background: url(../styles/icons/menu/send.svg) no-repeat;
   width: 40px;
   height: 40px;
-  position: absolute;
-  right: 28%;
+  background-position: center center;
 }
 
 .receive-button {
-  background: url(../styles/icons/receive.svg) no-repeat;
+  background: url(../styles/icons/menu/recive.svg) no-repeat;
   width: 40px;
   height: 40px;
-  position: absolute;
-  left: 28%;
+  background-position: center center;
 }
 
 .listAddChannel {
@@ -277,6 +255,7 @@ body {
   width: 100%;
   height: 8px;
   overflow: hidden;
+  z-index: 9999;
 }
 
 .iconsName {
@@ -296,4 +275,66 @@ body {
   margin: 0 auto;
   margin-top: 54px;
   margin-bottom: 54px;
+}
+
+.menu {
+  height: 70px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  position: absolute;
+  border-top: 2px solid #BFC0C2;
+  display: flex;
+  justify-content: space-between;
+}
+
+.menu__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 33%;
+}
+
+.menu__title {
+  text-align: center;
+  color: #000;
+  font-size: 10px;
+  margin-top: 8px;
+}
+
+.menu__title_active {
+  text-align: center;
+  font-size: 10px;
+  color: #005691;
+  margin-top: 8px;
+}
+
+.topmenu_action {
+  height: 48px;
+  width: 48px;
+  background-position: center center;
+  background: #BFE3F3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.topmenu_action-img {
+  width: 21px;
+  height: 21px;
+  background: url(../styles/icons/menu/add.svg) no-repeat;
+}
+
+.icon-arrow {
+  width: 21px;
+  height: 21px;
+  background: url(../styles/icons/menu/arrow.svg) no-repeat;
+}
+
+.topmenu_action-arrow {
+  width: 21px;
+  height: 21px;
+  background: url(../styles/icons/menu/arrow-prev.svg) no-repeat;
 }

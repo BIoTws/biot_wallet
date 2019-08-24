@@ -34,27 +34,15 @@
 }
 
 .input {
-  width: 97%;
-  height: 2em;
-  border: 0;
-  color: #c8d5d3;
-  border-bottom: 1px solid $backgroundLight;
-  background-color: $backgroundDark;
-  text-align: left;
-  padding-left: 10px;
-  margin-bottom: 15px;
-
-  &:focus {
-    text-align: left;
-    padding-left: 10px;
-    outline: none;
-    border-bottom: 1px solid rgba(#5765d7, 0.7);
-  }
-
-  &::placeholder {
-    text-align: left;
-    color: #616775;
-  }
+  width: 100%;
+  border: none;
+  color: #000000;
+  border-bottom: 2px solid #BFC0C2;
+  background-color: transparent;
+  padding-left: 20px;
+  font-size: 16px;
+  padding-bottom: 10px;
+  box-sizing: border-box;
 }
 
 
@@ -352,4 +340,23 @@ input:checked+.slider:before {
 
 .redText {
   color: #ea2b2b;
+}
+
+.wallets-list-body-name {
+  font-size: 12px;
+  color: #000000;
+  left: 0;
+  position: static;
+  margin-bottom: 5px;
+}
+
+.wallets-list-body-balance {
+  font-size: 21px;
+  color: #000000;
+  left: 0;
+  position: static;
+}
+
+.wallets-list-body-balance span {
+  color: #008ECF;
 }

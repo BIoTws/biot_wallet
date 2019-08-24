@@ -15,7 +15,7 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 		faucetText: 'Get from faucet'
 	};
 
-	componentDidMount () {
+	componentDidMount() {
 		getBiot(async (biot: any) => {
 			let address = (await biot.core.getAddressesInWallet(this.props.walletId))[0];
 			console.error('address', address);
@@ -31,7 +31,7 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 		_eventBus.on('text', this.message);
 	}
 
-	componentWillUnmount (): void {
+	componentWillUnmount(): void {
 		_eventBus.removeListener('text', this.message);
 	}
 
@@ -48,7 +48,7 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 		}
 	};
 
-	getFromFaucet () {
+	getFromFaucet() {
 		if (this.state.getting) return;
 		this.setState({ getting: true, faucetText: 'Please wait' });
 
@@ -65,17 +65,19 @@ export class ReceivePage extends React.Component<{ walletId: String }> {
 		});
 	}
 
-	render () {
+	render() {
 		return <div className={'receive-block'}>
 			<div className={'qr-address'}>
-				<img hidden={this.state.hidden} width={'100%'} height={'100%'} src={this.state.imgUrl}/>
+				<img hidden={this.state.hidden} width={'100%'} height={'100%'} src={this.state.imgUrl} />
 			</div>
-			<div className={'address'}>
-				<text>{this.state.address}</text>
+			<div className="inner">
+				<div className={'address'}>
+					<text>{this.state.address}</text>
+				</div>
+				<div className={'faucet'}><a onClick={() => {
+					this.getFromFaucet()
+				}}>{this.state.faucetText}</a></div>
 			</div>
-			<div className={'faucet'}><a onClick={() => {
-				this.getFromFaucet()
-			}}>{this.state.faucetText}</a></div>
 		</div>
 	}
 }
