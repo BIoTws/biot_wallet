@@ -79,7 +79,7 @@
 
 .wallets-list-body {
   border-top: 2px solid #DFDFE0;
-  border-bottom: 2px solid #DFDFE0;
+  // border-bottom: 2px solid #DFDFE0;
   background: #ffffff;
   padding-left: 20px;
   padding-right: 20px;
@@ -87,6 +87,7 @@
   justify-content: space-between;
   align-items: center;
   display: flex;
+  margin-top: 0;
 }
 
 .button-submit {

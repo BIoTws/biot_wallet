@@ -171,12 +171,16 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
       return (
         <div key={transaction.id} className={"list-body"}>
           <div className={transaction.transaction} />
-          <div className={"list-body-name"}>{transaction.name}</div>
-          <div className={"list-body-balance"}>{transaction.balance}</div>
-          <div className={"list-body-date"}>
-            {
-              //@ts-ignore
-              moment(transaction.time * 1000).format("MM.DD.YYYY HH:mm")}
+          <div className="list-body-wrap">
+            <div className={"list-body-name"}>{transaction.name}</div>
+            <div className="list-body-descr">
+              <div className={"list-body-balance"}>{transaction.balance} <span>BC</span></div>
+              <div className={"list-body-date"}>
+                {
+                  //@ts-ignore
+                  moment(transaction.time * 1000).format("MM.DD.YYYY HH:mm")}
+              </div>
+            </div>
           </div>
         </div>
       );

@@ -52,6 +52,70 @@
   background-color: #ffffff;
   border-top: 2px solid #BFC0C2;
 
+  .list-body {
+    background: #EFEFF0;
+    position: static;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    height: auto;
+    line-height: normal;
+    width: 100%;
+    display: flex;
+    margin-left: 0;
+    align-items: center;
+
+    .list-body-name {
+      color: #000000;
+      font-size: 16px;
+      position: static;
+      text-align: left;
+    }
+
+    .list-body-balance {
+      color: #008ECF;
+      font-size: 16px;
+      font-weight: bold;
+      position: static;
+
+      span {
+        color: #000000;
+      }
+    }
+
+    .list-body-date {
+      color: #000000;
+      font-size: 10px;
+      position: static;
+    }
+
+    .list-body-descr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .list-body-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .receive,
+    .send {
+      position: static;
+      background-size: cover;
+      width: 16px;
+      height: 16px;
+      margin-right: 15px;
+    }
+  }
+
   &-button {
     height: 2em;
     line-height: 2em;

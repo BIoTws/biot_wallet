@@ -1,5 +1,45 @@
 @import 'vars.scss';
 
+@font-face {
+  font-family: 'Bosh Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Bosh Sans'),
+    url('./fonts/BoschSans-Light.woff') format('woff'),
+    url('./fonts/BoschSans-Light.ttf') format('ttf'),
+    url('./fonts/BoschSans-Light.otf') format('otf');
+}
+
+@font-face {
+  font-family: 'Bosh Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Bosh Sans'),
+    url('./fonts/BoschSans-Regular.woff') format('woff'),
+    url('./fonts/BoschSans-Regular.ttf') format('ttf'),
+    url('./fonts/BoschSans-Regular.otf') format('otf');
+}
+
+@font-face {
+  font-family: 'Bosh Sans';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Bosh Sans'),
+    url('./fonts/BoschSans-Medium.woff') format('woff'),
+    url('./fonts/BoschSans-Medium.ttf') format('ttf'),
+    url('./fonts/BoschSans-Medium.otf') format('otf');
+}
+
+@font-face {
+  font-family: 'Bosh Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Bosh Sans'),
+    url('./fonts/BoschSans-Bold.woff') format('woff'),
+    url('./fonts/BoschSans-Bold.ttf') format('ttf'),
+    url('./fonts/BoschSans-Bold.otf') format('otf');
+}
+
 body {
   background-color: #fff;
   margin: 0;
@@ -10,6 +50,11 @@ body {
   padding-left: 20px;
   padding-right: 20px;
   box-sizing: border-box;
+}
+
+.innerM .data input[type="text"] {
+  color: #000000;
+  margin-bottom: 30px;
 }
 
 :focus,

@@ -395,7 +395,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					<div className={wallet.coin}>
 					</div>
 					<div className={'wallets-list-body-name'}>{wallet.name}</div>
-					<div className={'wallets-list-body-balance'}>{wallet.balance} bytes</div>
+					<div className={'wallets-list-body-balance'}>{wallet.balance} BC</div>
 				</div>
 			);
 		});
@@ -450,9 +450,12 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				onClick={() => this.openChatOrApp(correspondent)}
 				onTouchStart={() => this.onTStart(correspondent.device_address)}
 				onTouchEnd={() => this.onTEnd(correspondent.device_address)}>
-				<div style={{ padding: '10px 7px' }}><img width={'50px'} height={'50px'} src={icon} /></div>
-				<div className={'wallets-list-body-name'}>{correspondent.name}</div>
-				<div className={'cors-list'}>{correspondent.device_address}</div>
+				<div style={{ width: 48, height: 48, marginRight: 10, flexShrink: 0 }}><img width={'100%'} height={'100%'} src={icon} /></div>
+				<div style={{ width: "100%", display: "flex", justifyContent: "flex-start", flexDirection: "column" }}>
+					<div className={'wallets-list-body-name'}>{correspondent.name}</div>
+					<div className={'cors-list'} style={{ color: "#000", position: "static" }}>{correspondent.device_address}</div>
+				</div>
+				<div className="icon-arrow" />
 			</div>
 		});
 	}
@@ -662,18 +665,18 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				{/* <div className={'top-bar'}>
 					<text className={'wallet-title'}>Apps and chats</text>
 				</div> */}
-				{/* <div id={'bl_for_scroll_corrs'}>
-					<div className={'state-wallets'}>
-						<div key={'recvCorr'} className={'wallets-list-body'} onClick={() => {
+				<div id={'bl_for_scroll_corrs'}>
+					<div className={'state-wallets'} style={{ marginTop: 15 }}>
+						{/* <div key={'recvCorr'} className={'wallets-list-body'} onClick={() => {
 							this.showAddC()
 						}}>
 							<div className={'recvCorr'}></div>
 							<div className={'wallets-list-body-name'}>Accept invitation</div>
 							<div className={'cors-list'}>by pairing code</div>
-						</div>
+						</div> */}
 						{this.listCorrespondents()}
 					</div>
-				</div> */}
+				</div>
 				<Menu page={'apps'} setPage={this.props.setPage} />
 			</div>
 		} else if (this.state.app === 'app') {
@@ -681,21 +684,61 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				{this.getWallet()}
 				{this.getProfile()}
 				<div hidden={this.state.hiddenBlock}>
-					<div className={'top-bar'}>
+					{/* <div className={'top-bar'}>
 						<text className={'wallet-title'}>{this.state.thisChat.name}</text>
 						<a onClick={() => this.closeApp()} className={'back-button'}> </a>
+					</div> */}
+					<div style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px",
+					}}>
+						<div style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							background: "#ffffff"
+						}}>
+							<div onClick={() => this.closeApp()} className="topmenu_action">
+								<div className="topmenu_action-arrow" />
+							</div>
+							<div style={{ paddingLeft: 20, width: "100%" }}>{this.state.thisChat.name}</div>
+						</div>
+						<div className="line" />
 					</div>
-					<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
-					<div key={'data'} className={'data'}>{this.state.data}</div>
+					<div className="inner innerM">
+						<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
+						<div key={'data'} className={'data'}>{this.state.data}</div>
+					</div>
 				</div>
 			</div>
 		} else if (this.state.app === 'chat') {
 			return <div>
 				{this.getWallet()}
 				<div hidden={this.state.hiddenBlock}>
-					<div className={'top-bar'}>
+					{/* <div className={'top-bar'}>
 						<text className={'wallet-title'}>{this.state.thisChat.name}</text>
 						<a onClick={() => this.goList()} className={'back-button'}> </a>
+					</div> */}
+					<div style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px",
+					}}>
+						<div style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							background: "#ffffff"
+						}}>
+							<div onClick={() => this.goList()} className="topmenu_action">
+								<div className="topmenu_action-arrow" />
+							</div>
+							<div style={{ paddingLeft: 20, width: "100%" }}>{this.state.thisChat.name}</div>
+						</div>
+						<div className="line" />
 					</div>
 					<div key={'home_data'} className={'data'}>
 						<div id={'bl_for_scroll'} ref={this.messages_scroll}>
@@ -712,7 +755,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 									onClick={() => this.hideBlockAndShowWallets(1)}>Insert my address
 								</div>
 							</div>
-							<input id={'text_input'} type={'text'} placeholder={'Your message'}
+							<textarea id={'text_input'} placeholder={'Your message'} style={{ border: "1px solid #DFDFE0", padding: 10, boxSizing: "border-box", height: 85, background: "#FFFFFF" }}
 								value={this.state.currentText} onChange={this.setCurrentText} />
 							<div id={'send_img'} onClick={() => this.sendMessage()} />
 						</div>

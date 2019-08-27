@@ -127,27 +127,28 @@ input:checked+.slider:before {
 }
 
 .setAddress {
-  width: 97%;
-  border-bottom: 1px solid $backgroundLight;
+  border-bottom: 2px solid #bfc0c2;
   text-align: left;
-  padding: 8px
+  padding: 8px;
+  padding-left: 20px;
 }
 
 .selectAddress {
   font-family: $font;
-  color: #5762ef;
+  color: #000000;
+
 }
 
 .setProfile {
   width: 97%;
-  border-bottom: 1px solid $backgroundLight;
+  border-bottom: 2px solid #bfc0c2;
   text-align: left;
   padding: 8px
 }
 
 #chooseProfile {
   font-family: $font;
-  color: #5762ef;
+  color: #000000;
 }
 
 .plsWaiting {
@@ -203,7 +204,7 @@ input:checked+.slider:before {
 
 #text_input {
   position: fixed;
-  bottom: 10px;
+  bottom: 50px;
   left: 55px;
   width: 72%;
   height: 2em;
@@ -217,7 +218,6 @@ input:checked+.slider:before {
   &:focus {
     text-align: left;
     outline: 0;
-    border-bottom: 1px solid rgba(#5765d7, 0.7);
   }
 
   &::placeholder {
@@ -229,29 +229,29 @@ input:checked+.slider:before {
 
 #menu_img {
   position: fixed;
-  background: url(../styles/icons/menu.svg) no-repeat;
-  width: 34px;
-  height: 34px;
+  background: url(../styles/icons/menu/dots.svg) no-repeat;
+  width: 31px;
+  height: 7px;
   display: inline-block;
-  bottom: 0;
-  left: 12px;
+  bottom: 15px;
+  left: 55px;
 }
 
 #send_img {
-  background: url(../styles/icons/send_1.svg) no-repeat;
-  width: 34px;
-  height: 34px;
+  background: url(../styles/icons/menu/sendms.svg) no-repeat;
+  width: 75px;
+  height: 24px;
   display: inline-block;
   position: fixed;
   bottom: 7px;
-  right: 12px;
+  right: 55px;
 }
 
 #bl_for_scroll {
   position: fixed;
   overflow-y: scroll;
-  top: 3em;
-  bottom: 5em;
+  top: 5em;
+  bottom: 150px;
   left: 0;
   right: 0;
 }
@@ -271,7 +271,7 @@ input:checked+.slider:before {
 
 .m_l,
 .m_r {
-  max-width: 80%;
+  max-width: 220px;
   word-wrap: break-word;
   color: #fff;
   border-radius: 10px;
@@ -279,15 +279,15 @@ input:checked+.slider:before {
 }
 
 .m_l {
-  margin: 15px 10px;
+  margin: 10px;
   text-align: left;
-  background-color: #5d5d5d;
+  background-color: #C4C4C4;
 }
 
 .m_r {
-  margin: 15px 10px 0 19%;
+  margin: 10px 10px 0 auto;
   text-align: right;
-  background-color: #5568bf
+  background-color: #008ECF;
 }
 
 #send_my_address,
