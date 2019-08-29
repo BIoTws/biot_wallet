@@ -38,7 +38,6 @@ export class QRScanner extends React.Component<any, IPage> {
 				} catch (e) {
 					json = null;
 				}
-
 				if (text.indexOf('obyte:') !== -1 || text.indexOf('obyte-tn:') !== -1) {
 					let r = text.match(/^obyte(|-tn):(.+)/);
 					if (r && r[2]) {
@@ -394,7 +393,8 @@ export class App extends React.Component {
 		params: {},
 		name: '',
 		seed: '',
-		textSaveName: 'Save name'
+		textSaveName: 'Save name',
+		asset: 'base'
 	};
 
 	constructor (props) {
@@ -504,6 +504,10 @@ export class App extends React.Component {
 		});
 	};
 
+	setAsset = (asset) => {
+		this.setState({ asset: asset });
+	};
+
 	nowSaveName = false;
 	saveName = () => {
 		if (!this.nowSaveName) {
@@ -595,15 +599,17 @@ export class App extends React.Component {
 					<a onClick={() => this.setState({ page: 'sendTransaction' })} className={'send-button'}> </a>
 					<a onClick={() => this.setState({ page: 'receiveTransaction' })} className={'receive-button'}> </a>
 				</div>
-				<Wallet walletId={this.state.walletId}/>
+				<Wallet setAsset={this.setAsset} walletId={this.state.walletId}/>
 			</div>
 		} else if (this.state.page == 'sendTransaction') {
+			console.error('ASSET STATE', this.state.asset);
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Send</text>
 					<a onClick={() => this.setState({ page: 'wallet' })} className={'back-button'}> </a>
 				</div>
-				<SendPage walletId={this.state.walletId} back={() => this.setState({ page: 'wallet' })}
+				<SendPage walletId={this.state.walletId} asset={this.state.asset}
+				          back={() => this.setState({ page: 'wallet' })}
 				          params={this.state.params}/>
 			</div>
 		} else if (this.state.page == 'receiveTransaction') {
