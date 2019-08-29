@@ -4,13 +4,14 @@ import getBiot from "../getBiot";
 
 interface ISendPage {
 	walletId: string,
+	asset: string,
 	back: () => void,
 	params?: { address: string, amount: number } | {}
 }
 
 export class SendPage extends React.Component<ISendPage, {}> {
 
-	state = {address: '', amount: ''};
+	state = { address: '', amount: '' };
 
 	setAddress = (evt) => {
 		this.setState({
@@ -24,13 +25,13 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	componentDidMount() {
+	componentDidMount () {
 		console.error('params2', this.props.params);
 		if (this.props.params) {
 			// @ts-ignore
-			if (this.props.params.address) this.setState({address: this.props.params.address});
+			if (this.props.params.address) this.setState({ address: this.props.params.address });
 			// @ts-ignore
-			if (this.props.params.amount) this.setState({amount: this.props.params.amount});
+			if (this.props.params.amount) this.setState({ amount: this.props.params.amount });
 		}
 	}
 
@@ -40,7 +41,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 			try {
 				console.error('addresses', (await biot.core.getAddressesInWallet(this.props.walletId)));
 				console.error('paym', await biot.core.sendPaymentFromWallet({
-					asset: 'base',
+					asset: this.props.asset,
 					wallet: this.props.walletId,
 					toAddress: this.state.address,
 					amount: this.state.amount,
@@ -56,7 +57,11 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	render() {
+	render () {
+		let asset = this.props.asset;
+		if(asset === 'base') {
+			asset = 'bytes';
+		}
 		return <div>
 			<div className={'send-form'}>>
 				<div className={'address-input'}>
@@ -73,7 +78,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 						required={true}
 						type="text"
 						className="send-input"
-						placeholder="Amount"
+						placeholder={'Amount of ' + asset}
 						value={this.state.amount}
 						onChange={this.setAmount}/>
 				</div>

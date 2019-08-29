@@ -1,6 +1,7 @@
 import * as React from 'react';
 import "../styles/wallet-page.scss";
 import getBiot from "../getBiot";
+import Swipe from 'react-easy-swipe';
 
 interface ITransactions {
 	name: string;
@@ -18,9 +19,7 @@ interface IChannels {
 	row: any;
 }
 
-
-export class Wallet extends React.Component<{ walletId: String }, {}> {
-
+export class Wallet extends React.Component<{ walletId: String, setAsset: any }, {}> {
 	state = {
 		balance: 0,
 		list: 'transactions',
@@ -29,12 +28,55 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		isShowModalChannel: false,
 		modalChannelId: 'Open',
 		modalChannelStatus: 'Open',
-		modalChannelRow: null
+		modalChannelRow: null,
+		balanceIndex: 0,
+		balanceLength: 1,
 	};
 
 	timerB: any = null;
 
-	calcListTransactions(objTransactions, myAddresses) {
+	constructor (props) {
+		super(props);
+		this.onSwipeLeft = this.onSwipeLeft.bind(this);
+		this.onSwipeRight = this.onSwipeRight.bind(this);
+	}
+
+	onSwipeLeft () {
+		let index = this.state.balanceIndex;
+		if (this.state.balanceIndex === this.state.balanceLength - 1) {
+			index = 0;
+			let coin = this.state.balance[index].coin;
+			console.error('CHANGED TO1', coin, this.state.balanceIndex);
+			this.props.setAsset(coin);
+		} else {
+			index++;
+			let coin = this.state.balance[index].coin;
+			console.error('CHANGED TO2', coin, this.state.balanceIndex);
+			this.props.setAsset(coin);
+		}
+		this.setState({ balanceIndex: index });
+		console.error('LEFT'); //+1
+	}
+
+	onSwipeRight () {
+		let index = this.state.balanceIndex;
+		let maxIndex = this.state.balanceLength;
+		if (this.state.balanceIndex === 0) {
+			index = maxIndex - 1;
+			let coin = this.state.balance[index].coin;
+			console.error('CHANGED TO', coin);
+			this.props.setAsset(coin);
+		} else {
+			index--;
+			let coin = this.state.balance[index].coin;
+			console.error('CHANGED TO', coin);
+			this.props.setAsset(coin);
+		}
+		this.setState({ balanceIndex: index });
+		console.error('RIGHT'); // -1
+	}
+
+	calcListTransactions (objTransactions, myAddresses) {
 		let list: any = [];
 
 		for (let key in objTransactions) {
@@ -104,10 +146,16 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		return list;
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		getBiot(async (biot: any) => {
 			let upd = async () => {
 				let balance = await biot.core.getWalletBalance(this.props.walletId);
+				balance.bc = { stable: 3333, pending: 3333, is_private: null };
+				let balanceArray: any = [];
+				for (let key in balance) {
+					balanceArray = [...balanceArray, { coin: key, balance: balance[key].pending + balance[key].stable }]
+				}
+				console.error('BALANCE ARRAY', balanceArray);
 				let objTransactions = await biot.core.getWalletTransactions(this.props.walletId);
 				let myAddresses = await biot.core.getAddressesInWallet(this.props.walletId);
 				let listTransactions = this.calcListTransactions(objTransactions, myAddresses);
@@ -131,13 +179,13 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 						}];
 					}
 				}
-
 				arrChannels = arrChannels.sort((a, b) => {
 					return new Date(b.row.change_date).getTime() - new Date(a.row.change_date).getTime()
 				});
 				console.error('arrC', arrChannels);
 				this.setState({
-					balance: balance.base.stable + balance.base.pending,
+					balance: balanceArray,
+					balanceLength: balanceArray.length,
 					transactions: listTransactions,
 					channels: arrChannels
 				});
@@ -149,7 +197,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 		});
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount () {
 		if (this.timerB) clearInterval(this.timerB);
 	}
 
@@ -216,10 +264,10 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 			}, 60000);
 		}
 		console.error('start', 7);
-		this.setState({isShowModalChannel: false});
+		this.setState({ isShowModalChannel: false });
 	};
 
-	render() {
+	render () {
 		let getBlock = () => {
 			if (this.state.list == 'transactions') {
 				return <div key={'transactions'} className={'transactions'}>
@@ -244,7 +292,7 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 						right: '5px',
 						color: '#c8d5d3'
 					}}>
-						<div>Id: <span style={{fontSize: '12px'}}>{this.state.modalChannelId}</span></div>
+						<div>Id: <span style={{ fontSize: '12px' }}>{this.state.modalChannelId}</span></div>
 						<div>Status: {this.state.modalChannelStatus}</div>
 						{this.state.modalChannelStatus === 'Open' ? <div>
 							<button onClick={() => this.closeChannel()} className={'button-send-submit'} style={{
@@ -263,33 +311,70 @@ export class Wallet extends React.Component<{ walletId: String }, {}> {
 							width: '100%',
 							height: '100%'
 						}}
-						onClick={() => this.setState({isShowModalChannel: false})}>_
+						onClick={() => this.setState({ isShowModalChannel: false })}>_
 					</div>
 				</div>
 		};
-
-		return (
-			<div>
-				{modal()}
-				<div className={'balance'}>
-					<div className={'balance-title-block'}>
-						<span className={'balance-title'}>Total balance</span>
+		let balance: any = this.state.balance;
+		if (balance.length > 1) {
+			console.error('index', this.state.balanceIndex);
+			let currentCoin = this.state.balance[this.state.balanceIndex];
+			console.error('cc', currentCoin);
+			let coin = currentCoin.coin;
+			if (coin === 'base') {
+				coin = 'Bytes'
+			}
+			return (
+				<div>
+					<Swipe onSwipeRight={this.onSwipeRight}
+					       onSwipeLeft={this.onSwipeLeft}
+					>
+						{modal()}
+						<div className={'balance'}>
+							<div className={'balance-title-block'}>
+								<span className={'balance-title'}>Total balance</span>
+							</div>
+							<div className={'balance-text-block'}>
+								<span className={'balance-text'}>{currentCoin.balance} {coin}</span>
+							</div>
+						</div>
+						<div onClick={() => this.setState({ list: 'transactions' })}
+						     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
+							<text>Transactions</text>
+						</div>
+						<div onClick={() => this.setState({ list: 'channels' })}
+						     className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
+							<text>Channels</text>
+						</div>
+						{getBlock()}
+					</Swipe>
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					{modal()}
+					<div className={'balance'}>
+						<div className={'balance-title-block'}>
+							<span className={'balance-title'}>Total balance</span>
+						</div>
+						<div className={'balance-text-block'}>
+							<span className={'balance-text'}>{this.state.balance} bytes</span>
+						</div>
 					</div>
-					<div className={'balance-text-block'}>
-						<span className={'balance-text'}>{this.state.balance} bytes</span>
-					</div>
-				</div>
 
-				<div onClick={() => this.setState({list: 'transactions'})}
-				     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
-					<text>Transactions</text>
+					<div onClick={() => this.setState({ list: 'transactions' })}
+					     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
+						<text>Transactions</text>
+					</div>
+					<div onClick={() => this.setState({ list: 'channels' })}
+					     className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
+						<text>Channels</text>
+					</div>
+					{getBlock()}
 				</div>
-				<div onClick={() => this.setState({list: 'channels'})}
-				     className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
-					<text>Channels</text>
-				</div>
-				{getBlock()}
-			</div>
-		);
+			);
+		}
+
 	}
 }
