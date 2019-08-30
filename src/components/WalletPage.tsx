@@ -65,13 +65,13 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		let maxIndex = this.state.balanceLength;
 		if (this.state.balanceIndex === 0) {
 			index = maxIndex - 1;
-			let balance:any = this.state.balance[index];
+			let balance: any = this.state.balance[index];
 			let coin = balance.coin;
 			console.error('CHANGED TO', coin);
 			this.props.setAsset(coin);
 		} else {
 			index--;
-			let balance:any = this.state.balance[index];
+			let balance: any = this.state.balance[index];
 			let coin = balance.coin;
 			console.error('CHANGED TO', coin);
 			this.props.setAsset(coin);
@@ -321,6 +321,14 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		};
 		let balance: any = this.state.balance;
 		if (balance.length > 1) {
+			let dotArray: any = [];
+			for (let i = 0; i < balance.length; i++) {
+				if (i === this.state.balanceIndex) {
+					dotArray = [...dotArray, <div className={'dot-active'}></div>]
+				} else {
+					dotArray = [...dotArray, <div className={'dot'}></div>]
+				}
+			}
 			console.error('index', this.state.balanceIndex);
 			let currentCoin: any = this.state.balance[this.state.balanceIndex];
 			console.error('cc', currentCoin);
@@ -341,8 +349,13 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 								<span className={'balance-title'}>Total balance</span>
 							</div>
 							<div className={'balance-text-block'}>
-								<span className={'balance-text'}>{currentCoin.balance} {coin}</span>
+								{coin.length > 5 ?
+									<div><span className={'balance-text'}>{currentCoin.balance}</span><br/>
+										<div className={'balance-coin-name'}>{coin}</div>
+									</div>
+									: <span className={'balance-text'}>{currentCoin.balance} {coin}</span>}
 							</div>
+							{dotArray}
 						</div>
 						<div onClick={() => this.setState({ list: 'transactions' })}
 						     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
@@ -367,7 +380,8 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 							<span className={'balance-title'}>Total balance</span>
 						</div>
 						<div className={'balance-text-block'}>
-							<span className={'balance-text'}>{currentCoin.length ? currentCoin[0].balance : 0} bytes</span>
+							<span
+								className={'balance-text'}>{currentCoin.length ? currentCoin[0].balance : 0} bytes</span>
 						</div>
 					</div>
 

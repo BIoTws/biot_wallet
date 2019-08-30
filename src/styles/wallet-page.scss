@@ -36,6 +36,15 @@ $background: #191c2f;
   color: #e9f5f3;
 }
 
+.balance-coin-name {
+  margin-top: -20px;
+  word-wrap: break-word;
+  font-family: 'Roboto', sans-serif;
+  font-size: 10px;
+  text-align: center;
+  color: #e9f5f3;
+}
+
 .transactions {
   overflow: auto;
   width: 95%;
@@ -197,7 +206,7 @@ $background: #191c2f;
   position: absolute;
   left: 70px;
   top: 3.6em;
-  font-size:14px;
+  font-size: 14px;
 }
 
 .list-body-balance-ch {
@@ -226,4 +235,24 @@ $background: #191c2f;
   position: absolute;
   left: 10px;
   top: 19%;
+}
+
+.dot {
+  margin-top: 100px;
+  margin-right: 3px;
+  height: 8px;
+  width: 8px;
+  background-color: #434c71;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-active {
+  margin-top: 100px;
+  margin-right: 3px;
+  height: 8px;
+  width: 8px;
+  background-color: #5765d7;
+  border-radius: 50%;
+  display: inline-block;
 }
