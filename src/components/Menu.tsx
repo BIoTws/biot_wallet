@@ -18,8 +18,8 @@ export class Menu extends React.Component<any, IPage> {
 		return (
 			<div className={'menu'}>
 				<a onClick={() => {
-					this.setP("index")
-				}} className={this.props.page === 'index' ? 'index-icon-active' : 'index-icon'}>
+					this.setP("wallet")
+				}} className={this.props.page === 'wallet' ? 'index-icon-active' : 'index-icon'}>
 				</a>
 				<a onClick={() => {
 					this.setP("qrScanner")

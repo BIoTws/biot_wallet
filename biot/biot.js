@@ -9,6 +9,7 @@ for (let k in lconf) {
 	conf[k] = lconf[k];
 }
 
+window.channels = require('biot-core/channels');
 window.stepInit = 'waiting';
 window.objectHash = objectHash;
 window.eventBus = eventBus;
@@ -17,7 +18,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 async function onDeviceReady() {
 	const core = require('biot-core');
 	const ChannelsManager = require('biot-core/lib/ChannelsManager');
-	
+
 	window.InitializeBIoT = async function () {
 		let init = await core.init('1029384756');
 		if (init.split && init.split(' ').length % 3 === 0) {
@@ -25,6 +26,7 @@ async function onDeviceReady() {
 			window.seed = init;
 			const device = require('ocore/device');
 			window.myDeviceAddress = device.getMyDeviceAddress();
+			eventBus.emit('biot_ok');
 		} else if (init === 'Please set device name') {
 			window.stepInit = 'errorDeviceName';
 		} else {
@@ -37,7 +39,7 @@ async function onDeviceReady() {
 	let light_attestations = require('./light_attestations');
 	window.biot = {core, db, storage, network, light_attestations};
 	window.ChannelsManager = ChannelsManager;
-	
+
 	function getQR(cb) {
 		// @ts-ignore
 		QRScanner.prepare(onDone); // show the prompt
