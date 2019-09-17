@@ -151,6 +151,83 @@ input:checked+.slider:before {
   color: #000000;
 }
 
+#profileInfo {
+  font-family: 'Roboto', sans-serif;
+  color: #1cd40f;
+}
+
+.profile_block {
+  z-index: 2;
+  width: 95%;
+  height: 400px;
+  position: absolute;
+  left: 2%;
+  top: 80px;
+  background-color: #191c2f;
+  overflow: auto;
+  overflow-x:hidden;
+}
+.profile_block::-webkit-scrollbar {
+  width: 3px;
+}
+.profile_block::-webkit-scrollbar-thumb {
+  border-width: 0.7px 0.7px 0.7px 1.4px;
+  border-color: #24293d;
+  background-color: #5765d7;
+}
+.profile_block::-webkit-scrollbar-track {
+  border-width: 0;
+}
+.profile_block::-webkit-scrollbar-track {
+  border-width: 0;
+}
+
+.profile-key{
+  word-wrap: break-word;
+  color: #ececec;
+  font-family: 'Roboto', sans-serif;
+  padding: 12px 0;
+  border-bottom: 2px solid #24293d;
+}
+.profile-key:last-child {
+  border-bottom: 0 solid #24293d;
+}
+.info-background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top:0;
+  bottom:0;
+  background-color: rgba(21, 24, 35, 0.9);
+  z-index: 1;
+}
+.profile-value-key {
+  color: #4d55d5;
+  position: relative;
+  left: 10px;
+  top: -3px;
+}
+.profile-value {
+  width: 90%;
+  position: relative;
+  left: 10px;
+  top: 7px;
+}
+.verified_profile {
+  background: url(../styles/icons/verified.svg) no-repeat;
+  width: 17px;
+  height: 17px;
+  margin-left: 62px;
+  margin-top: -18px;
+}
+.unverified_profile {
+  background: url(../styles/icons/unverified.svg) no-repeat;
+  width: 17px;
+  height: 17px;
+  margin-left: 62px;
+  margin-top: -18px;
+}
+
 .plsWaiting {
   position: absolute;
   top: 3em;
@@ -184,6 +261,46 @@ input:checked+.slider:before {
   top: 40px;
 }
 
+.qr-invite {
+  width: 14em;
+  height: 14em;
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  margin-left: -7em;
+  background-color: #24293d;
+}
+
+.invite-code {
+  word-wrap: break-word;
+  width: 24em;
+  height: 3.3em;
+  line-height: 1.7em;
+  position: absolute;
+  top: 310px;
+  left: 50%;
+  margin-left: -12em;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  background-color: #24293d;
+  color: #e9f5f3;
+}
+.copy-pairing {
+  font-family: 'Roboto', sans-serif;
+  color: #b3bebc;
+  font-weight: 600;
+  text-decoration: none;
+  user-select: none;
+  padding: .4em 3.5em;
+  outline: none;
+  border: 0 solid;
+  border-radius: 0;
+  transition: 0.1s;
+  background: #444fa5;
+  position: relative;
+  top: 340px;
+}
 
 .invDev {
   background: url(../styles/icons/pairingcode.svg) no-repeat;
@@ -304,7 +421,10 @@ input:checked+.slider:before {
 }
 
 #insert_my_address {
-  margin-top: -84px;
+  margin-top: -60px;
+}
+#insert_my_profile {
+  margin-top: -100px;
 }
 
 #action_tab_bg {

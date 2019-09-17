@@ -21,8 +21,8 @@ interface walletsProps {
 }
 
 export class CreateWallet extends React.Component<any, IState> {
-  constructor(props: any) {
-    super(props);
+	constructor(props: any) {
+		super(props);
 
     this.state = {
       balance: 0,
@@ -32,35 +32,30 @@ export class CreateWallet extends React.Component<any, IState> {
     };
   }
 
-  public handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
-    e.preventDefault();
-    this.props.addWallet(
-      this.state.currentWallet,
-      this.state.coin,
-      this.state.balance
-    );
-  }
+	public handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
+		e.preventDefault();
+		this.props.addWallet(this.state.currentWallet, this.state.coin, this.state.balance);
+	}
 
-  public render(): JSX.Element {
-    return (
-      <div>
-        <form onSubmit={e => this.handleSubmit(e)}>
-          <input
-            required={true}
-            type="text"
-            className="tdl-input"
-            placeholder="Wallet name"
-            value={this.state.currentWallet}
-            onChange={e => this.setState({ currentWallet: e.target.value })}
-          />
-          <br />
-          <button className={"button-submit"} type="submit">
-            Add
-          </button>
-        </form>
-      </div>
-    );
-  }
+	public render(): JSX.Element {
+		return (
+			<div>
+				<form onSubmit={e => this.handleSubmit(e)}>
+					<input
+						required={true}
+						type="text"
+						className="tdl-input"
+						placeholder="Wallet name"
+						value={this.state.currentWallet}
+						onChange={e => this.setState({currentWallet: e.target.value})}
+					/><br>
+				</br>
+					<button className={'button-submit'} type="submit">Add</button>
+				</form>
+			</div>
+		);
+	}
+
 }
 
 export class WalletsList extends React.Component<walletsProps, any> {
@@ -80,23 +75,7 @@ export class WalletsList extends React.Component<walletsProps, any> {
         JSON.stringify(assocWalletToName)
       );
 
-      this.setState({
-        show: false,
-        wallets: [
-          ...this.state.wallets,
-          {
-            id: walletId,
-            name: name,
-            coin: "Byteball",
-            balance: balance.base.stable + balance.base.pending
-          }
-        ],
-        page: "wallets",
-        name: ""
-      });
-      alert("New wallet: " + name);
-    });
-  };
+	state = {show: false, wallets: [], page: 'wallets', name: ''};
 
   timerWL: any = null;
 
@@ -139,42 +118,45 @@ export class WalletsList extends React.Component<walletsProps, any> {
     });
   }
 
-  componentWillUnmount() {
-    if (this.timerWL) clearInterval(this.timerWL);
-    // @ts-ignore
-    let _eventBus = window.eventBus;
-    _eventBus.removeListener("backbutton", this.backKeyClick);
-  }
+	componentDidMount() {
+		this.addWallet = this.addWallet.bind(this);
+		this.setName = this.setName.bind(this);
+		this.showSetName = this.showSetName.bind(this);
+		// @ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.on('backbutton', this.backKeyClick);
 
-  showWallets = () => {
-    return this.state.wallets.map((wallets: IWallet) => {
-      return (
-        <div
-          onClick={() => {
-            this.props.setPage("wallet", wallets.id);
-          }}
-          key={wallets.id}
-          className={"wallets-list-body"}
-        >
-          <div>
-            <div className={"wallets-list-body-name"}>{wallets.name}</div>
-            <div className={"wallets-list-body-balance"}>
-              <span>{wallets.balance}</span> BC
-            </div>
-          </div>
-          <div className="icon-arrow" />
-        </div>
-      );
-    });
-  };
+		let self = this;
+		getBiot(async (biot: any) => {
+			async function updWL() {
+				let wallets: any = [];
+				let walletsInDb = await biot.core.getWallets();
+				let lWN = localStorage.getItem('assocWalletToName');
+				let assocWalletToName = lWN ? JSON.parse(lWN) : {};
+				for (let i = 0; i < walletsInDb.length; i++) {
+					let wallet = walletsInDb[i];
+					let balance = await biot.core.getWalletBalance(wallet);
+					console.error('name', assocWalletToName[wallet], wallet);
+					wallets = [...wallets, {
+						id: wallet,
+						name: assocWalletToName[wallet] ? assocWalletToName[wallet] : wallet.substr(0, 25) + '...',
+						coin: 'Byteball',
+						balance: balance.base.stable + balance.base.pending
+					}];
+				}
+				self.setState({wallets: wallets});
+			}
 
   showSetName() {
     this.setState({ page: "setName" });
   }
 
-  hideSetName() {
-    this.setState({ page: "wallets" });
-  }
+	componentWillUnmount() {
+		if (this.timerWL) clearInterval(this.timerWL);
+		// @ts-ignore
+		let _eventBus = window.eventBus;
+		_eventBus.removeListener('backbutton', this.backKeyClick);
+	}
 
   setName = evt => {
     this.setState({
@@ -187,6 +169,9 @@ export class WalletsList extends React.Component<walletsProps, any> {
       this.hideSetName();
     }
   };
+	showSetName() {
+		this.setState({page: 'setName'});
+	}
 
   render() {
     if (this.state.page === "setName") {

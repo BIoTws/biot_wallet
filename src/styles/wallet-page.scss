@@ -42,12 +42,21 @@
   }
 }
 
+.balance-coin-name {
+  margin-top: -20px;
+  word-wrap: break-word;
+  font-family: 'Roboto', sans-serif;
+  font-size: 10px;
+  text-align: center;
+  color: #e9f5f3;
+}
+
 .transactions {
   overflow: auto;
   width: 95%;
-  height: 45%;
+  height: 40%;
   position: absolute;
-  bottom: 3%;
+  bottom: 14%;
   left: 2%;
   background-color: #ffffff;
   border-top: 2px solid #BFC0C2;
@@ -170,9 +179,9 @@
 .channels {
   overflow: auto;
   width: 95%;
-  height: 45%;
+  height: 40%;
   position: absolute;
-  bottom: 3%;
+  bottom: 14%;
   left: 2%;
   background-color: #ffffff;
   border-top: 2px solid #BFC0C2;

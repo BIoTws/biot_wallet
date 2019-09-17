@@ -4,6 +4,7 @@ import getBiot from "../getBiot";
 
 interface ISendPage {
 	walletId: string,
+	asset: string,
 	back: () => void,
 	params?: { address: string, amount: number } | {}
 }
@@ -40,7 +41,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 			try {
 				console.error('addresses', (await biot.core.getAddressesInWallet(this.props.walletId)));
 				console.error('paym', await biot.core.sendPaymentFromWallet({
-					asset: 'base',
+					asset: this.props.asset,
 					wallet: this.props.walletId,
 					toAddress: this.state.address,
 					amount: this.state.amount,
@@ -56,9 +57,15 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	render() {
-		return <div className="inner">
-			<div className={'send-form'}>
+	render () {
+		let asset = this.props.asset;
+		if (asset === 'base') {
+			asset = 'bytes';
+		} else if (asset === 'Clcb6ZC5br93OA7ZMFEq88i+1CkJtpxpyAz4WyinKBY=') {
+			asset = 'BC'
+		}
+		return <div>
+			<div className={'send-form'}>>
 				<div className={'address-input'}>
 					<input
 						required={true}
@@ -69,13 +76,22 @@ export class SendPage extends React.Component<ISendPage, {}> {
 						onChange={this.setAddress} />
 				</div>
 				<div className={'amount-input'}>
-					<input
-						required={true}
-						type="text"
-						className="send-input"
-						placeholder="Amount"
-						value={this.state.amount}
-						onChange={this.setAmount} />
+					{asset.length > 5 ? <div><input
+							required={true}
+							type="text"
+							className="send-input"
+							placeholder={'Amount of '}
+							value={this.state.amount}
+							onChange={this.setAmount}/>
+							<span className={'balance-coin-name'}>{asset}</span></div> :
+						<input
+							required={true}
+							type="text"
+							className="send-input"
+							placeholder={'Amount of ' + asset}
+							value={this.state.amount}
+							onChange={this.setAmount}/>
+					}
 				</div>
 				<div className={'button-block'}>
 					<button onClick={() => this.sendPayment()} className={'button-send-submit'} type="submit">

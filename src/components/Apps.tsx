@@ -4,6 +4,7 @@ import "../styles/style.scss";
 import getBiot from "../getBiot";
 import makeBlockie from 'ethereum-blockies-base64';
 import { Menu } from "./Menu";
+import { QRCode, ErrorCorrectLevel } from "qrcode-generator-ts/js";
 
 export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	values: any = {};
@@ -19,6 +20,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		data: [],
 		wallets: [],
 		profiles: [],
+		hidden: true,
 		hiddenBlock: false,
 		hiddenWallets: true,
 		hiddenWaiting: true,
@@ -26,6 +28,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		page: '',
 		message: '',
 		correspondents: [],
+		imgUrl: '',
 		pairingCode: '',
 		peerPairingCode: '',
 		thisChat: { name: '', device_address: '' },
@@ -35,20 +38,22 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		hiddenListAction: true,
 		elementTapId: '',
 		isChecked: false,
+		chatProfileValues: [],
+		hiddenChatProfileInfo: true,
 	};
 
 	private messages_scroll: React.RefObject<any>;
 	private messages_height: React.RefObject<any>;
 	private elms: any;
 
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		this.messages_scroll = React.createRef();
 		this.messages_height = React.createRef();
 		this.elms = {};
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
 		this.changeValue = this.changeValue.bind(this);
@@ -58,6 +63,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.onTStart = this.onTStart.bind(this);
 		this.hideTapActionList = this.hideTapActionList.bind(this);
 		this.delCor = this.delCor.bind(this);
+		this.copyPairingCode = this.copyPairingCode.bind(this);
 
 		//@ts-ignore
 		let _eventBus = window.eventBus;
@@ -107,7 +113,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount () {
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('text', this.messages);
@@ -115,8 +121,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		_eventBus.removeListener('backbutton', this.backKeyClick);
 	}
 
-
-	goList() {
+	goList () {
 		this.setState({
 			app: 'list',
 			data: '',
@@ -129,8 +134,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		};
 	}
 
-
-	closeApp() {
+	closeApp () {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'close'
 		});
@@ -138,7 +142,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ thisChat: { name: '', device_address: '' }, app: 'list', data: '', page: '', message: '' });
 	}
 
-	getElement(f) {
+	getElement (f) {
 		if (f.type === 'input') {
 			if (f.id) this.elms[f.id] = React.createRef();
 			return this.tInput(f.title, f.id);
@@ -199,7 +203,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	handleCheck(id, isChecked) {
+	handleCheck (id, isChecked) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'update_value',
 			page: this.state.page,
@@ -212,22 +216,19 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ hiddenBlock: true, hiddenProfiles: false });
 	}
 
-	setProfile(profile) {
-		console.error(profile);
+	setProfile (profile) {
 		let prf = JSON.parse(profile.object);
 		this.values['profile'] = profile.object;
-		this.elms['setProfile'].current.innerText = prf.name[0] + ' ' + prf.lname[0];
+		if (this.elms['setProfile']) {
+			this.elms['setProfile'].current.innerText = prf.name[0] + ' ' + prf.lname[0];
+		}
 		this.setState({ hiddenBlock: false, hiddenProfiles: true });
 		this.callbackW(profile);
-		//this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
-		//console.error('set', address, unit, object);
 	}
 
-	getProfile() {
+	getProfile () {
 		let wallets = this.state.profiles.map((profile: any) => {
 			let prf = JSON.parse(profile.object);
-			console.error('profile', profile);
-			console.error('prf', prf);
 			return (
 				<div onClick={() => this.setProfile(profile)} key={profile.unit}
 					className={'wallets-list-body'}>
@@ -242,21 +243,122 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	messages(from_address, text) {
+	async messages (from_address, text) {
 		console.error('messages', from_address, text);
 		let cm = this.state.messages;
 		if (!cm[from_address]) {
 			cm[from_address] = [];
 		}
-		cm[from_address].push({ text, i: false });
-		localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
-		this.setState({ messages: cm });
-		setTimeout(() => {
-			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
-		}, 100);
+		if (text.indexOf('profile:')) {
+			let parsedProfile;
+			try {
+				parsedProfile = JSON.parse(text);
+			} catch (e) {
+			}
+			if (parsedProfile) {
+				let pr = parsedProfile.profile;
+				let parsedProfileObject = JSON.parse(pr.object);
+				let prfArray = [] as any;
+				for (let key in parsedProfileObject) {
+					prfArray = [...prfArray, { key: key, value: parsedProfileObject[key][0] }]
+				}
+				let profilesInStorage: any = localStorage.getItem('verified_profiles');
+				if (!profilesInStorage) {
+					if (await this.checkProfile(pr.attester, pr.address, pr.unit, parsedProfileObject)) {
+						profilesInStorage = [pr];
+						localStorage.setItem('verified_profiles', JSON.stringify(profilesInStorage));
+						let profileIndex = profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit);
+						cm[from_address].push({
+							text: prfArray,
+							i: false,
+							isProfile: true,
+							index: profileIndex
+						});
+						localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+						this.setState({ messages: cm });
+						setTimeout(() => {
+							this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+						}, 100);
+					} else {
+						let profileIndex = -1;
+						cm[from_address].push({
+							text: prfArray,
+							i: false,
+							isProfile: true,
+							index: profileIndex
+						});
+						localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+						this.setState({ messages: cm });
+						setTimeout(() => {
+							this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+						}, 100);
+					}
+				} else {
+					profilesInStorage = JSON.parse(profilesInStorage);
+					if (profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit) >= 0) {
+						let profileIndex = profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit);
+						cm[from_address].push({
+							text: prfArray,
+							i: false,
+							isProfile: true,
+							index: profileIndex
+						});
+						localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+						this.setState({ messages: cm });
+						setTimeout(() => {
+							this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+						}, 100);
+					} else {
+						if (await this.checkProfile(pr.attester, pr.address, pr.unit, parsedProfileObject)) {
+							profilesInStorage = [...profilesInStorage, pr];
+							localStorage.setItem('verified_profiles', JSON.stringify(profilesInStorage));
+							let profileIndex = profilesInStorage.findIndex(obj => obj.address === pr.address && obj.attester === pr.attester && obj.object === pr.object && obj.unit === pr.unit);
+							cm[from_address].push({
+								text: prfArray,
+								i: false,
+								isProfile: true,
+								index: profileIndex
+							});
+							localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+							this.setState({ messages: cm });
+							setTimeout(() => {
+								this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+							}, 100);
+						} else {
+							let profileIndex = -1;
+							cm[from_address].push({
+								text: prfArray,
+								i: false,
+								isProfile: true,
+								index: profileIndex
+							});
+							localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+							this.setState({ messages: cm });
+							setTimeout(() => {
+								this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+							}, 100);
+						}
+					}
+				}
+			} else {
+				cm[from_address].push({ text, i: false });
+				localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+				this.setState({ messages: cm });
+				setTimeout(() => {
+					this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+				}, 100);
+			}
+		} else {
+			cm[from_address].push({ text, i: false });
+			localStorage.setItem('m_' + from_address, JSON.stringify(cm[from_address]));
+			this.setState({ messages: cm });
+			setTimeout(() => {
+				this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+			}, 100);
+		}
 	}
 
-	async checkProfile(attesters, address, unit, profile) {
+	async checkProfile (attesters, address, unit, profile) {
 		let db = this.biot.db;
 		let storage = this.biot.storage;
 		let network = this.biot.network;
@@ -291,7 +393,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			return false;
 		}
 
-		function handleJoint(objJoint, resolve) {
+		function handleJoint (objJoint, resolve) {
 			let payload = objJoint.unit.messages.find(m => m.app === 'attestation').payload;
 			if (payload && payload.address === address) {
 				let hidden_profile = {};
@@ -311,11 +413,10 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	async objMessages(from_address, object) {
+	async objMessages (from_address, object) {
 		if (object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
-			console.error('listapps', listApps);
 			listApps[from_address] = true;
 			localStorage.setItem('listApps', JSON.stringify(listApps));
 			return;
@@ -375,12 +476,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	changeValue(id, value) {
+	changeValue (id, value) {
 		this.values[id] = value;
-		console.error(value);
 	}
 
-	tInput(title, id) {
+	tInput (title, id) {
 		return <div>
 			<div><input className={'input'} onChange={(e) => {
 				this.changeValue(id, e.target.value)
@@ -388,7 +488,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		</div>
 	}
 
-	getWallet() {
+	getWallet () {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => this.setWallet(wallet.id)} key={wallet.id} className={'wallets-list-body'}>
@@ -404,19 +504,21 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		</div>
 	}
 
-	async setWallet(id) {
+	async setWallet (id) {
 		let addresses = await this.core.getAddressesInWallet(id);
 		this.values['address'] = addresses[0];
-		this.elms['setAddress'].current.innerText = this.values['address'];
+		if (this.elms['setAddress']) {
+			this.elms['setAddress'].current.innerText = this.values['address'];
+		}
 		this.setState({ hiddenBlock: false, hiddenWallets: true });
 		this.callbackW(addresses[0]);
 	}
 
-	showWallets() {
+	showWallets () {
 		this.setState({ hiddenBlock: true, hiddenWallets: false });
 	}
 
-	sendResponse() {
+	sendResponse () {
 		for (let key in this.requirements) {
 			if (this.values[key] === undefined || (this.values[key] !== undefined && this.values[key] === '')) {
 				if (this.requirements[key].type === 'input') {
@@ -434,7 +536,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ hiddenWaiting: false });
 	}
 
-	sendRequest(req) {
+	sendRequest (req) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'request',
 			page: this.state.page,
@@ -442,7 +544,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	listCorrespondents() {
+	listCorrespondents () {
 		return this.state.correspondents.map((correspondent: any) => {
 			// @ts-ignore
 			let icon = makeBlockie(correspondent.device_address);
@@ -460,7 +562,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	copyPairingCode() {
+	copyPairingCode () {
 		//@ts-ignore
 		window.cordova.plugins.clipboard.copy(this.state.pairingCode);
 		//@ts-ignore
@@ -468,7 +570,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 	showAddC() {
-		this.setState({ app: 'addC' });
+		this.setState({app: 'addC'});
+	}
+
+	showInvDev () {
+		this.setState({ app: 'invDev' });
 	}
 
 	setPeerPairingCode = (evt) => {
@@ -496,12 +602,24 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	backKeyClick = () => {
 		if (this.state.app === 'app' && !this.state.hiddenBlock && this.state.hiddenProfiles) {
 			this.closeApp();
-		} else if (this.state.app === 'addC' || this.state.app === 'chat') {
-			this.goList();
 		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenWallets) {
 			this.setState({ hiddenBlock: false, hiddenWallets: true });
 		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenProfiles) {
 			this.setState({ hiddenBlock: false, hiddenProfiles: true });
+		} else if (this.state.app === 'chat' && this.state.isShowBlockSendAddress) {
+			this.setState({ isShowBlockSendAddress: !this.state.isShowBlockSendAddress });
+		} else if (this.state.app === 'chat' && this.state.hiddenBlock && !this.state.hiddenProfiles) {
+			this.setState({ hiddenBlock: false, hiddenProfiles: true });
+		} else if (this.state.app === 'chat' && this.state.hiddenBlock && !this.state.hiddenWallets) {
+			this.setState({ hiddenBlock: false, hiddenWallets: true });
+		} else if (this.state.app === 'chat' && !this.state.hiddenChatProfileInfo) {
+			this.setState({ hiddenChatProfileInfo: true });
+		} else if (this.state.app === 'addC' || this.state.app === 'chat') {
+			this.goList();
+		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenWallets) {
+			this.setState({hiddenBlock: false, hiddenWallets: true});
+		} else if (this.state.app === 'app' && this.state.hiddenBlock && !this.state.hiddenProfiles) {
+			this.setState({hiddenBlock: false, hiddenProfiles: true});
 		}
 	};
 
@@ -539,21 +657,65 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 
 	sendMessage = () => {
 		let message = this.state.currentText;
-		this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
-		let cm = this.state.messages;
-		if (!cm[this.state.thisChat.device_address]) {
-			cm[this.state.thisChat.device_address] = [];
+		if (message.indexOf('profile:')) {
+			let parsedProfile;
+			try {
+				parsedProfile = JSON.parse(message);
+			} catch (e) {
+			}
+			if (parsedProfile) {
+				let pr = parsedProfile.profile;
+				let parsedProfileObject = JSON.parse(pr.object);
+				let prfArray = [] as any;
+				for (let key in parsedProfileObject) {
+					prfArray = [...prfArray, { key: key, value: parsedProfileObject[key][0] }]
+				}
+				this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
+				let cm = this.state.messages;
+				if (!cm[this.state.thisChat.device_address]) {
+					cm[this.state.thisChat.device_address] = [];
+				}
+				cm[this.state.thisChat.device_address].push({ text: prfArray, i: true, isProfile: true, index: 0 });
+				localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
+				this.setState({ messages: cm, currentText: '' });
+				setTimeout(() => {
+					this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+				}, 100);
+			} else {
+				this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
+				let cm = this.state.messages;
+				if (!cm[this.state.thisChat.device_address]) {
+					cm[this.state.thisChat.device_address] = [];
+				}
+				cm[this.state.thisChat.device_address].push({ text: message, i: true });
+				localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
+				this.setState({ messages: cm, currentText: '' });
+				setTimeout(() => {
+					this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+				}, 100);
+			}
+		} else {
+			this.core.sendTextMessageToDevice(this.state.thisChat.device_address, message);
+			let cm = this.state.messages;
+			if (!cm[this.state.thisChat.device_address]) {
+				cm[this.state.thisChat.device_address] = [];
+			}
+			cm[this.state.thisChat.device_address].push({ text: message, i: true });
+			localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
+			this.setState({ messages: cm, currentText: '' });
+			setTimeout(() => {
+				this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
+			}, 100);
 		}
-		cm[this.state.thisChat.device_address].push({ text: message, i: true });
-		localStorage.setItem('m_' + this.state.thisChat.device_address, JSON.stringify(cm[this.state.thisChat.device_address]));
-		this.setState({ messages: cm, currentText: '' });
-		setTimeout(() => {
-			this.messages_scroll.current.scrollTop = this.messages_height.current.clientHeight;
-		}, 100);
 	};
 
 	showOrHideBlock = () => {
 		this.setState({ isShowBlockSendAddress: !this.state.isShowBlockSendAddress });
+	};
+	hideMenuBlock = () => {
+		if (this.state.isShowBlockSendAddress) {
+			this.setState({ isShowBlockSendAddress: false });
+		}
 	};
 
 	hideBlockAndShowWallets = (insert) => {
@@ -569,7 +731,20 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ isShowBlockSendAddress: false });
 		this.showWallets();
 	};
-
+	hideBlockAndShowProfiles = (insert) => {
+		this.callbackW = (profile) => {
+			let prf = JSON.stringify({ profile: profile });
+			if (insert) {
+				this.setState({ currentText: this.state.currentText + prf });
+			} else {
+				this.setState({ currentText: prf }, () => {
+					this.sendMessage();
+				});
+			}
+		};
+		this.setState({ isShowBlockSendAddress: false });
+		this.chooseProfile();
+	};
 
 	tapTimers = {};
 	onTStart = (id) => {
@@ -587,6 +762,45 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ elementTapId: '', hiddenListAction: true });
 	};
 
+	openProfileInfo = (profileIndex) => {
+		let profiles: any = localStorage.getItem('verified_profiles');
+		profiles = JSON.parse(profiles);
+		let currentProfile = profiles[profileIndex];
+		let curPrfObject = JSON.parse(currentProfile.object);
+		let prfArray = [] as any;
+		for (let key in curPrfObject) {
+			prfArray = [...prfArray, {
+				key: key,
+				value: curPrfObject[key][0]
+			}]
+		}
+		prfArray = [...prfArray, {
+			key: 'address',
+			value: currentProfile.address,
+		}, {
+			key: 'attester',
+			value: currentProfile.attester,
+		}, {
+			key: 'unit',
+			value: currentProfile.unit,
+		}];
+		this.setState({ chatProfileValues: prfArray, hiddenChatProfileInfo: !this.state.hiddenChatProfileInfo });
+	};
+
+	profileInfoInChat () {
+		let profiles = this.state.chatProfileValues.map((value: any, index) => {
+			return <div key={index} className={'profile-key'}>
+				<div className={'profile-value-key'}>{value.key}</div>
+				<div className={'profile-value'}>{value.value}</div>
+			</div>
+		});
+		return <div hidden={this.state.hiddenChatProfileInfo}>
+			<div className={'info-background'}
+			     onClick={() => this.setState({ hiddenChatProfileInfo: true })}></div>
+			<div className={'profile_block'}>{profiles}</div>
+		</div>
+	}
+
 	delCor = () => {
 		getBiot(async (biot) => {
 			await biot.core.removeCorrespondent(this.state.elementTapId).catch(e => alert(e));
@@ -598,7 +812,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ hiddenListAction: true });
 	};
 
-	render() {
+	render () {
 		if (this.state.app === 'addC') {
 			return <div>
 				<div style={{
@@ -627,6 +841,31 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 						<div style={{ textAlign: 'center' }}>
 							<input type={'button'} value={'Accept invitation'} className={'button-send-submit'}
 								onClick={this.addCorrespondent} />
+						</div>
+					</div>
+				</div>
+			</div>
+		} else if (this.state.app === 'invDev') {
+			let qrCode = new QRCode();
+			qrCode.setErrorCorrectLevel(ErrorCorrectLevel.M);
+			qrCode.setTypeNumber(10);
+			qrCode.addData("obyte:" + this.state.pairingCode);
+			qrCode.make();
+			let base64ImageString = qrCode.toDataURL();
+			return <div>
+				<div className={'top-bar'}>
+					<text className={'wallet-title'}>Invite the other device</text>
+					<a onClick={() => this.goList()} className={'back-button'}> </a>
+					<div>
+						<div className={'qr-invite'}>
+							<img width={'100%'} height={'100%'} src={base64ImageString}/>
+						</div>
+						<div className={'invite-code'}>
+							<text>{this.state.pairingCode}</text>
+						</div>
+						<div style={{ textAlign: 'center' }}>
+							<input type={'button'} value={'Copy pairing code'} className={'copy-pairing'}
+							       onClick={this.copyPairingCode}/>
 						</div>
 					</div>
 				</div>
@@ -715,6 +954,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			</div>
 		} else if (this.state.app === 'chat') {
 			return <div>
+				{this.profileInfoInChat()}
 				{this.getWallet()}
 				<div hidden={this.state.hiddenBlock}>
 					{/* <div className={'top-bar'}>
@@ -745,7 +985,44 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 							<div id={'messages_block'} ref={this.messages_height}>
 								{this.state.messages[this.state.thisChat.device_address] ?
 									this.state.messages[this.state.thisChat.device_address].map((value, index) => {
-										return <div key={index} className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+										if (value.isProfile && value.index >= 0) {
+											let profile = value.text;
+											profile = profile.map((value, index) => {
+												return <div key={index}>{value.key} : {value.value}</div>
+											});
+											if (value.i) {
+												return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+													<div>You successfully sent your profile:</div>
+													{profile}
+												</div>
+											} else {
+												return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+													<div>User sent you his profile:</div>
+													<br/>
+													<div>verified: <div className={'verified_profile'}></div>
+													</div>
+													{profile}
+													<a id={'profileInfo'}
+													   onClick={() => this.openProfileInfo(value.index)}>click
+														to see more details</a>
+												</div>
+											}
+										} else if (value.isProfile && value.index === -1) {
+											let profile = value.text;
+											profile = profile.map((value, index) => {
+												return <div key={index}>{value.key} : {value.value}</div>
+											});
+											return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
+												<div>User sent you his profile:</div>
+												<br/>
+												<div>verified: <div className={'unverified_profile'}></div>
+												</div>
+												{profile}
+											</div>
+										} else {
+											return <div key={index}
+											            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+										}
 									}) : null}
 							</div>
 						</div>
@@ -753,6 +1030,9 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 							<div id={'menu_img'} onClick={this.showOrHideBlock}>
 								<div hidden={!this.state.isShowBlockSendAddress} id={'insert_my_address'}
 									onClick={() => this.hideBlockAndShowWallets(1)}>Insert my address
+								</div>
+								<div hidden={!this.state.isShowBlockSendAddress} id={'insert_my_profile'}
+								     onClick={() => this.hideBlockAndShowProfiles(1)}>Insert my profile
 								</div>
 							</div>
 							<textarea id={'text_input'} placeholder={'Your message'} style={{ border: "1px solid #DFDFE0", padding: 10, boxSizing: "border-box", height: 85, background: "#FFFFFF" }}
