@@ -335,18 +335,18 @@ export class App extends React.Component {
 		super(props);
 		let self = this;
 
-		getBiot(async (biot) => {
-			this.setState({walletId: (await biot.core.getWallets())[0]})
-		});
-
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
 
 		obEvents.on('text', self.messages);
 		obEvents.on('object', self.objMessages);
-		obEvents.on('backbutton', this.backKeyClick);
+		obEvents.on('backbutton', self.backKeyClick);
 
 		this.chInit();
+
+		getBiot(async (biot) => {
+			this.setState({walletId: (await biot.core.getWallets())[0]})
+		});
 
 		events.on('nfc_payment', obj => {
 			this.setPage('setWallet', null, 'sendTransaction', {
@@ -385,7 +385,6 @@ export class App extends React.Component {
 		//@ts-ignore
 		let _stepInit = window.stepInit;
 		if (_stepInit) {
-			console.error('qweqweqwe', _stepInit);
 			if (_stepInit === 'waiting') {
 				return setTimeout(this.chInit, 100);
 			} else if (_stepInit === 'errorDeviceName') {
@@ -400,6 +399,10 @@ export class App extends React.Component {
 				let seed = window.seed;
 				this.setState({page: 'showSeed', seed});
 			}
+
+			getBiot(async (biot) => {
+				this.setState({walletId: (await biot.core.getWallets())[0]})
+			});
 
 			//@ts-ignore
 			delete window.seed;
@@ -449,7 +452,7 @@ export class App extends React.Component {
 				await biot.core.setDeviceName(this.state.name);
 				//@ts-ignore
 				await window.InitializeBIoT();
-				this.setState({page: 'index'});
+				this.setState({page: 'wallet'});
 				this.chInit();
 			});
 		}
@@ -561,50 +564,53 @@ export class App extends React.Component {
 		}
 	}
 }
-
-// @ts-ignore
-nfc.addNdefListener(
-	parseTag,
-	function () {
-		console.error('nfc ok');
-	},
-	function () {
-		console.error('nfc error');
-	}
-);
-// @ts-ignore
-nfc.addMimeTypeListener("text/plain", parseTag,
-	function () {
-		console.error('nfc ok');
-	},
-	function () {
-		console.error('nfc error');
-	}
-);
-
-function parseTag(nfcEvent) {
-	getBiot((biot: any) => {
-		console.error('NFCCWA', nfcEvent);
-		let records = nfcEvent.tag.ndefMessage;
-
-		for (let i = 0; i < records.length; i++) {
-			// @ts-ignore
-			let text = nfc.bytesToString(records[i].payload).substr(3);
-			console.error('text nfc', text);
-			if (/^biot:/.test(text)) {
-				let t = text.substr(5).split('|');
-				let amount = parseInt(t[1]);
-				// @ts-ignore
-				if (OBValidation.isValidAddress(t[0]) && typeof amount === "number") {
-					events.emit('nfc_payment', {
-						address: t[0],
-						amount: amount
-					});
-				}
-			}
-		}
-	});
-}
+//
+// // @ts-ignore
+// nfc.addNdefListener(
+// 	parseTag,
+// 	function () {
+// 		console.error('nfc ok');
+// 	},
+// 	function () {
+// 		console.error('nfc error');
+// 	}
+// );
+// // @ts-ignore
+// if(nfc) {
+// 	// @ts-ignore
+// 	nfc.addMimeTypeListener("text/plain", parseTag,
+// 		function () {
+// 			console.error('nfc ok');
+// 		},
+// 		function () {
+// 			console.error('nfc error');
+// 		}
+// 	);
+// }
+//
+// function parseTag(nfcEvent) {
+// 	getBiot((biot: any) => {
+// 		console.error('NFCCWA', nfcEvent);
+// 		let records = nfcEvent.tag.ndefMessage;
+//
+// 		for (let i = 0; i < records.length; i++) {
+// 			// @ts-ignore
+// 			let text = nfc.bytesToString(records[i].payload).substr(3);
+// 			console.error('text nfc', text);
+// 			if (/^biot:/.test(text)) {
+// 				let t = text.substr(5).split('|');
+// 				let amount = parseInt(t[1]);
+// 				// @ts-ignore
+// 				if (OBValidation.isValidAddress(t[0]) && typeof amount === "number") {
+// 					events.emit('nfc_payment', {
+// 						address: t[0],
+// 						amount: amount
+// 					});
+// 				}
+// 			}
+// 		}
+// 	});
+// }
 
 
 document.addEventListener("backbutton", onBackKeyDown, false);
