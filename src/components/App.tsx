@@ -1,14 +1,15 @@
 import * as React from 'react';
 
 import "../styles/style.scss";
-import {WalletsList} from "./WalletsList";
-import {Wallet} from "./WalletPage";
-import {ReceivePage} from "./ReceivePage";
-import {SendPage} from "./SendPage";
-import {Apps} from "./Apps";
-import {Menu} from "./Menu";
+import { WalletsList } from "./WalletsList";
+import { Wallet } from "./WalletPage";
+import { ReceivePage } from "./ReceivePage";
+import { SendPage } from "./SendPage";
+import { Apps } from "./Apps";
+import { Menu } from "./Menu";
 import getBiot from "../getBiot";
-import {EventEmitter} from './EventEmitter';
+import { EventEmitter } from './EventEmitter';
+import Channel from "./Channel";
 
 let events = new EventEmitter();
 
@@ -123,9 +124,28 @@ export class QRScanner extends React.Component<any, IPage> {
 
 	render() {
 		return (
-			<div className={'top-bar'}>
-				<text className={'qrScanner-title'}>QR Scanner</text>
-				<a onClick={() => this.props.setPage('wallet')} className={'back-button'}> </a>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}
+			>
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}
+				>
+					<div onClick={() => this.props.setPage('wallet')} className="topmenu_action">
+						<div className="topmenu_action-arrow" />
+					</div>
+					<div style={{ paddingLeft: 20, width: "100%" }}>QR Scanner</div>
+				</div>
+				<div className="line" />
 			</div>
 		)
 	}
@@ -139,7 +159,7 @@ interface ISetWallet {
 
 export class SetWallet extends React.Component<ISetWallet, any> {
 
-	state = {wallets: []};
+	state = { wallets: [] };
 
 	componentDidMount() {
 		getBiot(async (biot: any) => {
@@ -163,7 +183,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 				console.error(wallets[0]);
 				this.props.setPage(this.props.nextPage, wallets[0].id, null, this.props.params)
 			} else {
-				this.setState({wallets: wallets});
+				this.setState({ wallets: wallets });
 			}
 		});
 	}
@@ -182,7 +202,7 @@ export class SetWallet extends React.Component<ISetWallet, any> {
 			);
 		});
 		return <div>
-			<div className={'state-wallets'} style={{paddingTop: '45px'}}>
+			<div className={'state-wallets'} style={{ paddingTop: '45px' }}>
 				{wallets}
 			</div>
 		</div>
@@ -193,7 +213,7 @@ export class ReqChannel extends React.Component<any, any> {
 	state = {
 		wallets: [],
 		profiles: [],
-		profile: {address: '', unit: '', object: ''},
+		profile: { address: '', unit: '', object: '' },
 		hiddenProfiles: true,
 		hiddenWaiting: true,
 		deviceAddress: ''
@@ -205,7 +225,7 @@ export class ReqChannel extends React.Component<any, any> {
 		let pubKey = this.props.params.pairingCode.match(/^[A-Za-z0-9/=+\-]+/)[0];
 		// @ts-ignore
 		let peerDeviceAddress = objectHash.getDeviceAddress(pubKey);
-		this.setState({deviceAddress: peerDeviceAddress})
+		this.setState({ deviceAddress: peerDeviceAddress })
 	}
 
 	openChannel = async () => {
@@ -264,12 +284,12 @@ export class ReqChannel extends React.Component<any, any> {
 	async chooseProfile() {
 		getBiot(async (biot: any) => {
 			let profiles = await biot.core.getProfiles();
-			this.setState({hiddenProfiles: false, profiles});
+			this.setState({ hiddenProfiles: false, profiles });
 		});
 	}
 
 	setProfile(address, unit, object) {
-		this.setState({profile: {address, unit, object}, hiddenProfiles: true});
+		this.setState({ profile: { address, unit, object }, hiddenProfiles: true });
 		console.error('set', address, unit, object);
 	}
 
@@ -279,7 +299,7 @@ export class ReqChannel extends React.Component<any, any> {
 			console.error('prf', prf);
 			return (
 				<div onClick={() => this.setProfile(profile.address, profile.unit, profile.object)} key={profile.unit}
-				     className={'wallets-list-body'}>
+					className={'wallets-list-body'}>
 					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
 					<div className={'profiles-list-body-balance'}>{profile.address}</div>
 				</div>
@@ -345,7 +365,7 @@ export class App extends React.Component {
 		this.chInit();
 
 		getBiot(async (biot) => {
-			this.setState({walletId: (await biot.core.getWallets())[0]})
+			this.setState({ walletId: (await biot.core.getWallets())[0] })
 		});
 
 		events.on('nfc_payment', obj => {
@@ -388,7 +408,7 @@ export class App extends React.Component {
 			if (_stepInit === 'waiting') {
 				return setTimeout(this.chInit, 100);
 			} else if (_stepInit === 'errorDeviceName') {
-				return this.setState({page: 'setName'});
+				return this.setState({ page: 'setName' });
 			} else if (_stepInit === 'error') {
 				return alert('error');
 			}
@@ -397,11 +417,11 @@ export class App extends React.Component {
 				localStorage.setItem('isShownSeed', '1');
 				//@ts-ignore
 				let seed = window.seed;
-				this.setState({page: 'showSeed', seed});
+				this.setState({ page: 'showSeed', seed });
 			}
 
 			getBiot(async (biot) => {
-				this.setState({walletId: (await biot.core.getWallets())[0]})
+				this.setState({ walletId: (await biot.core.getWallets())[0] })
 			});
 
 			//@ts-ignore
@@ -413,7 +433,7 @@ export class App extends React.Component {
 		if (this.state.page !== 'apps') {
 			let cm = localStorage.getItem('m_' + from_address);
 			let messages = cm ? JSON.parse(cm) : [];
-			messages.push({text, i: false});
+			messages.push({ text, i: false });
 			localStorage.setItem('m_' + from_address, JSON.stringify(messages));
 		}
 	};
@@ -430,7 +450,7 @@ export class App extends React.Component {
 	};
 
 	setPage = (page, walletId?, nextPage?, params?) => {
-		this.setState({page: page, nextPage: nextPage || '', params: params || {}});
+		this.setState({ page: page, nextPage: nextPage || '', params: params || {} });
 	};
 
 	setName = (evt) => {
@@ -440,19 +460,19 @@ export class App extends React.Component {
 	};
 
 	setAsset = (asset) => {
-		this.setState({asset: asset});
+		this.setState({ asset: asset });
 	};
 
 	nowSaveName = false;
 	saveName = () => {
 		if (!this.nowSaveName) {
 			this.nowSaveName = true;
-			this.setState({textSaveName: 'Please wait'});
+			this.setState({ textSaveName: 'Please wait' });
 			getBiot(async (biot: any) => {
 				await biot.core.setDeviceName(this.state.name);
 				//@ts-ignore
 				await window.InitializeBIoT();
-				this.setState({page: 'wallet'});
+				this.setState({ page: 'wallet' });
 				this.chInit();
 			});
 		}
@@ -463,101 +483,161 @@ export class App extends React.Component {
 		window.cordova.plugins.clipboard.copy(this.state.seed);
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Seed successfully copied');
-		this.setState({page: 'wallet'});
+		this.setState({ page: 'wallet' });
 	};
 
 	backKeyClick = () => {
 		if (this.state.page === 'setWallet') {
-			this.setState({page: 'index'})
+			this.setState({ page: 'index' })
 		} else if (this.state.page == 'wallet') {
-			this.setState({page: 'index'})
+			this.setState({ page: 'index' })
 		} else if (this.state.page == 'sendTransaction') {
-			this.setState({page: 'wallet'})
+			this.setState({ page: 'wallet' })
 		} else if (this.state.page == 'receiveTransaction') {
-			this.setState({page: 'wallet'})
+			this.setState({ page: 'wallet' })
 		}
 	};
 
 	render() {
-		if (this.state.page == 'index') {
+		if (this.state.page == 'Channel') {
+			return <Channel />
+		} else if (this.state.page == 'index') {
 			return <div className={'app-body'}>
-				<WalletsList setPage={this.setPage}/>
-				<Menu page={'index'} setPage={this.setPage}/>
+				<WalletsList setPage={this.setPage} />
+				<Menu page={'index'} setPage={this.setPage} />
 			</div>
 		} else if (this.state.page === 'setWallet') {
 			return <div>
 				<div className={'top-bar'}>
 					<text className={'wallet-title'}>Please select the wallet</text>
-					<a onClick={() => this.setState({page: 'index'})} className={'back-button'}> </a>
+					<a onClick={() => this.setState({ page: 'index' })} className={'back-button'}> </a>
 				</div>
-				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params}/>
+				<SetWallet setPage={this.setPage} nextPage={this.state.nextPage} params={this.state.params} />
 			</div>
 		} else if (this.state.page === 'setName') {
-			return <div className={'app-body'} style={{textAlign: 'center'}}>
-				<div className={'name-title'}>What's your name?</div>
-				<div><input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName}/>
+			return <div className={'app-body'} style={{ textAlign: 'center' }}>
+				<div style={{ display: "flex", flexDirection: "column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+					<div className="inner">
+						<div style={{ marginBottom: 8 }}>What's your name?</div>
+					</div>
+					<div className="line" />
 				</div>
-				<div className={'button-block'}>
-					<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
-						{this.state.textSaveName}
-					</button>
+				<div className="inner">
+					<div className="iconsName" />
+					<div>
+						<input type={'text'} className={'name-input'} placeholder={'Your name'} onChange={this.setName} />
+					</div>
+					<div className={'button-block'}>
+						<button onClick={() => this.saveName()} className={'button-send-submit'} type="submit">
+							{this.state.textSaveName}
+						</button>
+					</div>
 				</div>
 			</div>
 		} else if (this.state.page === 'showSeed') {
-			return <div className={'app-body'} style={{textAlign: 'center'}}>
-				<div className={'name-title'}>Please save your seed</div>
-				<div style={{color: '#fff'}}>{this.state.seed}</div>
-				<div className={'button-block'}>
-					<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
-						Copy seed and close
-					</button>
+			return <div className={'app-body'} style={{ textAlign: 'center' }}>
+				<div style={{ display: "flex", flexDirection: "column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+					<div className="inner">
+						<div style={{ marginBottom: 8 }}>Please save your seed</div>
+					</div>
+					<div className="line" />
+				</div>
+				<div className="iconsSeed" />
+				<div className="seed-block">{this.state.seed}</div>
+				<div className="inner">
+					<div className={'button-block'}>
+						<button onClick={() => this.copySeed()} className={'button-send-submit'} type="submit">
+							Copy seed
+						</button>
+					</div>
 				</div>
 			</div>
 		} else if (this.state.page === 'reqChannel') {
-			return <div><ReqChannel params={this.state.params} walletId={this.state.walletId} setPage={this.setPage}/>
+			return <div><ReqChannel params={this.state.params} walletId={this.state.walletId} setPage={this.setPage} />
 			</div>
 		} else if (this.state.page == 'qrScanner') {
 			return <div>
-				<QRScanner setPage={this.setPage}/>
+				<QRScanner setPage={this.setPage} />
 			</div>
 		} else if (this.state.page == 'wallet' && this.state.walletId) {
 			return <div>
-				<div className={'top-bar'}>
-					<text
-						className={'wallet-title'}>{
-						this.state.walletName.length > 25 ?
-							this.state.walletName.substr(0, 25) + '...' :
-							this.state.walletName}</text>
+				<div style={{ display: "flex", flexDirection: "column", textAlign: "left", paddingTop: 13, fontSize: "21px" }}>
+					<div className="inner">
+						<div style={{ marginBottom: 8 }}>
+							<text>{
+								this.state.walletName.length > 25 ?
+									this.state.walletName.substr(0, 25) + '...' :
+									this.state.walletName}
+							</text>
+						</div>
+					</div>
+					<div className="line" />
 				</div>
 				<div className={'wallet-menu'}>
-					<a onClick={() => this.setState({page: 'sendTransaction'})} className={'send-button'}> </a>
-					<a onClick={() => this.setState({page: 'receiveTransaction'})} className={'receive-button'}> </a>
+					<div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+						<a onClick={() => this.setState({ page: 'sendTransaction' })} className={'send-button'}> </a>
+						<div>Send</div>
+					</div>
+					<div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+						<a onClick={() => this.setState({ page: 'receiveTransaction' })} className={'receive-button'}> </a>
+						<div>Recive</div>
+					</div>
 				</div>
-				<Wallet setAsset={this.setAsset} walletId={this.state.walletId}/>
-				<Menu page={'wallet'} setPage={this.setPage}/>
+				<Wallet setAsset={this.setAsset} walletId={this.state.walletId} />
+				<Menu page={'wallet'} setPage={this.setPage} />
 			</div>
 		} else if (this.state.page == 'sendTransaction') {
 			console.error('ASSET STATE', this.state.asset);
 			return <div>
-				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Send</text>
-					<a onClick={() => this.setState({page: 'wallet'})} className={'back-button'}> </a>
+				<div style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}>
+					<div style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}>
+						<div onClick={() => this.setState({ page: 'wallet' })} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
+						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>Send</div>
+					</div>
+					<div className="line" />
 				</div>
 				<SendPage walletId={this.state.walletId} asset={this.state.asset}
-				          back={() => this.setState({page: 'wallet'})}
-				          params={this.state.params}/>
+					back={() => this.setState({ page: 'wallet' })}
+					params={this.state.params} />
 			</div>
 		} else if (this.state.page == 'receiveTransaction') {
 			return <div>
-				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Receive</text>
-					<a onClick={() => this.setState({page: 'wallet'})} className={'back-button'}> </a>
+				<div style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}>
+					<div style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}>
+						<div onClick={() => this.setState({ page: 'wallet' })} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
+						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>Receive</div>
+					</div>
+					<div className="line" />
 				</div>
-				<ReceivePage walletId={this.state.walletId}/>
+				<ReceivePage walletId={this.state.walletId} />
 			</div>
 		} else if (this.state.page == 'apps') {
 			return <div>
-				<Apps setPage={this.setPage}/>
+				<Apps setPage={this.setPage} />
 			</div>
 		} else {
 			return <div>Loading...</div>
@@ -637,7 +717,7 @@ obEvents.on('object', (device_address, object) => {
 				if (error) {
 					//@ts-ignore
 					window.plugins.toast.showLongBottom('An error occurred while sending payment through the channel');
-					return console.error('error:::::',error, response);
+					return console.error('error:::::', error, response);
 				} else {
 					//@ts-ignore
 					window.plugins.toast.showLongBottom('Payment through channel sent successfully');

@@ -25,7 +25,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	componentDidMount () {
+	componentDidMount() {
 		console.error('params2', this.props.params);
 		if (this.props.params) {
 			// @ts-ignore
@@ -57,7 +57,7 @@ export class SendPage extends React.Component<ISendPage, {}> {
 		});
 	};
 
-	render () {
+	render() {
 		let asset = this.props.asset;
 		if (asset === 'base') {
 			asset = 'bytes';
@@ -65,38 +65,40 @@ export class SendPage extends React.Component<ISendPage, {}> {
 			asset = 'BC'
 		}
 		return <div>
-			<div className={'send-form'}>>
-				<div className={'address-input'}>
-					<input
-						required={true}
-						type="text"
-						className="send-input"
-						placeholder="Recipient address"
-						value={this.state.address}
-						onChange={this.setAddress}/>
-				</div>
-				<div className={'amount-input'}>
-					{asset.length > 5 ? <div><input
+			<div className={'send-form'}>
+				<div className="inner">
+					<div className={'address-input'}>
+						<input
+							required={true}
+							type="text"
+							className="send-input"
+							placeholder="Recipient address"
+							value={this.state.address}
+							onChange={this.setAddress} />
+					</div>
+					<div className={'amount-input'}>
+						{asset.length > 5 ? <div><input
 							required={true}
 							type="text"
 							className="send-input"
 							placeholder={'Amount of '}
 							value={this.state.amount}
-							onChange={this.setAmount}/>
+							onChange={this.setAmount} />
 							<span className={'balance-coin-name'}>{asset}</span></div> :
-						<input
-							required={true}
-							type="text"
-							className="send-input"
-							placeholder={'Amount of ' + asset}
-							value={this.state.amount}
-							onChange={this.setAmount}/>
-					}
-				</div>
-				<div className={'button-block'}>
-					<button onClick={() => this.sendPayment()} className={'button-send-submit'} type="submit">
-						Send
+							<input
+								required={true}
+								type="text"
+								className="send-input"
+								placeholder={'Amount of ' + asset}
+								value={this.state.amount}
+								onChange={this.setAmount} />
+						}
+					</div>
+					<div className={'button-block'}>
+						<button onClick={() => this.sendPayment()} className={'button-send-submit'} type="submit">
+							Send
 					</button>
+					</div>
 				</div>
 			</div>
 		</div>

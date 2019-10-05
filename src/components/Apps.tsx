@@ -46,14 +46,14 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	private messages_height: React.RefObject<any>;
 	private elms: any;
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		this.messages_scroll = React.createRef();
 		this.messages_height = React.createRef();
 		this.elms = {};
 	}
 
-	componentDidMount () {
+	componentDidMount() {
 		this.messages = this.messages.bind(this);
 		this.objMessages = this.objMessages.bind(this);
 		this.changeValue = this.changeValue.bind(this);
@@ -113,7 +113,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		// @ts-ignore
 		let _eventBus = window.eventBus;
 		_eventBus.removeListener('text', this.messages);
@@ -121,7 +121,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		_eventBus.removeListener('backbutton', this.backKeyClick);
 	}
 
-	goList () {
+	goList() {
 		this.setState({
 			app: 'list',
 			data: '',
@@ -134,7 +134,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		};
 	}
 
-	closeApp () {
+	closeApp() {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'close'
 		});
@@ -142,7 +142,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ thisChat: { name: '', device_address: '' }, app: 'list', data: '', page: '', message: '' });
 	}
 
-	getElement (f) {
+	getElement(f) {
 		if (f.type === 'input') {
 			if (f.id) this.elms[f.id] = React.createRef();
 			return this.tInput(f.title, f.id);
@@ -153,13 +153,13 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 					For choose address click here</a>
 			</div>
 		} else if (f.type === 'blank_line') {
-			return <div><br/></div>
+			return <div><br /></div>
 		} else if (f.type === 'submit') {
 			if (f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} style={{ textAlign: 'center' }}>
 				<input ref={this.elms[f.id]} onClick={() => this.sendResponse()} className={'button-send-submit'}
-				       type={'submit'}
-				       value={f.title}/>
+					type={'submit'}
+					value={f.title} />
 			</div>
 		} else if (f.type === 'h2') {
 			if (f.id) this.elms[f.id] = React.createRef();
@@ -176,8 +176,8 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			if (f.id) this.elms[f.id] = React.createRef();
 			return <div id={f.id} style={{ textAlign: 'center' }}>
 				<input ref={this.elms[f.id]} onClick={() => this.sendRequest(f.req)} className={'button-send-submit'}
-				       type={'button'}
-				       value={f.title}/>
+					type={'button'}
+					value={f.title} />
 			</div>
 		} else if (f.type === 'checkbox') {
 			if (f.id) this.elms[f.id] = React.createRef();
@@ -185,7 +185,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				<label className={'switch'} htmlFor={f.id}>
 					<text className={'checkboxTitle'}>{f.title}</text>
 					<input ref={this.elms[f.id]} onChange={(e) => this.handleCheck(f.id, e.target.checked)}
-					       type={'checkbox'} id={f.id}/>
+						type={'checkbox'} id={f.id} />
 					<div className={'slider round'}></div>
 				</label>
 			</div>
@@ -203,7 +203,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	handleCheck (id, isChecked) {
+	handleCheck(id, isChecked) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'update_value',
 			page: this.state.page,
@@ -212,11 +212,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.changeValue(id, isChecked)
 	};
 
-	chooseProfile () {
+	chooseProfile() {
 		this.setState({ hiddenBlock: true, hiddenProfiles: false });
 	}
 
-	setProfile (profile) {
+	setProfile(profile) {
 		let prf = JSON.parse(profile.object);
 		this.values['profile'] = profile.object;
 		if (this.elms['setProfile']) {
@@ -226,12 +226,12 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.callbackW(profile);
 	}
 
-	getProfile () {
+	getProfile() {
 		let wallets = this.state.profiles.map((profile: any) => {
 			let prf = JSON.parse(profile.object);
 			return (
 				<div onClick={() => this.setProfile(profile)} key={profile.unit}
-				     className={'wallets-list-body'}>
+					className={'wallets-list-body'}>
 					<div className={'profiles-list-body-name'}>{prf.name[0] + ' ' + prf.lname[0]}</div>
 					<div className={'profiles-list-body-balance'}>{profile.attester}</div>
 				</div>
@@ -243,7 +243,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 	}
 
 
-	async messages (from_address, text) {
+	async messages(from_address, text) {
 		console.error('messages', from_address, text);
 		let cm = this.state.messages;
 		if (!cm[from_address]) {
@@ -358,7 +358,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	async checkProfile (attesters, address, unit, profile) {
+	async checkProfile(attesters, address, unit, profile) {
 		let db = this.biot.db;
 		let storage = this.biot.storage;
 		let network = this.biot.network;
@@ -393,7 +393,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			return false;
 		}
 
-		function handleJoint (objJoint, resolve) {
+		function handleJoint(objJoint, resolve) {
 			let payload = objJoint.unit.messages.find(m => m.app === 'attestation').payload;
 			if (payload && payload.address === address) {
 				let hidden_profile = {};
@@ -413,7 +413,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	async objMessages (from_address, object) {
+	async objMessages(from_address, object) {
 		if (object.type === 'imapp') {
 			let ls = localStorage.getItem('listApps');
 			let listApps = ls ? JSON.parse(ls) : {};
@@ -476,26 +476,26 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		}
 	}
 
-	changeValue (id, value) {
+	changeValue(id, value) {
 		this.values[id] = value;
 	}
 
-	tInput (title, id) {
+	tInput(title, id) {
 		return <div>
 			<div><input className={'input'} onChange={(e) => {
 				this.changeValue(id, e.target.value)
-			}} id={id} placeholder={title} ref={this.elms[id]} type={'text'}/></div>
+			}} id={id} placeholder={title} ref={this.elms[id]} type={'text'} /></div>
 		</div>
 	}
 
-	getWallet () {
+	getWallet() {
 		let wallets = this.state.wallets.map((wallet: { id: string, name: string, balance: number, coin: string }) => {
 			return (
 				<div onClick={() => this.setWallet(wallet.id)} key={wallet.id} className={'wallets-list-body'}>
 					<div className={wallet.coin}>
 					</div>
 					<div className={'wallets-list-body-name'}>{wallet.name}</div>
-					<div className={'wallets-list-body-balance'}>{wallet.balance} bytes</div>
+					<div className={'wallets-list-body-balance'}>{wallet.balance} BC</div>
 				</div>
 			);
 		});
@@ -504,7 +504,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		</div>
 	}
 
-	async setWallet (id) {
+	async setWallet(id) {
 		let addresses = await this.core.getAddressesInWallet(id);
 		this.values['address'] = addresses[0];
 		if (this.elms['setAddress']) {
@@ -514,11 +514,11 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.callbackW(addresses[0]);
 	}
 
-	showWallets () {
+	showWallets() {
 		this.setState({ hiddenBlock: true, hiddenWallets: false });
 	}
 
-	sendResponse () {
+	sendResponse() {
 		for (let key in this.requirements) {
 			if (this.values[key] === undefined || (this.values[key] !== undefined && this.values[key] === '')) {
 				if (this.requirements[key].type === 'input') {
@@ -536,7 +536,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ hiddenWaiting: false });
 	}
 
-	sendRequest (req) {
+	sendRequest(req) {
 		this.core.sendTechMessageToDevice(this.state.thisChat.device_address, {
 			type: 'request',
 			page: this.state.page,
@@ -544,33 +544,36 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 	}
 
-	listCorrespondents () {
+	listCorrespondents() {
 		return this.state.correspondents.map((correspondent: any) => {
 			// @ts-ignore
 			let icon = makeBlockie(correspondent.device_address);
 			return <div key={correspondent.device_address} className={'wallets-list-body'}
-			            onClick={() => this.openChatOrApp(correspondent)}
-			            onTouchStart={() => this.onTStart(correspondent.device_address)}
-			            onTouchEnd={() => this.onTEnd(correspondent.device_address)}>
-				<div style={{ padding: '10px 7px' }}><img width={'50px'} height={'50px'} src={icon}/></div>
-				<div className={'wallets-list-body-name'}>{correspondent.name}</div>
-				<div className={'cors-list'}>{correspondent.device_address}</div>
+				onClick={() => this.openChatOrApp(correspondent)}
+				onTouchStart={() => this.onTStart(correspondent.device_address)}
+				onTouchEnd={() => this.onTEnd(correspondent.device_address)}>
+				<div style={{ width: 48, height: 48, marginRight: 10, flexShrink: 0 }}><img width={'100%'} height={'100%'} src={icon} /></div>
+				<div style={{ width: "100%", display: "flex", justifyContent: "flex-start", flexDirection: "column", paddingRight: 10, boxSizing: "border-box" }}>
+					<div className={'wallets-list-body-name'}>{correspondent.name}</div>
+					<div className={'cors-list'} style={{ color: "#000", position: "static" }}>{correspondent.device_address}</div>
+				</div>
+				<div className="icon-arrow" />
 			</div>
 		});
 	}
 
-	copyPairingCode () {
+	copyPairingCode() {
 		//@ts-ignore
 		window.cordova.plugins.clipboard.copy(this.state.pairingCode);
 		//@ts-ignore
 		window.plugins.toast.showShortBottom('Pairing code successfully copied');
 	}
 
-	showAddC () {
+	showAddC() {
 		this.setState({ app: 'addC' });
 	}
 
-	showInvDev () {
+	showInvDev() {
 		this.setState({ app: 'invDev' });
 	}
 
@@ -780,7 +783,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ chatProfileValues: prfArray, hiddenChatProfileInfo: !this.state.hiddenChatProfileInfo });
 	};
 
-	profileInfoInChat () {
+	profileInfoInChat() {
 		let profiles = this.state.chatProfileValues.map((value: any, index) => {
 			return <div key={index} className={'profile-key'}>
 				<div className={'profile-value-key'}>{value.key}</div>
@@ -789,7 +792,7 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		});
 		return <div hidden={this.state.hiddenChatProfileInfo}>
 			<div className={'info-background'}
-			     onClick={() => this.setState({ hiddenChatProfileInfo: true })}></div>
+				onClick={() => this.setState({ hiddenChatProfileInfo: true })}></div>
 			<div className={'profile_block'}>{profiles}</div>
 		</div>
 	}
@@ -805,19 +808,36 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 		this.setState({ hiddenListAction: true });
 	};
 
-	render () {
+	render() {
 		if (this.state.app === 'addC') {
 			return <div>
-				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Accept invitation</text>
-					<a onClick={() => this.goList()} className={'back-button'}> </a>
-				</div>
-				<div className={'data'}>
-					<div><input className={'input'} placeholder={'Pairing code'} onChange={this.setPeerPairingCode}/>
+				<div style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}>
+					<div style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}>
+						<div onClick={() => this.goList()} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
+						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>Accept invitation</div>
 					</div>
-					<div style={{ textAlign: 'center' }}>
-						<input type={'button'} value={'Accept invitation'} className={'button-send-submit'}
-						       onClick={this.addCorrespondent}/>
+					<div className="line" />
+				</div>
+				<div className="inner">
+					<div className={'data'}>
+						<div><input className={'input'} placeholder={'Pairing code'} onChange={this.setPeerPairingCode} />
+						</div>
+						<div style={{ textAlign: 'center' }}>
+							<input type={'button'} value={'Accept invitation'} className={'button-send-submit'}
+								onClick={this.addCorrespondent} />
+						</div>
 					</div>
 				</div>
 			</div>
@@ -829,22 +849,44 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 			qrCode.make();
 			let base64ImageString = qrCode.toDataURL();
 			return <div>
-				<div className={'top-bar'}>
+				{/* <div className={'top-bar'}>
 					<text className={'wallet-title'}>Invite the other device</text>
 					<a onClick={() => this.goList()} className={'back-button'}> </a>
-					<div>
-						<div className={'qr-invite'}>
-							<img width={'100%'} height={'100%'} src={base64ImageString}/>
+				</div> */}
+				<div style={{
+					display: "flex",
+					flexDirection: "column",
+					textAlign: "left",
+					fontSize: "21px"
+				}}>
+					<div style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						background: "#ffffff"
+					}}>
+						<div onClick={() => this.goList()} className="topmenu_action">
+							<div className="topmenu_action-arrow" />
 						</div>
+						<div style={{ paddingLeft: 20, width: "100%" }}>Invite the other device</div>
+					</div>
+					<div className="line" />
+				</div>
+				<div>
+					<div className={'qr-invite'}>
+						<img width={'100%'} height={'100%'} src={base64ImageString} />
+					</div>
+					<div className="inner">
 						<div className={'invite-code'}>
 							<text>{this.state.pairingCode}</text>
 						</div>
 						<div style={{ textAlign: 'center' }}>
 							<input type={'button'} value={'Copy pairing code'} className={'copy-pairing'}
-							       onClick={this.copyPairingCode}/>
+								onClick={this.copyPairingCode} />
 						</div>
 					</div>
 				</div>
+
 			</div>
 		} else if (this.state.app === 'list') {
 			return <div>
@@ -854,12 +896,45 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 						<div onClick={this.delCor}>Delete correspondent</div>
 					</div>
 				</div>
-				<div className={'top-bar'}>
-					<text className={'wallet-title'}>Apps and chats</text>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px"
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							paddingLeft: 20
+						}}
+					>
+						<div>Apps and chats</div>
+						<div style={{
+							display: "flex",
+							justifyContent: "flex-end",
+							alignItems: "center",
+							paddingLeft: 20
+						}}>
+							<div onClick={() => this.showInvDev()} className="topmenu_action" style={{ marginRight: 5 }}>
+								<div className="topmenu_action-img-par" />
+							</div>
+							<div onClick={() => this.showAddC()} className="topmenu_action">
+								<div className="topmenu_action-img" />
+							</div>
+						</div>
+						{/* <div onClick={() => this.showAddC()} className="topmenu_action">
+							<div className="topmenu_action-img" />
+						</div> */}
+					</div>
+					<div className="line" />
 				</div>
 				<div id={'bl_for_scroll_corrs'}>
 					<div className={'state-wallets'}>
-						<div key={'invDev'} className={'wallets-list-body'} onClick={() => {
+						{/* <div key={'invDev'} className={'wallets-list-body'} onClick={() => {
 							this.showInvDev()
 						}}>
 							<div className={'invDev'}></div>
@@ -872,23 +947,43 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 							<div className={'recvCorr'}></div>
 							<div className={'wallets-list-body-name'}>Accept invitation</div>
 							<div className={'cors-list'}>by pairing code</div>
-						</div>
+						</div> */}
 						{this.listCorrespondents()}
 					</div>
 				</div>
-				<Menu page={'apps'} setPage={this.props.setPage}/>
+				<Menu page={'apps'} setPage={this.props.setPage} />
 			</div>
 		} else if (this.state.app === 'app') {
 			return <div>
 				{this.getWallet()}
 				{this.getProfile()}
 				<div hidden={this.state.hiddenBlock}>
-					<div className={'top-bar'}>
+					<div style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px"
+					}}>
+						<div style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							background: "#ffffff"
+						}}>
+							<div onClick={() => this.closeApp()} className="topmenu_action">
+								<div className="topmenu_action-arrow" />
+							</div>
+							<div style={{ paddingLeft: 20, width: "100%" }}>{this.state.thisChat.name}</div>
+						</div>
+						<div className="line" />
+					</div>
+
+					{/* <div className={'top-bar'}>
 						<text className={'wallet-title'}>{this.state.thisChat.name}</text>
 						<a onClick={() => this.closeApp()} className={'back-button'}> </a>
-					</div>
+					</div> */}
 					<div className={'plsWaiting'} hidden={this.state.hiddenWaiting}>Please waiting</div>
-					<div key={'data'} className={'data'}>{this.state.data}</div>
+					<div key={'data'} className={'data inner'}>{this.state.data}</div>
 				</div>
 			</div>
 		} else if (this.state.app === 'chat') {
@@ -897,9 +992,24 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 				{this.getWallet()}
 				{this.getProfile()}
 				<div hidden={this.state.hiddenBlock} onClick={() => this.hideMenuBlock()}>
-					<div className={'top-bar'}>
-						<text className={'wallet-title'}>{this.state.thisChat.name}</text>
-						<a onClick={() => this.goList()} className={'back-button'}> </a>
+					<div style={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+						fontSize: "21px",
+					}}>
+						<div style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							background: "#ffffff"
+						}}>
+							<div onClick={() => this.goList()} className="topmenu_action">
+								<div className="topmenu_action-arrow" />
+							</div>
+							<div style={{ paddingLeft: 20, width: "100%" }}>{this.state.thisChat.name}</div>
+						</div>
+						<div className="line" />
 					</div>
 					<div key={'home_data'} className={'data'}>
 						<div id={'bl_for_scroll'} ref={this.messages_scroll}>
@@ -919,12 +1029,12 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 											} else {
 												return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
 													<div>User sent you his profile:</div>
-													<br/>
+													<br />
 													<div>verified: <div className={'verified_profile'}></div>
 													</div>
 													{profile}
 													<a id={'profileInfo'}
-													   onClick={() => this.openProfileInfo(value.index)}>click
+														onClick={() => this.openProfileInfo(value.index)}>click
 														to see more details</a>
 												</div>
 											}
@@ -935,14 +1045,14 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 											});
 											return <div key={index} className={value.i ? 'm_r' : 'm_l'}>
 												<div>User sent you his profile:</div>
-												<br/>
+												<br />
 												<div>verified: <div className={'unverified_profile'}></div>
 												</div>
 												{profile}
 											</div>
 										} else {
 											return <div key={index}
-											            className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
+												className={value.i ? 'm_r' : 'm_l'}>{value.text}</div>
 										}
 									}) : null}
 							</div>
@@ -950,15 +1060,15 @@ export class Apps extends React.Component<{ setPage: (page) => void }, any> {
 						<div id={'input_block'}>
 							<div id={'menu_img'} onClick={this.showOrHideBlock}>
 								<div hidden={!this.state.isShowBlockSendAddress} id={'insert_my_address'}
-								     onClick={() => this.hideBlockAndShowWallets(1)}>Insert my address
+									onClick={() => this.hideBlockAndShowWallets(1)}>Insert my address
 								</div>
 								<div hidden={!this.state.isShowBlockSendAddress} id={'insert_my_profile'}
-								     onClick={() => this.hideBlockAndShowProfiles(1)}>Insert my profile
+									onClick={() => this.hideBlockAndShowProfiles(1)}>Insert my profile
 								</div>
 							</div>
-							<input id={'text_input'} type={'text'} placeholder={'Your message'}
-							       value={this.state.currentText} onChange={this.setCurrentText}/>
-							<div id={'send_img'} onClick={() => this.sendMessage()}/>
+							<textarea id={'text_input'} placeholder={'Your message'} style={{ border: "1px solid #DFDFE0", padding: 10, boxSizing: "border-box", height: 85, background: "#FFFFFF" }}
+								value={this.state.currentText} onChange={this.setCurrentText} />
+							<div id={'send_img'} onClick={() => this.sendMessage()} />
 						</div>
 					</div>
 				</div>

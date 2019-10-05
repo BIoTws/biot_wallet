@@ -1,0 +1,96 @@
+@import 'vars.scss';
+
+.Channel {
+    font-family: $font;
+
+    &__wallet {
+        text-align: center;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    &__title {
+        font-weight: bold;
+        color: #000000;
+        margin-top: 40px;
+        margin-bottom: 10px;
+    }
+
+    &__members {
+        display: flex;
+        flex-direction: column;
+        margin-top: 25px;
+    }
+
+    &__member {
+        display: flex;
+        align-items: center;
+
+        &-name {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 21px;
+        }
+
+        &-value {
+            font-size: 16px;
+        }
+    }
+
+    &__close {
+        &-btn {
+            font-family: $font;
+            color: #ffffff;
+            font-weight: 600;
+            text-decoration: none;
+            user-select: none;
+            padding-top: 18px;
+            padding-bottom: 18px;
+            outline: none;
+            border: none;
+            background: #B00010;
+            width: 100%;
+            margin-top: 60px;
+        }
+
+        &-descr {
+            text-align: center;
+            font-size: 10px;
+            color: #bfc0c2;
+            margin-top: 10px;
+        }
+    }
+
+    &__transaction {
+        width: 100%;
+        padding: 8px 16px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        color: #ffffff;
+
+        &-name {
+            font-size: 16px;
+        }
+
+        &-info {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &-value {
+            font-weight: bold;
+        }
+
+        &-date {
+            font-size: 10px;
+        }
+    }
+
+    &__first {
+        background: #008ECF;
+    }
+
+    &__second {
+        background: #005691;
+    }
+}

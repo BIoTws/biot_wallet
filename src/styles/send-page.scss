@@ -1,7 +1,8 @@
+@import 'vars.scss';
 $background: #191c2f;
 
 .send-form {
-  width: 95%;
+  width: 100%;
   height: 500px;
   left: 2%;
   top: 7%;
@@ -17,29 +18,39 @@ $background: #191c2f;
 }
 
 .send-input {
-  width: 98%;
-  height: 2em;
-  border: 0;
-  color: #7E8494;
-  border-bottom: 1px solid rgba(#c8d5d3, 0.5);
-  background-color: $background;
-  text-align: center;
+  width: 100%;
+  border: none;
+  color: #000000;
+  border-bottom: 2px solid #BFC0C2;
+  background-color: transparent;
+  padding-left: 20px;
+  font-size: 16px;
+  padding-bottom: 10px;
+  box-sizing: border-box;
+
+  &:focus {
+    &::-webkit-input-placeholder {
+      color: transparent
+    }
+  }
+
+  & .button-send-submit {
+    font-family: $font;
+    color: #b3bebc;
+    font-weight: 600;
+    text-decoration: none;
+    user-select: none;
+    padding: .4em 3.5em;
+    outline: none;
+    border: 0 solid;
+    border-radius: 0;
+    transition: 0.1s;
+    background: #444fa5;
+    position: relative;
+    top: 50px;
+  }
 }
 
-.send-input:focus {
-  text-align: center;
-  outline: 0;
-  border-bottom: 1px solid rgba(#5765d7, 0.7);
-}
-
-.send-input:focus::-webkit-input-placeholder {
-  color: transparent
-}
-
-.send-input::placeholder {
-  text-align: center;
-  color: #7E8494;
-}
 
 .button-send-submit {
   font-family: 'Roboto', sans-serif;
@@ -60,6 +71,7 @@ $background: #191c2f;
 .button-block {
   height: 50px
 }
+
 .balance-coin-name {
   word-wrap: break-word;
   font-family: 'Roboto', sans-serif;

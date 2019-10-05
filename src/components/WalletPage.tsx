@@ -35,13 +35,13 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 
 	timerB: any = null;
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		this.onSwipeLeft = this.onSwipeLeft.bind(this);
 		this.onSwipeRight = this.onSwipeRight.bind(this);
 	}
 
-	onSwipeLeft () {
+	onSwipeLeft() {
 		let index = this.state.balanceIndex;
 		if (this.state.balanceIndex === this.state.balanceLength - 1) {
 			index = 0;
@@ -60,7 +60,7 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		console.error('LEFT'); //+1
 	}
 
-	onSwipeRight () {
+	onSwipeRight() {
 		let index = this.state.balanceIndex;
 		let maxIndex = this.state.balanceLength;
 		if (this.state.balanceIndex === 0) {
@@ -80,7 +80,7 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		console.error('RIGHT'); // -1
 	}
 
-	calcListTransactions (objTransactions, myAddresses) {
+	calcListTransactions(objTransactions, myAddresses) {
 		let list: any = [];
 
 		for (let key in objTransactions) {
@@ -150,7 +150,7 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		return list;
 	}
 
-	componentDidMount () {
+	componentDidMount() {
 		getBiot(async (biot: any) => {
 			let upd = async () => {
 				let balance = await biot.core.getWalletBalance(this.props.walletId);
@@ -201,22 +201,43 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		});
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		if (this.timerB) clearInterval(this.timerB);
 	}
+
+	// showTransactions = () => {
+	// 	return this.state.transactions.map((transaction: ITransactions) => {
+	// 		return (
+	// 			<div key={transaction.id} className={'list-body'}>
+	// 				<div className={transaction.transaction}>
+	// 				</div>
+	// 				<div className={'list-body-name'}>{transaction.name}</div>
+	// 				<div className={'list-body-balance'}>{transaction.balance}</div>
+	// 				<div className={'list-body-date'}>{
+	// 					//@ts-ignore
+	// 					moment(transaction.time * 1000).format("MM.DD.YYYY HH:mm")
+	// 				}</div>
+	// 			</div>
+	// 		);
+	// 	});
+	// };
 
 	showTransactions = () => {
 		return this.state.transactions.map((transaction: ITransactions) => {
 			return (
-				<div key={transaction.id} className={'list-body'}>
-					<div className={transaction.transaction}>
+				<div key={transaction.id} className={"list-body"}>
+					<div className={transaction.transaction} />
+					<div className="list-body-wrap">
+						<div className={"list-body-name"}>{transaction.name}</div>
+						<div className="list-body-descr">
+							<div className={"list-body-balance"}>{transaction.balance} <span>byte</span></div>
+							<div className={"list-body-date"}>
+								{
+									//@ts-ignore
+									moment(transaction.time * 1000).format("MM.DD.YYYY HH:mm")}
+							</div>
+						</div>
 					</div>
-					<div className={'list-body-name'}>{transaction.name}</div>
-					<div className={'list-body-balance'}>{transaction.balance}</div>
-					<div className={'list-body-date'}>{
-						//@ts-ignore
-						moment(transaction.time * 1000).format("MM.DD.YYYY HH:mm")
-					}</div>
 				</div>
 			);
 		});
@@ -226,7 +247,7 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		return this.state.channels.map((channel: IChannels) => {
 			return (
 				<div key={channel.id} className={'channels-list-body'}
-				     onClick={() => this.showModalChannel(channel.row)}>
+					onClick={() => this.showModalChannel(channel.row)}>
 					<div className={'channels-list-body-name'}>{channel.id.substr(0, 20) + '...'}</div>
 					<div className={'list-body-balance-ch'}>My amount: {channel.myAmount} | Peer
 						amount: {channel.peerAmount}</div>
@@ -271,7 +292,7 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 		this.setState({ isShowModalChannel: false });
 	};
 
-	render () {
+	render() {
 		let getBlock = () => {
 			if (this.state.list == 'transactions') {
 				return <div key={'transactions'} className={'transactions'}>
@@ -303,7 +324,7 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 								position: 'inherit',
 								margin: '10px 0'
 							}}
-							        type="submit">Close channel
+								type="submit">Close channel
 							</button>
 						</div> : ''}
 					</div>
@@ -342,28 +363,28 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 				<div>
 					{modal()}
 					<Swipe onSwipeRight={this.onSwipeRight}
-					       onSwipeLeft={this.onSwipeLeft}
+						onSwipeLeft={this.onSwipeLeft}
 					>
 						<div className={'balance'}>
-							<div className={'balance-title-block'}>
+							{/* <div className={'balance-title-block'}>
 								<span className={'balance-title'}>Total balance</span>
-							</div>
+							</div> */}
 							<div className={'balance-text-block'}>
 								{coin.length > 5 ?
-									<div><span className={'balance-text'}>{currentCoin.balance}</span><br/>
+									<div><span className={'balance-text'}>{currentCoin.balance}</span><br />
 										<div className={'balance-coin-name'}>{coin}</div>
 									</div>
-									: <span className={'balance-text'}>{currentCoin.balance} {coin}</span>}
+									: <span className={'balance-text'}><span>{currentCoin.balance}</span> {coin}</span>}
 							</div>
 							{dotArray}
 						</div>
 					</Swipe>
-					<div onClick={() => this.setState({list: 'transactions'})}
-					     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
+					<div onClick={() => this.setState({ list: 'transactions' })}
+						className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
 						<text>Transactions</text>
 					</div>
-					<div onClick={() => this.setState({list: 'channels'})}
-					     className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
+					<div onClick={() => this.setState({ list: 'channels' })}
+						className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
 						<text>Channels</text>
 					</div>
 					{getBlock()}
@@ -371,26 +392,44 @@ export class Wallet extends React.Component<{ walletId: String, setAsset: any },
 			);
 		} else {
 			let currentCoin: any = this.state.balance;
+			let coin = currentCoin.coin;
+			if (coin === 'base') {
+				coin = 'Bytes'
+			} else if (coin === 'Clcb6ZC5br93OA7ZMFEq88i+1CkJtpxpyAz4WyinKBY=') {
+				coin = 'BC'
+			}
 			console.error('SINGLE BALANCE', currentCoin);
 			return (
 				<div>
 					{modal()}
 					<div className={'balance'}>
-						<div className={'balance-title-block'}>
+						{/* <div className={'balance-title-block'}>
 							<span className={'balance-title'}>Total balance</span>
-						</div>
+						</div> */}
 						<div className={'balance-text-block'}>
 							<span
-								className={'balance-text'}>{currentCoin.length ? currentCoin[0].balance : 0} bytes</span>
+								className={'balance-text'}><span>{currentCoin.length ? currentCoin[0].balance : 0}</span> {coin || "byte"}</span>
 						</div>
 					</div>
 
-					<div onClick={() => this.setState({ list: 'transactions' })}
-					     className={this.state.list === 'transactions' ? 'transactions-button-active' : 'transactions-button'}>
+					<div
+						onClick={() => this.setState({ list: "transactions" })}
+						className={
+							this.state.list === "transactions"
+								? "transactions-button-active"
+								: "transactions-button"
+						}
+					>
 						<text>Transactions</text>
 					</div>
-					<div onClick={() => this.setState({ list: 'channels' })}
-					     className={this.state.list !== 'transactions' ? 'channels-button-active' : 'channels-button'}>
+					<div
+						onClick={() => this.setState({ list: "channels" })}
+						className={
+							this.state.list !== "transactions"
+								? "channels-button-active"
+								: "channels-button"
+						}
+					>
 						<text>Channels</text>
 					</div>
 					{getBlock()}
